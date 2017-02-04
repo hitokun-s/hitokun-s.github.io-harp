@@ -11,8 +11,14 @@
     <% } %>
 
     <title><%= title %> - Hitokun's</title>
-    <%- partial("modules/_jquery") %>
-    <%- partial("modules/_semantic-ui") %>
+
+    <% modules.push("jquery"); %>
+    <% modules.push("semantic-ui"); %>
+
+    <% modules.filter(function(item, pos) {return modules.indexOf(item) == pos;}).forEach(function(v){ %>
+        <%- partial("modules/_" + v) %>
+    <% }) %>
+
     <style>
         body{
             padding-top: 90px;
