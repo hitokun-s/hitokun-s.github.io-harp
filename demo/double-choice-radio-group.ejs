@@ -1,0 +1,26 @@
+<% title = "Double Choice Radio Button Group" %>
+<% description = "Double Choice Radio Button Group" %>
+<%- partial("../modules/_view-source") %>
+
+<h1>Double Choice Radio Button Group</h1>
+<div>
+    <input type="radio" name="rd1" class="rd"/>
+    <input type="radio" name="rd2" class="rd"/>
+    <input type="radio" name="rd3" class="rd"/>
+    <input type="radio" name="rd4" class="rd"/>
+    <input type="radio" name="rd5" class="rd"/>
+</div>
+<script>
+    $(function () {
+        $(".rd").click(function () {
+            var res = $(".rd").filter(function (i, v) {
+                return v.checked;
+            });
+            console.log(res);
+            if (res.length > 2) {
+                $(".rd").prop("checked", false);
+                this.checked = true;
+            }
+        });
+    });
+</script>

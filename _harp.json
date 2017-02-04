@@ -1,0 +1,8 @@
+{
+  "globals": {
+    "title": "Hitokun's",
+    "name"  : "Hitoshi Wada",
+    "uri": "http://example.com",
+    "phrase": "My.status = (I as Programmer).canHelp(You) ? HAPPY : SAD"
+  }
+}

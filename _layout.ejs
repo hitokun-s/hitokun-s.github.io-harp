@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="description" content="<%= description %>">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <% if(image){ %>
+        <meta property="og:image" content="image"/>
+    <% } %>
+
+    <title><%= title %> - Hitokun's</title>
+    <%- partial("modules/_jquery") %>
+    <%- partial("modules/_semantic-ui") %>
+    <style>
+        body{
+            padding-top: 90px;
+        }
+    </style>
+</head>
+<body>
+<div class="ui top fixed tabular menu">
+    <div class="ui container">
+        <div class="left menu">
+            <a class="item"><h1>Hitokun's</h1></a>
+        </div>
+        <div class="right menu">
+            <a href="/index.html" class="item <%=  %>">
+                Home
+            </a>
+            <a href="/about.html" class="item">
+                About
+            </a>
+            <a href="/contact.html" class="item">
+                Contact
+            </a>
+        </div>
+    </div>
+</div>
+<div class="ui container">
+    <%- yield %>
+</div>
+</body>
+</html>

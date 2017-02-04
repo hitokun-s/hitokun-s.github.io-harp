@@ -1,0 +1,132 @@
+<%- partial("../modules/_d3.v3") %>
+<% title = "path between two svg" %>
+
+<style>
+    svg{
+        border: 1px solid black;
+    }
+    #parent{
+        width: 900px;
+        height:500px;
+    }
+</style>
+
+<h1>Please drag the background of left/right svg element!</h1>
+<svg id="parent">
+    <g transform="translate(50,50)">
+        <svg id="svg1"></svg>
+    </g>
+    <g transform="translate(450,50)">
+        <svg id="svg2"></svg>
+    </g>
+</svg>
+<script>
+    var data = [
+        {x: 50, y: 80, r:20},
+        {x: -30, y: 60, r:23},
+        {x: 80, y: -50, r:26},
+        {x: -50, y: -30, r:20}
+    ];
+
+    d3.select("#parent").append("text").text("parent <svg> element").attr({
+        x:10,
+        y:20,
+        "font-size":20
+    });
+
+    d3.select("#svg1").append("rect").attr("id", "plate1");
+    d3.select("#svg2").append("rect").attr("id", "plate2");
+    d3.selectAll("rect").attr({
+        x: 0,
+        y: 0,
+        width: 400,
+        height: 400,
+        "fill": "white",
+        "fill-opacity": 1,
+        "stroke-width": 1,
+        stroke: "black"
+    });
+
+    var makeGraph = function(selector,idx) {
+        var g = d3.select(selector)
+                .attr("width", 400)
+                .attr("height", 400)
+                .append("g")
+                .attr("transform", "translate(200,200)");
+        g.selectAll(".link")
+                .data(data)
+                .enter()
+                .append("path")
+                .classed("link", true)
+                .attr("d", function(d) {
+                    return "M0,0L" + d.x + "," + d.y;
+                })
+                .attr({
+                    stroke: "lightgreen",
+                    "stroke-width": 5
+                });
+        g.selectAll(".node")
+                .data(data)
+                .enter()
+                .append("circle")
+                .classed("node", true)
+                .attr({
+                    stroke:"lightgreen",
+                    "stroke-width": 5
+                })
+                .attr("r", function(d){return d.r})
+                .attr("cx", function(d) {
+                    return d.x;
+                })
+                .attr("cy", function(d) {
+                    return d.y;
+                });
+        g.append("circle").attr({
+            cx:0,
+            cy:0,
+            r:10,
+            fill:"red",
+            stroke:"lightgreen",
+            "stroke-width": 5
+        });
+        d3.select(selector).append("text").text("<svg> element "+idx).attr({
+            x:10,
+            y:20,
+            "font-size":20
+        });
+    };
+    makeGraph("#svg1","1");
+    makeGraph("#svg2","2");
+
+    d3.select("#plate1").datum({x: 200, y: 200});
+    d3.select("#plate2").datum({x: 200, y: 200});
+
+    var drag = d3.behavior.drag().on("drag", function(d) {
+        d.x += d3.event.dx;
+        d.y += d3.event.dy;
+        d3.select(this.parentNode).select("g").attr("transform", "translate(" + d.x + "," + d.y + ")");
+        var self = this;
+        d3.select("#overPath").attr("d", function(_d) {
+            if (self.id === "plate1") {
+                _d.x1 += d3.event.dx;
+                _d.y1 += d3.event.dy;
+            } else {
+                _d.x2 += d3.event.dx;
+                _d.y2 += d3.event.dy;
+            }
+            return "M" + _d.x1 + "," + _d.y1 + "L" + _d.x2 + "," + _d.y2;
+        });
+    });
+
+    d3.selectAll("#plate1,#plate2").call(drag);
+
+    d3.select("#parent").append("path")
+            .datum({x1: 250, y1: 250, x2: 650, y2: 250})
+            .attr({
+                id: "overPath",
+                d: "M250,250L650,250",
+                stroke: "red",
+                "stroke-width": 5
+            });
+</script>
+
