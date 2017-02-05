@@ -1,0 +1,66 @@
+<% modules.push("d3.v3"); %>
+<% modules.push("underscore"); %>
+
+<% title = "Rader Chart" %>
+
+<script src="js/rader-chart.js"></script>
+
+    <style>
+        svg {
+            width: 500px;
+            height: 500px;
+        }
+        table{
+            border: 2px solid black;
+            table-layout: fixed;
+            width: 500px;
+        }
+        th, td {
+            border: 2px solid black;
+            overflow: hidden;
+            width: 100px;
+        }
+    </style>
+
+<div class="container">
+    <h1>RaderChart</h1>
+
+    <p>You can drag the small green circles</p>
+    <table>
+        <tr id="th"></tr>
+        <tr id="td"></tr>
+    </table>
+
+    <div id="stage"></div>
+</div>
+<script>
+    var svg;
+    $(function () {
+        svg = d3.select("#stage").append("svg");
+
+        var reflesh = function (i, val) {
+            $("#item" + i).text(val);
+        }
+
+        var data = [
+            {val: 3, full: 10, text: "item A", type: "work"},
+            {val: 4, full: 10, text: "item B", type: "pollution"},
+            {val: 5, full: 10, text: "item C", type: "busso"},
+            {val: 6, full: 10, text: "item D", type: "yachin"},
+            {val: 8, full: 10, text: "item E", type: "library"}
+        ];
+        data.forEach(function (v, i) {
+            $("#th").append("<th>" + v.text + "</th>");
+            $("#td").append("<td id='item" + i + "'>" + v.val + "</td>");
+        });
+
+        createRaderChart(svg, data, {
+            drag: function (d) {
+                reflesh(d.idx, d.cratio * d.full);
+            },
+            dragend: function (d) {
+                reflesh(d.idx, d.cratio * d.full);
+            }
+        });
+    });
+</script>
