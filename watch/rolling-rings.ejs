@@ -1,0 +1,115 @@
+<% modules.push("bootstrap"); %>
+<% title = "Watch by Rolling Rings" %>
+<link href="css/rolling_rings.css" rel="stylesheet">
+
+    <script>
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var interval = 1000;
+        var timer;
+        var loop = function () {
+            showtime();
+            timer = setTimeout(loop, interval);
+        }
+        function showtime() {
+            var date = new Date();
+            h = date.getHours();
+            m = date.getMinutes();
+            s = date.getSeconds();
+            $("#h1").text(parseInt(h / 10));
+            $("#h2").text(parseInt(h % 10));
+            $("#m1").text(parseInt(m / 10));
+            $("#m2").text(parseInt(m % 10));
+            $("#s1").text(parseInt(s / 10));
+            $("#s2").text(parseInt(s % 10));
+        }
+        window.onload = function () {
+            var d = new Date();
+            var month = months[d.getMonth()];
+            var date = d.getDate();
+            $("#mon1").text(month.charAt(0));
+            $("#mon2").text(month.charAt(1));
+            $("#mon3").text(month.charAt(2));
+            $("#date1").text(parseInt(date / 10));
+            $("#date2").text(parseInt(date % 10));
+            loop();
+        }
+    </script>
+
+<div id="tunnel">
+    <div class="w_container clearfix">
+        <div id="stage" class="content">
+            <div class="shape-3d cube backfaces">
+                <div id="h1" class="panel one"></div>
+                <div id="h2" class="panel two"></div>
+                <div class="panel three">:</div>
+                <div id="m1" class="panel four"></div>
+                <div id="m2" class="panel five"></div>
+                <div class="panel six">:</div>
+                <div id="s1" class="panel seven"></div>
+                <div id="s2" class="panel eight"></div>
+                <div class="panel nine"></div>
+                <div class="panel ten"></div>
+                <div class="panel eleven"></div>
+                <div class="panel twelve"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w_container clearfix">
+        <div id="stage" class="content">
+            <div class="bk_shape-3d cube backfaces">
+                <div class="bk_panel bk_one"></div>
+                <div class="bk_panel bk_two"></div>
+                <div class="bk_panel bk_three"></div>
+                <div class="bk_panel bk_four"></div>
+                <div class="bk_panel bk_five"></div>
+                <div class="bk_panel bk_six"></div>
+                <div class="bk_panel bk_seven"></div>
+                <div class="bk_panel bk_eight"></div>
+                <div class="bk_panel bk_nine"></div>
+                <div class="bk_panel bk_ten"></div>
+                <div class="bk_panel bk_eleven"></div>
+                <div class="bk_panel bk_twelve"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w_container2 clearfix">
+        <div id="stage" class="content">
+            <div class="shape-3d cube backfaces">
+                <div id="mon1" class="panel one"></div>
+                <div id="mon2" class="panel two"></div>
+                <div id="mon3" class="panel three"></div>
+                <div id="date1" class="panel four"></div>
+                <div id="date2" class="panel five"></div>
+                <div class="panel six"></div>
+                <div class="panel seven"></div>
+                <div class="panel eight"></div>
+                <div class="panel nine"></div>
+                <div class="panel ten"></div>
+                <div class="panel eleven"></div>
+                <div class="panel twelve"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w_container2 clearfix">
+        <div id="stage" class="content">
+            <div class="bk_shape-3d cube backfaces">
+                <div class="bk_panel bk_one"></div>
+                <div class="bk_panel bk_two"></div>
+                <div class="bk_panel bk_three"></div>
+                <div class="bk_panel bk_four"></div>
+                <div class="bk_panel bk_five"></div>
+                <div class="bk_panel bk_six"></div>
+                <div class="bk_panel bk_seven"></div>
+                <div class="bk_panel bk_eight"></div>
+                <div class="bk_panel bk_nine"></div>
+                <div class="bk_panel bk_ten"></div>
+                <div class="bk_panel bk_eleven"></div>
+                <div class="bk_panel bk_twelve"></div>
+            </div>
+        </div>
+    </div>
+
+</div>

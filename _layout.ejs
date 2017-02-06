@@ -2,13 +2,11 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <% if(description){ %>
-        <meta name="description" content="<%= description %>">
-    <% } %>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <% if(image){ %>
-        <meta property="og:image" content="<%= image %>"/>
-    <% } %>
+    <% if(description){ %><meta name="description" content="<%= description %>"><% } %>
+    <% if(author){      %><meta name="author" content="<%= author %>"><%            } %>
+    <% if(keywords){    %><meta name="Keywords" content="<%= keywords %>"><%        } %>
+    <% if(image){       %><meta property="og:image" content="<%= image %>"/><%     } %>
 
     <title><%= title %> - Hitokun's</title>
 

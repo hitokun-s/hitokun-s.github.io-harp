@@ -1,0 +1,49 @@
+<% modules.push("vue"); %>
+<% title = "Computed Property with Vue.js" %>
+
+<div class="container">
+    <h1>Computed Property with Vue.js</h1>
+    <div id="example" class="vs">
+        a={{ a }}, b={{ b }}
+    </div>
+    <script class="vs">
+        var x = 100;
+        var vm = new Vue({
+            el: '#example', // view不要ならこれはなくても良い
+            data: {
+                a: 1
+            },
+            computed: {
+                b: function () {
+                    console.log("computing b!");
+                    return this.a + 1
+                },
+                c: function () {
+                    console.log("computing c!");
+                    return this.b + 1
+                },
+                d: function () {
+                    console.log("computing d!");
+                    return this.x + 1;
+                },
+                e: function () {
+                    console.log("computing d!");
+                    return this.d + 1;
+                },
+            }
+        });
+        vm.a = 2;
+        
+        console.log("a", vm.a);
+
+        x = 1000;
+
+        console.log(vm.e);
+
+
+        // 参考：
+        // https://vuejs.org/guide/reactivity.html
+        // https://jp.vuejs.org/guide/computed.html
+        
+    </script>
+</div>
