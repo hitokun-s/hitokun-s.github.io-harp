@@ -1,5 +1,8 @@
+
 Hi, I'm Hitoshi Wada.  
-Thank you for visiting my homepage!
+Thank you for visiting my homepage!  
+I became a freelance <b>Full-Scratch engineer</b> after worked for enterprises for several years.  
+**Now I am working as a freelance, and at the same time, traveling all over the world to meet challenging project to join.**  
 
 ## Qualifications
 
@@ -9,12 +12,12 @@ Certificate
 - Oracle Master(Silver11g)
 - [Applied Information Technology Engineer Examination](https://www.jitec.ipa.go.jp/1_11seido/ap.html)
 
-Experience Languages
+Favorite Languages
 
-|Language|Level|
-|---|---|
-|Java, PHP, python, Groovy, Javascript(+node.js)|professional|
-|ObjectiveC, C++|experienced|
+- Java
+- python
+- Groovy
+- Javascript(+node)
 
 ## Career
 
@@ -31,6 +34,4 @@ Experience Languages
 
 - [Tokyo University](http://www.u-tokyo.ac.jp/en/index.html)
 - [Fujisan Magazine Service](http://www.fujisan.co.jp/)
-
-**Now I am working as a freelance, and at the same time, traveling all over the world to meet challenging project to join.**
 
