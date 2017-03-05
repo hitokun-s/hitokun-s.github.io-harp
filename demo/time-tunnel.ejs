@@ -1,0 +1,71 @@
+<% modules.push("d3.v3") %>
+<% modules.push("three") %>
+
+
+<% title = "Time Tunnel" %>
+<% description = "A Tunnel Component of Time Machine" %>
+<% image = "../image/time_tunnel.png" %>
+
+
+    <script src="../js/Detector.js"></script>
+    <script src="../js/RequestAnimationFrame.js"></script>
+    <script src="../js/timetunnel.js"></script>
+    <style>
+        #stage{
+            position: relative;
+        }
+        #timetunnel{
+            width: 100%;
+            height: 600px;
+            overflow	: hidden;
+            padding		: 0;
+            margin		: 0;
+
+            color		: #222;
+            background-color: #BBB;
+            font-family	: arial;
+            font-size	: 100%;
+        }
+        #btn-grp{
+            position:absolute;
+            z-index:2;
+            top:20px;
+            left:20px;
+        }
+        #btn-grp button{
+            border-radius: 5px;
+            border: solid 2px #ccff33;
+            background-color: transparent;
+            color:#ccff33;
+            font-size:24px;
+        }
+        .text-white{
+            color: white;
+        }
+    </style>
+
+<div id="stage">
+<div id="timetunnel" ></div>
+<div id="btn-grp">
+    <h1 class="page-header text-white">
+        Time Tunnel
+    </h1>
+    <p class="text-white">This is a tunnel component of <a href="http://historip.com">Time Machine</a></p>
+    <button id="exit">exit</button>
+    <button id="stop">stop</button>
+    <button id="start">start</button>
+    <button id="accel">accel</button>
+    <button id="brake">brake</button>
+</div>
+</div>
+
+<script>
+    $("#stage").height($(window).height() - $(".navbar").height() - 1);
+    var tunnel = new Timetunnel("timetunnel", "image/water.jpg");
+    tunnel.start();
+    $("#exit").click(tunnel.exit);
+    $("#stop").click(tunnel.stop);
+    $("#start").click(tunnel.start);
+    $("#accel").click(tunnel.accel);
+    $("#brake").click(tunnel.brake);
+</script>

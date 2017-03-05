@@ -1,0 +1,21 @@
+<% title = "Games" %>
+
+<h1><i class="trash icon"></i><%=title%></h1>
+
+<div class="row">
+    <div class="ui link cards">
+        <% for(var article of public.game._data.articles){ %>
+        <a href="<%= article.href %>" class="card ui raised">
+            <div class="image">
+                <img src="<%= article.img || 'https://dummyimage.com/600x400/000/fff' %>"/>
+            </div>
+            <div class="content">
+                <div class="header"><%= article.href %></div>
+                <div class="desciption"><%= article.description %></div>
+            </div>
+        </a>
+        <% } %>
+    </div>
+</div>
+
+</div>

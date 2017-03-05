@@ -1,0 +1,6 @@
+{
+  "articles":[
+    {"href":"moving-blocks.html", "img": "../images/moving_blocks.png"},
+    {"href":"rolling-rings.html", "img": "../images/rolling_rings.png"}
+  ]
+}

@@ -1,0 +1,38 @@
+<% title = "Musics" %>
+
+<h1><i class="music icon"></i><%=title%></h1>
+
+
+<div class="ui container">
+    <div class="ui header">
+        <div class="content">
+            <h1 class="ui red tag huge label">Compositions</h1>
+        </div>
+    </div>
+    <div class="ui link cards">
+        <% for(var article of public.music._data.compositions){ %>
+        <a href="<%= article.href %>" class="card ui raised">
+            <div class="content">
+                <div class="header"><%= article.title %></div>
+            </div>
+        </a>
+        <% } %>
+    </div>
+
+    <div class="ui header">
+        <div class="content">
+            <h1 class="ui red tag huge label">Plays</h1>
+        </div>
+    </div>
+    <div class="ui link cards">
+        <% for(var article of public.music._data.plays){ %>
+        <a href="<%= article.href %>" class="card ui raised">
+            <div class="content">
+                <div class="header"><%= article.title %></div>
+            </div>
+        </a>
+        <% } %>
+    </div>
+</div>
+
+</div>

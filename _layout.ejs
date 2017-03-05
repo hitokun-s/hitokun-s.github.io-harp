@@ -4,15 +4,24 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="author" content="Hitoshi Wada">
+    <meta name="author" content="<%= author%>">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@hitokuns">
+    
     <% if(description){ %><meta name="description" content="<%= description %>"><% } %>
     <% if(keywords){    %><meta name="Keywords" content="<%= keywords %>"><%        } %>
     <% if(image){       %><meta property="og:image" content="<%= image %>"/><%     } %>
+    <% if(description){       %><meta property="og:description" content="<%= description %>"/><%     } %>
+    
+    <meta property="og:title" content="<%= title %>" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="<%= url%>%>" />
 
     <title><%= title %> | Hitokun's</title>
 
     <% modules.push("jquery"); %>
-    <% modules.push("semantic-ui"); %>
+    <% modules.push("vue"); %>
+    <% if(modules.indexOf("bootstrap") == -1) modules.push("semantic-ui"); %>
 
     <% modules.filter(function(item, pos) {return modules.indexOf(item) == pos;}).forEach(function(v){ %>
         <%- partial("modules/_" + v) %>
@@ -24,12 +33,13 @@
     <!--<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>-->
     <!--<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>-->
     <![endif]-->
-    <script src="js/google-tracking.js"></script>
+    <script src="/js/google-tracking.js"></script>
 
-    <link href="css/responsive-helper.css" rel="stylesheet">
+    <link href="/css/responsive-helper.css" rel="stylesheet">
     <style>
         body{
             padding-top: 10px;
+            font-size: 20px;
         }
         .h-40{
             height:40px;
@@ -50,7 +60,7 @@
 <div class="ui top container">
     <div class="ui tabular menu h-40">
         <div class="left menu">
-            <a class="item"><h1>Hitokun's</h1></a>
+            <a href="/" class="item"><h1>Hitokun's</h1></a>
             <div class="large screen only">
                 <span class="ui left pointing big label" style="margin-top:21px;">
                     My.status = (I as Programmer).canHelp(You) ? HAPPY : SAD;
@@ -72,7 +82,35 @@
 </div>
 <br>
 <div class="ui container">
+    <div class="ui big breadcrumb" id="breadcrumb">
+        <template v-for="item in getMenu()">
+            <a href="{{ item.path }}" class="section">{{ item.name }}</a>
+            <i class="right chevron icon divider"></i>
+        </template>
+    </div>
     <%- yield %>
 </div>
+<script>
+    var breadcrumb = new Vue({
+        el: '#breadcrumb',
+        data: {
+        },
+        methods: {
+            getMenu: function(){
+                var totalPath = "/";
+                var res = [];
+                var paths = window.location.pathname.split("/");
+                for(var i = 0; i < paths.length - 1; i++){
+                    var path = paths[i];
+                    totalPath = totalPath + (path ? (path + "/") : "");
+                    res.push({name: path || "Home", path: totalPath})
+                }
+                return res;
+            }    
+        },
+        components: {
+        }
+    });
+</script>
 </body>
 </html>

@@ -1,0 +1,203 @@
+<% modules.push("bootstrap"); %>
+
+<% title = "Stacked Card" %>
+<% description = "Stacked Card Design" %>
+<% author = "hitokun" %>
+<% keywords = "stacked,card,design" %>
+
+    <style>
+        body{
+            background-color: #eee;
+        }
+        .card-holder, .card-holder2{
+            position: relative;
+            margin-top: 50px;
+            height:220px;
+        }
+        .card{
+            width:300px;
+            height:200px;
+            background-color: white;
+            padding:10px 20px 10px 20px;
+            border:2px solid black;
+            position: absolute;
+        }
+        .card:nth-child(2){
+            z-index: -1;
+            transform: translate(10px,-10px);
+        }
+        .card:nth-child(3){
+            z-index: -2;
+            transform: translate(20px,-20px);
+        }
+        .btn-next, .btn-next2{
+            position: absolute;
+            bottom:10px;
+            right:10px;
+        }
+        .btn-back, .btn-back2{
+            position: absolute;
+            bottom:10px;
+            left:10px;
+        }
+    </style>
+
+<div class="container">
+    <h1>Stacked Cards</h1>
+    <div class="card-holder">
+        <div class="card">
+            <h1>This is card 1.</h1>
+            <div>This is description.</div>
+            <button class="btn btn-primary pull-right btn-next">NEXT</button>
+        </div>
+        <div class="card">
+            <h1>This is card 2.</h1>
+            <div>This is description.</div>
+            <button class="btn btn-primary pull-right btn-next">NEXT</button>
+            <button class="btn btn-default pull-left btn-back">BACK</button>
+        </div>
+        <div class="card">
+            <h1>This is card 3.</h1>
+            <div>This is description.</div>
+            <button class="btn btn-default pull-left btn-back">BACK</button>
+        </div>
+    </div>
+    <h1>Stacked Cards with 3D paging</h1>
+    <div class="card-holder2">
+        <div class="card">
+            <h1>This is card 1.</h1>
+            <div>This is description.</div>
+            <button class="btn btn-primary pull-right btn-next2">NEXT</button>
+        </div>
+        <div class="card">
+            <h1>This is card 2.</h1>
+            <div>This is description.</div>
+            <button class="btn btn-primary pull-right btn-next2">NEXT</button>
+            <button class="btn btn-default pull-left btn-back2">BACK</button>
+        </div>
+        <div class="card">
+            <h1>This is card 3.</h1>
+            <div>This is description.</div>
+            <button class="btn btn-default pull-left btn-back2">BACK</button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    // as library source (not used in this page)
+    function StackedCard($holder, $members){
+        var stack = [];
+        var currIdx = 0;
+        $members.forEach(function(member){
+            $holder.append(member);
+        });
+        this.holder = $holder;
+        this.next = function(){
+            console.log("go to next card!");
+            var elm = $members[currIdx];
+            elm.css({
+                perspective: "200px",
+                "transform-origin": "left",
+                transform: "perspective(1000px) rotateY(-90deg)"
+            });
+            elm.on("transitionend", function(){
+                stack.push(elm.detach());
+                elm.off("transitionend");
+                $holder.find(".btn-prev").show();
+            });
+            currIdx++
+            return $members[currIdx];
+        }
+        this.prev = function(){
+            var elm = stack.pop();
+            elm.hide();
+            $holder.prepend(elm);
+            elm.css({
+                perspective: "200px",
+                "transform-origin": "left",
+                transform: "perspective(1000px) rotateY(-90deg)"
+            });
+            elm.show();
+            elm.css({
+                transition: "transform 0.3s linear",
+                perspective: "200px",
+                "transform-origin": "left",
+                transform: "perspective(1000px) rotateY(0deg)"
+            });
+            elm.on("transitionend", function(){
+                elm.css({
+                    transition: "",
+                    perspective: "",
+                    "transform-origin": "",
+                    transform: ""
+                });
+                elm.off("transitionend");
+            });
+            currIdx--;
+            if(currIdx == 0){
+                $holder.find(".btn-prev").hide();
+            }
+            return $members[currIdx];
+        }
+        this.addPrevButton = function(btnHtml){
+            $holder.append(btnHtml);
+            $holder.find(".btn-prev").hide();
+            $holder.find(".btn-prev").click(this.prev);
+        }
+        return this;
+    }
+
+    $(".card").css({
+        transition: "transform 0.3s linear"
+    });
+
+    var stack = [];
+    $(".btn-next").click(function(){
+       var elm = $(this).closest(".card").detach();
+        stack.push(elm);
+    });
+    $(".btn-back").click(function(){
+        $(".card-holder").prepend(stack.pop());
+    });
+
+    var stack2 = [];
+    $(".btn-next2").click(function(){
+        var elm = $(this).closest(".card");
+        elm.css({
+            transition: "transform 0.3s linear",
+            perspective: "200px",
+            "transform-origin": "left",
+            transform: "perspective(1000px) rotateY(-90deg)"
+        });
+        elm.on("transitionend", function(){
+            stack2.push(elm.detach());
+            elm.off("transitionend");
+        });
+    });
+    $(".btn-back2").click(function(){
+        var elm = stack2.pop();
+        elm.hide();
+        $(".card-holder2").prepend(elm);
+        elm.css({
+            perspective: "200px",
+            "transform-origin": "left",
+            transform: "perspective(1000px) rotateY(-90deg)"
+        });
+        elm.show();
+        elm.css({
+            transition: "transform 0.3s linear",
+            perspective: "200px",
+            "transform-origin": "left",
+            transform: "perspective(1000px) rotateY(0deg)"
+        });
+        elm.on("transitionend", function(){
+            elm.css({
+                transition: "",
+                perspective: "",
+                "transform-origin": "",
+                transform: ""
+            });
+            elm.off("transitionend");
+        });
+    });
+</script>

@@ -1,0 +1,23 @@
+<% title = "Watches" %>
+
+<h1><i class="wait icon"></i>Watches</h1>
+<p>Here is my watch collection.</p>
+
+<div class="row">
+    <div class="ui link cards">
+        <% for(var article of public.watch._data.articles){ %>
+        <a href="<%= article.href %>" class="card ui raised">
+            <div class="image">
+                <img src="<%= article.img || 'https://dummyimage.com/600x400/000/fff' %>"/>
+            </div>
+            <div class="content">
+                <div class="header"><%= article.href %></div>
+                <div class="meta"><%= article.href %></div>
+                <div class="desciption"><%= article.href %></div>
+            </div>
+        </a>
+        <% } %>
+    </div>
+</div>
+
+</div>

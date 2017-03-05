@@ -1,0 +1,141 @@
+<% title = "Turbulance" %>
+
+<script type="text/javascript" src="js/imgUtil.js"></script>
+
+<script>
+
+    //used for tubulance effect
+    var getBiLinearedImg = function (img, k) {
+        var w = img.width();
+        var h = img.height();
+        var res = new PixImage(w, h);
+        var partImg = img.getPartImage(0, 0, Math.floor(w / k), Math.floor(h / k));
+        for (var i = 0; i < w; i++) {
+            for (var j = 0; j < h; j++) {
+
+                var p = {x: i / k, y: j / k}
+                //xf:x integer floor, yf:y integer floor
+                //xc:x integer ceil, yc:y integer ceil,
+                var xf = Math.floor(p.x), xc = xf + 1;
+                var yf = Math.floor(p.y), yc = yf + 1;
+                var fracX = p.x - xf;
+                var fracY = p.y - yf;
+
+                if (xc >= partImg.width())console.log("!!!!!!!!!!");
+
+                var ff = fracX * fracY;
+                var cf = (1 - fracX) * fracY;
+                var fc = fracX * (1 - fracY);
+                var cc = (1 - fracX) * (1 - fracY);
+
+                var getValue = function (key) {
+                    var rgbff = partImg.getRGB(xf, yf);
+                    var rgbfc = partImg.getRGB(xf, yc);
+                    var rgbcf = partImg.getRGB(xc, yf);
+                    var rgbcc = partImg.getRGB(xc, yc);
+                    return Math.floor(rgbff[key] * cc + rgbcf[key] * fc + rgbfc[key] * cf + rgbcc[key] * ff);
+                }
+                res.setRGB(i, j, {r: getValue("r"), g: getValue("g"), b: getValue("b"), alpha: 255});
+            }
+        }
+        return res;
+    }
+    var getMerged = function (img_arr, ratio_arr) {
+        var w = img_arr[0].width();
+        var h = img_arr[0].height();
+        var res = new PixImage(w, h);
+
+        var sum = 0;//ratio_sum
+        ratio_arr.forEach(function (v) {
+            sum += v;
+        });
+
+        for (var i = 0; i < w; i++) {
+            for (var j = 0; j < h; j++) {
+                var r = 0, g = 0, b = 0;
+                img_arr.forEach(function (img, idx) {
+                    var c = img.getRGB(i, j);
+                    r += c.r * ratio_arr[idx];
+                    g += c.g * ratio_arr[idx];
+                    b += c.b * ratio_arr[idx];
+                });
+                res.setRGB(i, j, {r: Math.floor(r / sum), g: Math.floor(g / sum), b: Math.floor(b / sum), alpha: 255});
+            }
+        }
+        return res;
+    }
+    var getSmoothImg = function (img) {
+        var w = img.width();
+        var h = img.height();
+        var res = new PixImage(w, h);
+        for (var i = 0; i < w; i++) {
+            for (var j = 0; j < h; j++) {
+                var sum_r = 0, sum_g = 0, sum_b = 0;
+                for (var p = -23; p <= 23; p++) {
+                    for (var q = -23; q <= 23; q++) {
+                        var c = img.getRGB(i + p, j + q);
+                        sum_r += c.r;
+                        sum_g += c.g;
+                        sum_b += c.b;
+                    }
+                }
+                res.setRGB(i, j, {
+                    r: Math.floor(sum_r / 2209),
+                    g: Math.floor(sum_g / 2209),
+                    b: Math.floor(sum_b / 2209),
+                    alpha: 255
+                });
+            }
+        }
+        return res;
+    }
+    window.onload = function () {
+
+        if (!window.console) {
+            window.console = {
+                log: function (msg) {
+                }
+            };
+        }
+
+        canvas = document.getElementById('canvas');
+        if (!canvas || !canvas.getContext) {
+            return false;
+        }
+        ctx = canvas.getContext('2d');
+        var w = canvas.width = 300;
+        var h = canvas.height = 300;
+
+        var myImage = new PixImage(w, h);
+
+        //create random grayscale image
+        var img = new PixImage(ctx.getImageData(0, 0, w, h));
+        for (var i = 0; i < w; i++) {
+            for (var j = 0; j < h; j++) {
+                var val = Math.floor(Math.random() * 256)
+                myImage.setRGB(i, j, {r: val, g: val, b: val, alpha: 255});
+            }
+        }
+        var k = 64;
+        var img_arr = [], ratio_arr = [];
+        while (k >= 1) {
+            var bimg = getBiLinearedImg(myImage, k);
+            img_arr.push(bimg);
+            ratio_arr.push(k);
+            k /= 2;
+        }
+        var mist_img = getMerged(img_arr, ratio_arr);
+        mist_img = getSmoothImg(mist_img);
+
+        ctx.putImageData(mist_img.getImageData(), 0, 0);
+    }
+    function getImg() {
+        $("#canvas_img").attr("src", canvas.toDataURL("image/jpeg"));
+    }
+</script>
+<h1><%=title%></h1>
+<div style="width:300px;height:300px;text-align: center;margin-left: auto;margin-right: auto;">
+    <canvas id="canvas"></canvas>
+</div>
+<button onclick="getImg();">getImg</button>
+<img id="canvas_img"/>

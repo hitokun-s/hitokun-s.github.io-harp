@@ -1,0 +1,254 @@
+<% modules.push("d3.v3"); %>
+<% modules.push("bootstrap"); %>
+<% modules.push("font-awesome"); %>
+<% title = "What is the Language of Dreamland ?" %>
+
+<!--<link type="text/css" rel="stylesheet" href="../css/bootstrap_custom.css">-->
+<link type="text/css" rel="stylesheet" href="css/demo.css">
+
+<style id="src-css">
+    #stage {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        background-image: url("img/gray.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
+    svg {
+        opacity: 0.6;
+        width: 100%;
+        height: 100%;
+    }
+
+    rect {
+        opacity: 0.4;
+    }
+
+    /*            #img-surfer{
+                    position:absolute;
+                    width:100%;
+                    opacity: 0.5;
+                }*/
+</style>
+<div id="content">
+
+    <button id="update" class="pull-right">update(demo)</button>
+    <div id="src-html" class="text-center">
+        <h1>What is the Language of Dreamland? [demo]</h1>
+        <br>
+        <div id="stage">
+            <!--<img id="img-surfer" src="img/gray.jpg"/>-->
+            <svg></svg>
+        </div>
+        <h3>About twitter data used for this visualization</h3>
+        <table class="table table-bordered">
+            <tr>
+                <td>search keywords</td>
+                <td>
+                    'bali' and ('wave' or 'surfer' or 'surfing' or 'dreamland')<br>
+                    'バリ' and ('波' or 'サーファ' or 'サーフィン' or 'ドリームランド')
+                </td>
+            </tr>
+            <tr>
+                <td>tweeted time range</td>
+                <td>Jun 3 - Jun 10</td>
+            </tr>
+            <tr>
+                <td>number of tweets</td>
+                <td><b>873</b> tweets</td>
+            </tr>
+            <tr>
+                <td>number of laguages</td>
+                <td><b>14</b> languages</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<script id="src-js">
+
+    $("#content").wrap("<div class='container'><div class='row'><div class='col-centered col-lg-10'>");
+
+    var data = {
+        name: '',
+        children: [
+            {
+                name: "",
+                children: [
+                    {name: "Indonesian", "size": 431},
+                    {
+                        name: '',
+                        children: [
+                            {"name": "English", "size": 334},
+                            {
+                                name: '',
+                                children: [
+                                    {"name": "Japanese", "size": 92},
+                                    {
+                                        name: '',
+                                        children: [
+                                            {"name": "Undetermined", "size": 54},
+                                            {
+                                                name: '',
+                                                children: [
+                                                    {"name": "Tagalog", "size": 11},
+//                                                            {
+//                                                                name: "",
+//                                                                children: [
+                                                    {"name": "Haitian", "size": 2},
+                                                    {"name": "Arabic", "size": 1},
+                                                    {"name": "Korean", "size": 3},
+                                                    {"name": "Russian", "size": 4},
+                                                    {"name": "Estonian", "size": 2},
+                                                    {"name": "Swedish", "size": 3},
+                                                    {"name": "Turkish", "size": 4},
+                                                    {"name": "Polish", "size": 2},
+                                                    {"name": "Portuguese", "size": 1},
+                                                    {"name": "Slovak", "size": 1},
+//                                                                ]
+//                                                            },
+                                                ]
+                                            }
+                                        ]
+                                    }
+
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                name: "",
+                children: []
+            },
+        ]
+    };
+
+    var colors = d3.scale.category20();
+
+    $(function () {
+
+        var svg = d3.select("svg");
+
+
+        var treemap = d3.layout.treemap()
+                .size([parseInt(svg.style("width")), parseInt(svg.style("height"))])
+                .sticky(false).mode('slice-dice');
+        ;
+        var treemapData = treemap.value(function (d) {
+            return d.size
+        }).nodes(data);
+
+        var refresh = function (_data) {
+            console.log("refresh");
+            var _treemapData = treemap.value(function (d) {
+                return d.size
+            }).nodes(_data);
+
+            var g = svg.selectAll("g")
+                    .data(_treemapData)
+                    .transition()
+                    .duration(1500)
+            g.select("rect")
+                    .attr("x", function (d) {
+                        return d.x;
+                    })
+                    .attr("y", function (d) {
+                        return d.y;
+                    })
+                    .attr("width", function (d) {
+                        return d.dx;
+                    })
+                    .attr("height", function (d) {
+                        return d.dy;
+                    });
+            g.select("text").attr("x", function (d) {
+                return d.x + 7
+            })
+                    .attr("y", function (d) {
+                        return d.y + 22
+                    });
+        };
+
+        $("#update").click(function () {
+            refresh({
+                name: '',
+                children: [
+                    {"name": "in", "size": 1000},
+                    {"name": "en", "size": 830},
+                    {"name": "ar", "size": 369},
+                    {"name": "tl", "size": 75},
+                    {"name": "tr", "size": 40},
+                    {"name": "und", "size": 57},
+                    {"name": "pt", "size": 32},
+                    {"name": "es", "size": 21},
+                    {"name": "fr", "size": 21},
+                    {"name": "de", "size": 26},
+                    {"name": "ja", "size": 15},
+                    {"name": "ht", "size": 13}
+                ]
+            });
+        });
+
+        console.log(treemapData);
+        var boxGroup = svg.selectAll("g") //Boxグループを追加
+                .data(treemapData)
+                .enter()
+                .append("g");
+        var box = boxGroup.append('rect')
+                .attr({
+                    fill: "none",
+                    stroke: "black",
+                    "stroke-width": 1
+                })
+                .attr("x", function (d) {
+                    return d.x
+                })
+                .attr("y", function (d) {
+                    return d.y
+                })
+                .attr("width", function (d) {
+                    return d.dx
+                })
+                .attr("height", function (d) {
+                    return d.dy
+                })
+                .attr("fill", function (d, i) {
+                    return colors(i);
+                });
+        var text = boxGroup.append('text').text(function (d) {
+            return d.name;
+        })
+                .attr("x", function (d) {
+                    return d.x + 7
+                })
+                .attr("y", function (d) {
+                    var rect_height = d.dy;
+                    return rect_height < 20 ? d.y + rect_height - 1 : d.y + 22;
+                })
+                .attr("font-size", function (d) {
+                    var rect_height = d.dy;
+                    return Math.min(rect_height, 20);
+                })
+                .attr("stroke-width", function (d) {
+                    var rect_height = d.dy;
+                    return rect_height < 20 ? 1 : 2;
+                })
+                .attr({
+                    stroke: "black"
+                })
+        // add outer frame
+        svg.append("rect").attr({
+            x: 0,
+            y: 0,
+            width: svg.style("width"),
+            height: svg.style("height"),
+            stroke: "black",
+            "stroke-width": 3,
+            fill: "none"
+        })
+    });
+</script>
+

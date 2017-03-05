@@ -1,0 +1,19 @@
+<% title = "Tools" %>
+
+<h1><i class="configure icon"></i><%=title%></h1>
+<p>I created these tools for myself, because I needed!</p>
+
+<div class="row">
+    <div class="ui link cards">
+        <% for(var article of public.tool._data.articles){ %>
+        <a href="<%= article.href %>" class="card ui raised">
+            <div class="content">
+                <div class="header"><%= article.title %></div>
+                <div class="desciption"><%= article.description %></div>
+            </div>
+        </a>
+        <% } %>
+    </div>
+</div>
+
+</div>

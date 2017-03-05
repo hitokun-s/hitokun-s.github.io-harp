@@ -1,0 +1,203 @@
+<% modules.push("font-awesome"); %>
+<% modules.push("bootstrap"); %>
+
+<% title = "File Tree View" %>
+
+<style>
+    html, body {
+        height: 100%;
+        width: 100%;
+    }
+
+    ul, li {
+        list-style-type: none;
+        margin-left: 7px;
+        padding-left: 7px;
+    }
+
+    .fa-minus-square-o, .fa-plus-square-o {
+        cursor: pointer;
+    }
+
+    input {
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        outline: 0;
+        border: none;
+        box-sizing: border-box;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    input.active {
+        border: 1px solid black;
+    }
+
+    #header {
+        position: absolute;
+        height: 150px;
+        width: 100%;
+        top: 0px;
+        padding-left: 20px;
+    }
+
+    #container {
+        padding-top: 150px;
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    #main, #left-panel, #right-panel, #editor {
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    #main {
+        width: 100%;
+        padding: 2px;
+        background-color: gray;
+    }
+
+    #editor {
+        width: 100%;
+    }
+
+    #left-panel * {
+        margin-left: 3px;
+        margin-right: 3px;
+    }
+
+    #editor, #left-panel {
+        background-color: white;
+    }
+
+    .fa-file {
+        color: darkkhaki;
+    }
+
+    .fa-folder {
+        color: darkolivegreen;
+    }
+
+    .selected {
+        background-color: lightgray;
+    }
+
+    #back {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+</style>
+<div id="container">
+    <div id="header">
+        <a id="back" href="../"><i class="fa fa-arrow-circle-right"></i> back to Top</a>
+        <h1>File Tree View</h1>
+        <p>
+            This is a tree view demo.<br/>
+            I'm developing this demo for <a href="https://github.com/hitokun-s/ht-tools-desktop">a desktop app with
+                Node-Webkit</a>,<br/>
+            but this may be available for web site, such as site map tree.
+        </p>
+    </div>
+    <div id="main" class="row">
+        <div id="left-panel" class="col-3">
+            <div id="treeview"></div>
+        </div>
+        <div id="right-panel" class="col-9">
+            <textarea id="editor"></textarea>
+        </div>
+    </div>
+</div>
+<script>
+    var nodes = {
+        name: "root",
+        children: [
+            {name: "king"},
+            {name: "jobs"},
+            {
+                name: "folderA",
+                children: [
+                    {name: "kennedy"},
+                    {name: "gandhi"},
+                    {
+                        name: "folderB",
+                        children: [
+                            {name: "chaplin"},
+                            {name: "dummy"},
+                        ]
+                    },
+                    {name: "empty folder", children: []}
+                ]
+            }
+        ]
+    };
+
+    var draw = function (node) {
+        if (node.children) {
+            var ul = $("<ul/>").appendTo(node.dom);
+            node.children.forEach(function (child) {
+                child.dom = $("<li><input readonly value='" + child.name + "'></input></li>").appendTo(ul);
+                var isFolder = child.children != undefined;
+                child.dom.attr("data-type", isFolder ? "folder" : "file");
+                if (isFolder) {
+                    $("<i/>").attr("class", "fa fa-minus-square-o").prependTo(child.dom).click(function () {
+                        $(this).parent().find("li").toggle(100);
+                        $(this).toggleClass("fa-plus-square-o fa-minus-square-o");
+                    });
+                } else {
+                    $("<i/>").attr("class", "fa fa-square-o").prependTo(child.dom)
+                }
+                draw(child);
+            });
+        }
+    }
+    nodes.dom = $("#treeview");
+    draw(nodes);
+
+    $('[data-type="folder"]').children("input").before("<i class='fa fa-folder'></i>");
+    $('[data-type="file"]').children("input").before("<i class='fa fa-file'></i>");
+
+    $("input").each(function (i, e) {
+        $(e).attr("size", $(e).val().length);
+    });
+
+    $('[data-type="file"]').children("input").dblclick(function (e) {
+        $(".selected").removeClass("selected");
+        $(this).addClass("selected");
+        $("#editor").val("");//clear
+        var filename = $(this).val();
+        $.get(filename + ".txt").done(function (data) {
+            $("#editor").val(data);
+        }).fail(function (data) {
+            alert("Cannot get this file!");
+        });
+        e.stopPropagation();
+        return false;
+    });
+
+    $('[data-type="folder"]').children("input").dblclick(function (e) {
+        $(".selected").removeClass("selected");
+        $(this).parent().find("li").toggle(100);
+        $(this).prevAll("i:first-child").toggleClass("fa-plus-square-o fa-minus-square-o");
+    });
+
+    // show context menu
+    $("li").on('contextmenu', function (e) {
+        //                $(".active").prop('disabled', true).removeClass("active");
+//                $(this).children("input").eq(0)
+//                        .addClass("active")
+//                        .prop('disabled', false)
+//                        .keypress(function(e) {
+//                            if (e.which == 13) {
+//                                $(this).css("border", "none").prop('disabled', true);
+//                            }
+//                        });
+        e.stopPropagation();
+        return false;
+    });
+    $("input").eq(0).dblclick();
+</script>

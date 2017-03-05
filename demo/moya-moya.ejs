@@ -1,0 +1,95 @@
+<% modules.push("modernizr") %>
+<% title = "Moya-moya" %>
+<% image = "../image/moya-moya.png" %>
+
+    <style>
+        body ,nav{
+            background-color:#000 !important;
+        }
+        #comment{
+            background-color: transparent;
+            display:inline-block;
+            margin-left: 35px;
+            color:#ddd;
+            font-size:18px;
+        }
+        #comment button{
+            color:black;
+            margin: 10px;;
+        }
+        footer{
+            color:white;
+        }
+    </style>
+    <script src="js/LinkedList.js"></script>
+    <script src="js/HtCanvas.js"></script>
+    <script src="js/Moyamoya.js"></script>
+
+<div class="container">
+    <div class="row">
+        <div class="pull-left">
+            <canvas id="displayCanvas" width="400px" height="560px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+        <div id="comment">
+            <h1 class="page-header">Moya-moya</h1>
+            The world is too fuzzy.<br/>
+            Sometimes beautiful, sometimes ugly.<br/>
+            <button id="seeHer">See the Lady</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var mosaic;
+    var hiddenDraw = function(imgUrl) {
+        var img = new Image();
+        img.onload = function() {
+            var htCanvas = new HtCanvas(200, 280);
+            mozaic = htCanvas.getMosaic(img, 50);
+        };
+        img.src = imgUrl;
+    };
+    var seeHer = function(cellList) {
+        var diffSum = 0;
+        var dr, dg, db;
+        cellList.map(function(cell) {
+            var tgt = mosaic[cell.i][cell.j];
+            cell.r += 0.01 * (dr = tgt.r - cell.r);
+            cell.g += 0.01 * (dg = tgt.g - cell.g);
+            cell.b += 0.01 * (db = tgt.b - cell.b);
+            diffSum += dr * dr + dg * dg + db * db;
+        });
+        if (diffSum / cellList.length < 2000) {
+            moyamoya.setDelegate(hideHer);
+            console.log("show done");
+        }
+    };
+
+    var hideHer = function(cellList) {
+        var diffSum = 0;
+        var dr, dg, db;
+        cellList.map(function(cell) {
+            cell.r += 0.05 * (dr = cell.bufferR - cell.r);
+            cell.g += 0.05 * (dg = cell.bufferG - cell.g);
+            cell.b += 0.05 * (db = cell.bufferB - cell.b);
+            diffSum += dr * dr + dg * dg + db * db;
+        });
+        if (diffSum / cellList.length < 10) {
+            moyamoya.setDelegate(undefined);
+            console.log("hide done");
+        }
+    };
+
+    var moyamoya
+    $(function() {
+        moyamoya = new Moyamoya("displayCanvas");
+        moyamoya.start();
+        hiddenDraw("image/monalisa.jpg");
+
+        $("#seeHer").on("click", function() {
+            moyamoya.setDelegate(seeHer);
+        });
+    });
+</script>

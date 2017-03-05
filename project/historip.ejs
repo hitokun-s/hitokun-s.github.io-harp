@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html style="-webkit-user-select: none;">
+    <head>
+        <meta charset="utf-8">
+        <title>Historip - A Social TimeMachine -</title>
+        #{tmpl/css.html}
+        <script src="js/gradually.js"></script>
+        <meta property="og:title" content="historip13c" />
+        <meta property="og:image" content="http://historip.com/image/historip_profile.jpg" />
+        <meta property="og:description" content="A Social Time-Machine" />
+        #{tmpl/script.html}
+    </head>
+
+    <body>
+        #{tmpl/header.html}
+        #{widget/person_graph/person_graph.html}
+        <script>
+            //add window.onload event
+            $(function() {
+                $("#frame").height($(window).height() - $("#navbar").height());
+                $(document).trigger('layoutEnd');
+            });
+        </script>
+    </body>
+</html>

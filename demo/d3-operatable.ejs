@@ -1,0 +1,49 @@
+<% modules.push("d3.v3"); %>
+
+<% title = "d3-oparatable" %>
+<% description = "d3.js library for GoogleMap-like operation" %>
+<% image = "image/d3-operatable.png" %>
+
+    <style>
+        #view{
+            width: 500px;
+            height: 500px;
+            box-sizing: content-box;
+            margin:auto;
+            overflow: visible;
+            border:2px solid black;
+            position: relative;
+        }
+        svg{
+            /*border:1px solid black;*/
+            cursor: crosshair;
+            /*width: 500px;*/
+            /*height: 500px;*/
+            /*position: absolute;*/
+            background-color: lightcyan;
+        }
+    </style>
+
+    <script src="js/d3-operatable.js"></script>
+
+<h1><%=title%></h1>
+
+<div id="view">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+         viewBox="0 0 600 600" width="500" height="500">
+        <text x="100" y="300" font-family="impact" font-size="100" fill="none" stroke="blue" stroke-width="3">Hello</text>
+        <text x="200" y="380" font-family="impact" font-size="100" fill="blue" stroke="blue">World!</text>
+        <text x="20,25,30" y="30,27,24" rotate="-30" font-family="impact" font-size="6" fill="black">yes</text>
+        <g transform="rotate(-40) translate(-5,40)">
+            <polygon fill="red" stroke="none" points="10,0 0,10 20,10"></polygon>
+            <rect x="5" y="10" width="10" height="20"  fill="red" stroke="none" ></rect>
+        </g>
+    </svg>
+</div>
+</div>
+
+<script>
+    $(function() {
+        d3.select("svg").operatable();
+    });
+</script>

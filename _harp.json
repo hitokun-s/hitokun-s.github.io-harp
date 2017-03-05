@@ -2,12 +2,12 @@
   "globals": {
     "title": "Hitokun's",
     "description": null,
-    "author": null,
+    "author": "Hitoshi Wada",
     "keywords": null,
     "image": null,
     "modules":  [],
     "name"  : "Hitoshi Wada",
-    "uri": "http://example.com",
+    "url": "http://hitokun-s.github.io",
     "phrase": "My.status = (I as Programmer).canHelp(You) ? HAPPY : SAD"
   }
 }

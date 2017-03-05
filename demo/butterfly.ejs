@@ -1,0 +1,175 @@
+<% modules.push("prefixfree") %>
+
+<% title = "Butterfly" %>
+<% description = "Butterfly telling your browser supporting CSS3 or not" %>
+<% image = "../image/butterfly.png" %>
+
+    <style>
+        body{
+            overflow: hidden;
+        }
+
+        #parent{
+            position: absolute;
+            left: 40%;
+            top:30%;
+            transform-style: preserve-3d;
+            perspective-origin: 0px -200px;
+            animation-name: parent-orbit;
+            animation-duration: 20s;
+            animation-iteration-count:infinite;
+            animation-timing-function:ease-in-out;
+        }
+        @keyframes parent-orbit{
+            0% {transform: perspective(500px)  translateX(200px)  translateY(0px) rotateY(-200deg) ;}
+            50% {transform: perspective(500px)  translateX(-200px)  translateY(100px) rotateY(160deg) ;}
+            100% {transform: perspective(500px) translateX(200px)  translateY(0px) rotateY(520deg) ;}
+        }
+
+        #container{
+            width: 203px;
+            transform-style: preserve-3d;
+            transform:  perspective(300px) translateX(200px);
+
+            transform-style: preserve-3d;
+            transform: translateX(200px) rotateX(90deg);
+            animation-name: orbit;
+            animation-duration: 0.6s;
+            animation-iteration-count:infinite;
+            animation-timing-function:ease-in-out;
+        }
+        @keyframes orbit{
+            0% {transform:  translateX(300px) translateY(20px) rotateX(60deg);}
+            50% {transform:  translateX(300px) translateY(0px) rotateX(60deg);}
+            100% {transform:  translateX(300px) translateY(20px) rotateX(60deg);}
+        }
+
+        #left{
+            transform: rotateY(45deg);
+            transform: rotateY(45deg);
+            transform-origin:100% 50%;
+            animation-name: forleft;
+        }
+        #right{
+            transform: rotateY(-45deg);
+            transform: rotateY(-45deg);
+            transform-origin:0% 50%;
+            animation-name: forright;
+        }
+
+        .feather{
+            animation-duration: 0.3s;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count:infinite;
+            animation-direction:alternate-reverse;
+        }
+
+        @keyframes forleft{
+            from {transform: rotateY(-45deg);}
+            to {transform: rotateY(45deg);}
+        }
+        @keyframes forright{
+            from {transform: rotateY(45deg);}
+            to {transform: rotateY(-45deg);}
+        }
+
+
+        #serif-wrapper{
+            display: absolute;
+            animation-name: serif-orbit;
+            animation-duration: 10s;
+            animation-iteration-count:infinite;
+            animation-timing-function:ease-in-out;
+        }
+        @keyframes serif-orbit{
+            0% {transform: translateY(-50px) translateX(300px) rotateY(200deg);}
+            100% {transform: translateY(-50px) translateX(300px) rotateY(-160deg);}
+        }
+        #serif{
+            font-size: 30px;
+            font-family: "Batang";
+            animation-name: serif-light;
+            animation-duration: 1.5s;
+            animation-iteration-count:infinite;
+        }
+
+        @keyframes serif-light{
+            0% {opacity:0;}
+            20% {opacity:1;}
+            80% {opacity:1;}
+            100% {opacity:0;}
+        }
+
+        .btn{
+            margin: 4px auto;;
+        }
+    </style>
+
+    <script>
+        var show = function() {
+            $("#container").css({
+                "background-color": "red",
+                "opacity": 0.5
+            });
+            $("#parent").css({
+                "background-color": "yellow",
+                "opacity": 0.5
+            });
+        }
+        var hide = function() {
+            $(".plate").css({
+                "background-color": "transparent",
+                "opacity": 1
+            });
+        }
+        var stop = function(){
+            $("#parent, #container, #serif-wrapper, #serif, .feather").css("animation-play-state","paused");
+        }
+        var start = function(){
+            $("#parent, #container, #serif-wrapper, #serif, .feather").css("animation-play-state","running");
+        }
+        var listenEvents = [
+            'webkitAnimationIteration', // webkit(Chrome1.0, Safari3.2)
+            'oAnimationIteration', // Opera10.5
+            'animationiteration'        // IE10, Fx4以降, 12.10以降
+        ];
+        var tweet = function(){
+            var idx = -1;
+            var arr = [
+                "I am","a man","dreaming","I am ","a butterfly ?",
+                "or","I am","a butterfly","dreaming","I am","a man ?"
+            ];
+
+            arr.push("");
+            return function(){
+                idx++;
+                if(idx >= arr.length){
+                    idx = 0;
+                }
+                return arr[idx];
+            }
+        }();
+        $(function() {
+            $("#serif").on(listenEvents.join(' '), function() {
+                $("#serif").text(tweet());
+            });
+        });
+    </script>
+
+<h1><%= title %></h1>
+<div class="container">
+    <a class="ui primary button" onclick="show();">Show Structure</a>
+    <a class="ui primary button" onclick="hide();">Hide Structure</a>
+    <a class="ui danger button" onclick="stop();">Stop</a>
+    <a class="ui danger button" onclick="start();">Start</a>
+    <span>If you see the butterfly flying, your browser supports CSS3.</span>
+    <div id="parent" class="plate">
+        <div id="container" class="plate">
+            <!--do not insert line break between img tags-->
+            <img id="left" class="feather" src="../images/butterfly_left.png" /><img id="right" class="feather" src="../images/butterfly_right.png" />
+        </div>
+        <div id="serif-wrapper">
+            <p id="serif"></p>
+        </div>
+    </div>
+</div>

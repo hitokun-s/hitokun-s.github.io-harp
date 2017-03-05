@@ -1,0 +1,54 @@
+{
+  "compositions": [
+    {
+      "href": "data/Irish 1.wav",
+      "title": "Irish 1"
+    },
+    {
+      "href": "data/Irish 2.wav",
+      "title": "Irish 2"
+    },
+    {
+      "href": "data/Irish 3.wav",
+      "title": "Irish 3"
+    },
+    {
+      "href": "data/Irish 4.wav",
+      "title": "Irish 4"
+    },
+    {
+      "href": "data/Irish 5.wav",
+      "title": "Irish 5"
+    },
+    {
+      "href": "data/Irish 6.mp3",
+      "title": "Irish 6"
+    },
+    {
+      "href": "data/Irish 7.mp3",
+      "title": "Irish 7"
+    },
+    {
+      "href": "data/Irish 9.mp3",
+      "title": "Irish 9"
+    }
+  ],
+  "plays":[
+    {
+      "href": "https://www.youtube.com/watch?v=d4QFl3OduH0",
+      "title": "涙そうそう(Nada Sou Sou)"
+    },
+    {
+      "href": "https://www.youtube.com/watch?v=tEy94yEF-8w",
+      "title": "Let it go"
+    },
+    {
+      "href": "https://www.youtube.com/watch?v=CTVtiLi3wn0",
+      "title": "Gamelan song by Rindik(Tingklik)"
+    },
+    {
+      "href": "https://www.youtube.com/watch?v=Fh3M3GtuYqU",
+      "title": "Piano original"
+    }
+  ]
+}

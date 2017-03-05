@@ -1,0 +1,54 @@
+<% modules.push("d3.v3") %>
+<% title = "Time Handle" %>
+<% description = "A Handle Component of Time Machine" %>
+<% image = "../image/time_handle.png" %>
+
+    <script src="../js/timehandle.js"></script>
+    <style>
+        @import url(http://fonts.googleapis.com/css?family=Lato:300);
+
+        .show-val{
+            font-weight: 100;
+            /*letter-spacing: -2px;*/
+            font-family: 'Lato', sans-serif;
+        }
+
+        .th-btn-txt{
+            font-weight: 700;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .th-btn-grp, .th-knob{
+            cursor:pointer;
+        }
+    </style>
+
+<div class="container">
+    <div class="row">
+        <div id="view" class="text-center">
+            <h1 class="page-header">
+                Time Handle
+            </h1>
+            <p>This is a handle component of <a href="http://historip.com">Time Machine</a></p>
+        </div>
+    </div>
+</div>
+<script>
+    var handle = new TimeHandle("#view",
+            {
+                width: 500,
+                height: 500,
+                radius: 230,
+                baseColor: "#ccff33",
+                initVal: 1250,
+                showValFontSize: "100px",
+                ratioPerDeg: 0.2,
+                txtColor: "#ccff33",
+                max: 1299,
+                min: 1200,
+                onClickHandler: function() {
+                    alert("You will go to A.D." + handle.getValue());
+                }
+            }
+    );
+</script>
