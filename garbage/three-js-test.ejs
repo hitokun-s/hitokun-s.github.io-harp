@@ -125,13 +125,13 @@
         //camera.position.z = 300;
         renderer.render(scene, camera);
 
-        $("#stop").val("stop");
+        $("#stop").text("STOP");
         $("#stop").unbind().click(stop);
     }
 
     function stop() {
         cancelAnimationFrame(anime);
-        $("#stop").val("restart");
+        $("#stop").text("RESTART");
         $("#stop").unbind().click(myanimate);
     }
 

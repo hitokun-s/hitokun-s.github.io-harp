@@ -301,12 +301,12 @@
 
     function stop() {
         cancelAnimationFrame(anime);
-        $("#stop").val("restart");
+        $("#stop").text("RESTART");
         $("#stop").unbind().click(restart);
     }
 
     function restart() {
-        $("#stop").val("stop");
+        $("#stop").text("STOP");
         $("#stop").unbind().click(stop);
         myanimate();
     }
@@ -317,6 +317,6 @@
 </script>
 
 <h1><%=title %></h1>
-<input type="button" id="stop" class="ui primary button" value="stop">
+<button id="stop" class="ui primary button">STOP</button>
 <div id="test_canvas"></div>
 
