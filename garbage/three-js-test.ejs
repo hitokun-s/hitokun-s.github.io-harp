@@ -1,6 +1,6 @@
-<% modules.push("bootstrap"); %>
-<% modules.push("three.53"); %>
+<%- include('../_lib') %>
 <% title = "Three.js test" %>
+<% dependsOn(title, ["bootstrap", "three.53"]); %>
 
 <script>
     //reference url

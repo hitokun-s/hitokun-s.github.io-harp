@@ -18,12 +18,15 @@
     <meta property="og:url" content="<%= url%>%>" />
 
     <title><%= title %> | Hitokun's</title>
+    
+    <% modules[title] = modules[title] || []; %>
 
-    <% modules.push("jquery"); %>
-    <% modules.push("vue"); %>
-    <% if(modules.indexOf("bootstrap") == -1) modules.push("semantic-ui"); %>
+    <% modules[title].push("jquery"); %>
+    <% modules[title].push("vue"); %>
+    
+    <% if(modules[title].indexOf("bootstrap") == -1) modules[title].push("semantic-ui"); %>
 
-    <% modules.filter(function(item, pos) {return modules.indexOf(item) == pos;}).forEach(function(v){ %>
+    <% modules[title].filter(function(item, pos) {return modules[title].indexOf(item) == pos;}).forEach(function(v){ %>
         <%- partial("modules/_" + v) %>
     <% }) %>
 
@@ -47,6 +50,6 @@
     </style>
 </head>
 <body>
-<%- include(modules.indexOf("bootstrap") > -1 ? 'layout/_bootstrap' :'layout/_semantic'); %>
+<%- include(modules[title].indexOf("bootstrap") > -1 ? 'layout/_bootstrap' :'layout/_semantic'); %>
 </body>
 </html>

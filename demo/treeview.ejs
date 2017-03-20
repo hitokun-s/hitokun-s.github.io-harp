@@ -1,7 +1,6 @@
-<% modules.push("font-awesome"); %>
-<% modules.push("bootstrap"); %>
-
+<%- include('../_lib') %>
 <% title = "File Tree View" %>
+<% dependsOn(title, ["font-awesome", "bootstrap"]); %>
 
 <style>
     html, body {

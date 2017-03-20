@@ -1,5 +1,7 @@
-<% modules.push("d3.v3") %>
+<%- include('../_lib') %>
 <% title = "Time Handle" %>
+<% dependsOn(title, ["d3.v3"]); %>
+
 <% description = "A Handle Component of Time Machine" %>
 <% image = "../image/time_handle.png" %>
 

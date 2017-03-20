@@ -1,6 +1,7 @@
-<% modules.push("d3.v3"); %>
-<% modules.push("bootstrap"); %>
+<%- include('../_lib') %>
 <% title = "5bets" %>
+<% dependsOn(title, ["bootstrap", "d3.v3"]); %>
+
 <% image = "../image/5bets.png" %>
 
     <link href="css/5bets.css" rel="stylesheet">

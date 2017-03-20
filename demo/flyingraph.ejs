@@ -1,7 +1,7 @@
-<% modules.push("d3.v3") %>
-<% modules.push("prefixfree") %>
-
+<%- include('../_lib') %>
 <% title = "Flyingraph" %>
+<% dependsOn(title, ["d3.v3", "prefixfree"]); %>
+
 <% description = "Data is living as you can see" %>
 <% image = "image/flyingraph.png" %>
 

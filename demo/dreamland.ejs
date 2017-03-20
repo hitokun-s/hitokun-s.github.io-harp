@@ -1,7 +1,6 @@
-<% modules.push("d3.v3"); %>
-<% modules.push("bootstrap"); %>
-<% modules.push("font-awesome"); %>
+<%- include('../_lib') %>
 <% title = "What is the Language of Dreamland ?" %>
+<% dependsOn(title, ["font-awesome", "bootstrap", "d3.v3"]); %>
 
 <!--<link type="text/css" rel="stylesheet" href="../css/bootstrap_custom.css">-->
 <link type="text/css" rel="stylesheet" href="css/demo.css">

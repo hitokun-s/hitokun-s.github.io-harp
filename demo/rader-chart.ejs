@@ -1,7 +1,6 @@
-<% modules.push("d3.v3"); %>
-<% modules.push("underscore"); %>
-
+<%- include('../_lib') %>
 <% title = "Rader Chart" %>
+<% dependsOn(title, ["d3.v3", "underscore"]); %>
 
 <script src="js/rader-chart.js"></script>
 

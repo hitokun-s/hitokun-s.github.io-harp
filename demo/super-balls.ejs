@@ -1,5 +1,6 @@
-<% modules.push("processing") %>
+<%- include('../_lib') %>
 <% title = "Piled Particle" %>
+<% dependsOn(title, ["processing"]); %>
   
 <script type="text/javascript">
     var p;

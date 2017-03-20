@@ -1,5 +1,7 @@
-<% modules.push("modernizr") %>
+<%- include('../_lib') %>
 <% title = "Moya-moya" %>
+<% dependsOn(title, ["modernizr"]); %>
+
 <% image = "../image/moya-moya.png" %>
 
     <style>

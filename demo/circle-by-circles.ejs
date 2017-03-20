@@ -1,6 +1,7 @@
-<% modules.push("processing"); %>
-
+<%- include('../_lib') %>
 <% title = "Aggregated Particle" %>
+<% dependsOn(title, ["processing"]); %>
+
 <% image = "image/circle_by_circles.png" %>
 
 <script type="text/javascript">

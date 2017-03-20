@@ -1,8 +1,7 @@
-<% modules.push("angular"); %>
-<% modules.push("deep-diff"); %>
-<% modules.push("jsondiffpatch"); %>
-
+<%- include('../_lib') %>
 <% title = "Double Choice Radio Button Group" %>
+<% dependsOn(title, ["angular", "deep-diff", "jsondiffpatch"]); %>
+
 <% description = "Double Choice Radio Button Group" %>
 <%- partial("../modules/_view-source") %>
 

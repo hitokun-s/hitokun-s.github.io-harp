@@ -1,0 +1,7 @@
+<% dependsOn =
+        function(key, moduleList){
+            modules[key] = modules[key]||[];
+            modules[key] = modules[key].concat(moduleList);
+            console.log(key, moduleList);
+        };
+%>

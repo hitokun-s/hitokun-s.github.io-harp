@@ -1,8 +1,7 @@
-<% modules.push("d3.v3") %>
-<% modules.push("three") %>
-
-
+<%- include('../_lib') %>
 <% title = "Time Tunnel" %>
+<% dependsOn(title, ["d3.v3", "three"]); %>
+
 <% description = "A Tunnel Component of Time Machine" %>
 <% image = "../image/time_tunnel.png" %>
 
