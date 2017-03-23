@@ -1,0 +1,72 @@
+<%- include('../_lib') %>
+<% title = "Starbucks Location Map in Japan" %>
+<% dependsOn(title, ["d3.v3","leaflet"]); %>
+
+<% description = "Starbucks Location Map in Japan" %>
+<% keywords = "starbucks,map,location,Japan" %>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-providers/1.1.15/leaflet-providers.min.js"></script>
+
+<h1><%= title %></h1>
+
+<div id="map" style="width: 100%; height: 900px"></div>
+<script>
+    $(function () {
+        
+//        var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+//            maxZoom: 14,
+//            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+//        });
+//
+//        var map = L.map('map').addLayer(tiles);
+
+//        L.geoJson(geoJsonData, {
+//            onEachFeature: function (feature, layer) {
+//                layer.bindPopup(feature.properties.popup);
+//            }
+//        });
+//        markers.addLayer(geoJsonLayer);
+//        map.addLayer(markers);
+//        map.fitBounds(markers.getBounds());
+
+//        var map = L.map('map').setView([35.671062, 139.758496], 6);
+
+//        L.tileLayer(
+//                'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//                    attribution: '&copy; ' + mapLink + ' Contributors',
+//                    maxZoom: 18,
+//                }).addTo(map);
+        
+        // How to create MapBox Light style OSM map?
+        // refs: https://www.mapbox.com/studio/styles/mapbox/light-v9/share/
+
+        var baseLayer = L.tileLayer(
+                'https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaGl0b2t1biIsImEiOiJjaXVqYnd0NXUwMGRwMm9tc3RvcGZ1ZDZ5In0.Q4wyiiGDLH_lTi3zzFcAtA', {
+                    attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> Contributors',
+                    maxZoom: 18,
+                });
+
+//        L.tileLayer.provider('CartoDB.Positron').addTo(map);
+        
+        d3.csv("data/starbucks.csv", function(data){
+            var stores = data.map(function(d){
+//                var marker = new L.marker([d.lat, d.lng]);
+//                var marker = L.circleMarker([d.lat, d.lng], {weight:2});
+                var marker = L.circle([d.lat, d.lng], 500, {
+                    color: '#3388ff',
+                    fillColor: '#3388ff',
+                    fillOpacity: 1
+                }).bindPopup(d.name);
+                return marker;
+            });
+
+            var stores = L.layerGroup(stores);
+
+            var map = L.map('map', {
+                center: [37.8, 138],
+                zoom: 6,
+                layers: [baseLayer, stores]
+            });
+            
+        });
+    });
+</script>
