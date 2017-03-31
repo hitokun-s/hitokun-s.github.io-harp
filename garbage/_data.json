@@ -5,6 +5,7 @@
     {"href":"photohackday4.html", "title":"photohackday4"},
     {"href":"three-js-test.html", "title":"three.js demo"},
     {"href":"bs-treemap-bar-chart.html", "title":"B/S treemap bar chart"},
-    {"href":"c3-test.html", "title":"c3.js test"}
+    {"href":"c3-test.html", "title":"c3.js test"},
+    {"href":"export-svg-as-image.html", "title":"export svg as image"}
   ]
 }
