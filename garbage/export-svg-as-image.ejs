@@ -1,0 +1,126 @@
+<%- include('../_lib') %>
+<% title = "Export SVG as image" %>
+<% dependsOn(title, ["d3.v3", "c3", "canvg"]); %>
+
+<script type="text/javascript" src="https://cdn.rawgit.com/exupero/saveSvgAsPng/gh-pages/saveSvgAsPng.js"></script>
+
+<h1><%=title%></h1>
+<div id="chart1"></div>
+<button class="ui button primary" onClick="saveImage()">save image</button>
+<canvas id="canvas" width="1127px" height="320px"></canvas>
+<a href="#" id="hiddenPng" />
+
+<script>
+    var chart1 = c3.generate({
+        bindto: '#chart1',
+        data: {
+            columns: [
+                ['data1', 30, 200, 100, 400, 150, 250],
+                ['data2', 50, 20, 10, 40, 15, 25]
+            ]
+        }
+    });
+    var saveImage = function(){
+        //var svgText = document.getElementsByTagName('svg')[0].innerHTML;
+        //canvg('canvas', svgText, {scaleWidth:2, scaleHeight:2 });
+        
+        var svg = document.getElementsByTagName('svg')[0];
+//        var w = svg.getAttribute("width");
+//        var h = svg.getAttribute("height");
+//
+//        var canvas = document.createElement("canvas");
+//        canvas.setAttribute("width", w + "px");
+//        canvas.setAttribute("height", h + "px");
+//        
+//        console.log(canvas);
+//        
+//        document.body.appendChild(canvas);
+
+//        saveSvgAsPng(document.getElementsByTagName("svg")[0], "diagram.png");
+//        return;
+
+        function readTextFile(file) {
+            var rawFile = new XMLHttpRequest();
+            var allText = '';
+            rawFile.open("GET", file, false);
+            rawFile.onreadystatechange = function () {
+                if(rawFile.readyState === 4) {
+                    if(rawFile.status === 200 || rawFile.status == 0) {
+                        allText = rawFile.responseText;
+                    }
+                }
+            };
+            rawFile.send(null);
+            return allText;
+        }
+
+        var svg_style = readTextFile('https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css');
+        var all_style = svg_style.replace(/\r?\n|\r/g,'').split('}');
+        all_style.forEach(function(el) {
+            if (el.trim() != '') {
+                var full_rule_string = el.split('{');
+                var selector = full_rule_string[0].trim();
+                var all_rule = full_rule_string[1].split(';');
+                all_rule.forEach(function (elem) {
+                    if (elem.trim() != '') {
+                        var attr_value = elem.split(':');
+                        
+                        var prop = attr_value[0].trim();
+                        var value = attr_value[1].trim();
+
+                        d3.selectAll(selector).each(function(d, i){
+                            if(!this.getAttribute(prop) && !this.style[prop]){
+                                d3.select(this).style(prop + '', value + '');
+                            }
+                        });
+                    }
+                });
+            }
+        });
+        saveSvgAsPng(document.getElementsByTagName("svg")[0], "diagram.png");
+        return;
+
+        $.get("https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css", function(d){
+            console.log(d);
+            d = d.replace(/}/g, '}\n');
+            
+            var svgDiv = $("svg");
+            svgDiv.prepend("\n<style type='text/css'></style>");
+            svgDiv.find("style").html("\n<![CDATA[" + d + "]]>\n");
+
+//            saveSvgAsPng(document.getElementsByTagName("svg")[0], "diagram.png");
+
+            var canvas = document.getElementsByTagName('canvas')[0];
+            var svg = document.getElementsByTagName('svg')[0];
+//            var ctx = canvas.getContext('2d');
+////            ctx.scale(1, 1);
+//            ctx.drawSvg(document.getElementsByTagName('svg')[0].outerHTML);
+//            canvas.toBlob(function(blob) {
+//                saveAs(blob, "test.png");
+//            }, "image/png");
+
+            canvg(canvas, svg.outerHTML);
+            var theImage = canvas.toDataURL('image/png');
+            $("#hiddenPng").attr('href', theImage);
+            $("#hiddenPng").click();
+        });
+        
+        
+        var canvas = document.getElementsByTagName('canvas')[0];
+        
+//        canvg(canvas, svg.outerHTML);
+//        var theImage = canvas.toDataURL('image/png');
+//        $("#hiddenPng").attr('href', theImage);
+//        $("#hiddenPng").click();
+//        return;
+        
+        var ctx = canvas.getContext('2d');
+        ctx.scale(1, 1);
+//        ctx.drawSvg(document.getElementsByTagName('svg')[0].innerHTML);
+        ctx.drawSvg(svg.outerHTML);
+        canvas.toBlob(function(blob) {
+            saveAs(blob, "test.png");
+        }, "image/png");
+//        ctx.scale(6/13, 6/13);
+    }
+</script>
