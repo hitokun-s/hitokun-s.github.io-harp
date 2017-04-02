@@ -6,4 +6,6 @@ https://asmaloney.com/2015/06/code/clustering-markers-on-leaflet-maps/
 custom marker:
 http://leafletjs.com/examples/custom-icons/
 
+starbucks locations:
+http://starbuckslocations.net/Japan/
 
