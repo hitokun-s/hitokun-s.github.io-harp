@@ -1,0 +1,61 @@
+<%
+    var page;
+    if(title.indexOf("About") > -1){
+        page = "about";
+    }else if(title.indexOf("Contact") > -1){
+        page = "contact";
+    }else{
+        page = "home"
+    }
+ %>
+<style>
+    .bio{
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+    }
+</style>
+<div class="ui thin vertical inverted left visible sidebar menu">
+    <a class="item">
+        <h2>Hitokun's</h2>
+    </a>
+    <div id="breadcrumb">
+        <template v-for="item in getMenu()">
+            <a href="{{ item.path }}" class="item"><i class="right chevron icon divider"></i>{{ item.name }}</a>
+        </template>
+    </div>
+    <div class="bio">
+        <a href="/about.html" class="item">
+            About
+        </a>
+        <a href="/contact.html" class="item">
+            Contact
+        </a>
+    </div>
+    
+</div>
+<div class="pusher">
+    <%- yield %>
+</div>
+<script>
+    var breadcrumb = new Vue({
+        el: '#breadcrumb',
+        data: {
+        },
+        methods: {
+            getMenu: function(){
+                var totalPath = "/";
+                var res = [];
+                var paths = window.location.pathname.split("/");
+                for(var i = 0; i < paths.length - 1; i++){
+                    var path = paths[i];
+                    totalPath = totalPath + (path ? (path + "/") : "");
+                    res.push({name: path || "Home", path: totalPath})
+                }
+                return res;
+            }
+        },
+        components: {
+        }
+    });
+</script>

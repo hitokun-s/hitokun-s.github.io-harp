@@ -1,26 +1,46 @@
 <%- include('../_lib') %>
+<% layout = "semantic-sidebar" %>
 <% title = "Coffee Chain Locations in Japan" %>
 <% dependsOn(title, ["d3.v3","d3-queue","leaflet"]); %>
 
 <% description = "Coffee Chains Location Map in Japan" %>
 <% keywords = "coffee,cafe,chain,map,location,Japan" %>
+<% image = "img/coffee-chains-map-jp.png" %>
 <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-providers/1.1.15/leaflet-providers.min.js"></script>-->
 
 <style>
     #map{
         width: 100%;
-        height: 900px
+        height: 100%;
+        padding-top:98px;
     }
+    .coffee-header{
+        padding-left: 10px;
+        padding-bottom: 3px;
+        position: absolute;
+    }
+    .lbl-chain{
+        height:40px;
+    }
+    .lbl-chain img{
+        height:100%;
+    }
+    .pusher{
+        height:100%;
+        position: relative;
+    }
+    
 </style>
 
-<h1><%= title %></h1>
-<div id="chain-selector">
-    <div class="ui checkbox" v-for="chain in chains">
-        <input type="checkbox" id="{{ chain}}" value="{{chain}}" checked="true" v-model="checkedChains" v-on:click="clicked">
-        <label for="{{chain}}">{{ chain }}</label>
-    </div>
+<div class="coffee-header">
+    <h1><%= title %></h1>
+    <div id="chain-selector">
+        <div class="ui checkbox" v-for="chain in chains">
+            <input type="checkbox" id="{{ chain}}" value="{{chain}}" checked="true" v-model="checkedChains" v-on:click="clicked">
+            <label for="{{chain}}" class="lbl-chain"><img src="img/{{chain}}.png" alt=""></label>
+        </div>
+    </div>    
 </div>
-
 <script>
     var layerTitles = [
             "starbucks","komeda","doutor","tullys"

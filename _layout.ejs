@@ -50,6 +50,10 @@
     </style>
 </head>
 <body>
+<% if(typeof(layout) != "undefined" && layout){ %>
+<%- include('layout/_' + layout) %>
+<% } else { %>
 <%- include(modules[title].indexOf("bootstrap") > -1 ? 'layout/_bootstrap' :'layout/_semantic'); %>
+<% } %>
 </body>
 </html>
