@@ -14,8 +14,19 @@
         bottom: 0px;
         width: 100%;
     }
+    #btn-sidebar{
+        position: absolute;
+        right:0px;
+        cursor: pointer;
+    }
 </style>
-<div class="ui thin vertical inverted left visible sidebar menu">
+<div class="ui thin fixed inverted menu mobile only">
+    <div class="menu">
+        <div  class="item">Hitokun's</div>
+    </div>
+    <div id="btn-sidebar" class="ui right floated"><i class="icon large grey content"></i></div>
+</div>
+<div id="navbar" class="ui thin vertical inverted {{ isMobile ? 'top':'left visible'}} sidebar menu">
     <a class="item">
         <h2>Hitokun's</h2>
     </a>
@@ -24,7 +35,7 @@
             <a href="{{ item.path }}" class="item"><i class="right chevron icon divider"></i>{{ item.name }}</a>
         </template>
     </div>
-    <div class="bio">
+    <div class="bio mobile hidden">
         <a href="/about.html" class="item">
             About
         </a>
@@ -32,12 +43,31 @@
             Contact
         </a>
     </div>
-    
 </div>
-<div class="pusher">
+<div id="content" class="pusher" style="{{ isMobile ? 'padding-top: 40px !important;' : ''}}">
     <%- yield %>
 </div>
 <script>
+
+    var mediaManager = {
+        data: {
+            windowSize: 0,
+        },
+        methods: {
+            setWindowSize: function(){
+                this.windowSize = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+            }
+        },
+        created: function(){
+            this.setWindowSize();
+        },
+        computed: {
+            isMobile: function(){
+                return  this.windowSize < 768;
+            }
+        }
+    };
+    
     var breadcrumb = new Vue({
         el: '#breadcrumb',
         data: {
@@ -58,4 +88,20 @@
         components: {
         }
     });
+    var navbar = new Vue({
+        el: '#navbar',
+        mixins: [mediaManager],
+    });
+    var content = new Vue({
+        el: "#content",
+        mixins: [mediaManager]
+    });
+    
+    window.onresize = function() {
+        content.setWindowSize(); // 変数windowSizeが共有されているので、どれか1個を呼ぶだけでいい。
+    };
+    $("#btn-sidebar").click(function(){
+        $('.ui.sidebar').sidebar('toggle');    
+    });
+    
 </script>

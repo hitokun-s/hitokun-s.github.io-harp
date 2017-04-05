@@ -1,0 +1,90 @@
+<%- include('../_lib') %>
+<% title = "Angular and Semantic-UI Form test" %>
+<% dependsOn(title, ["angular"]); %>
+
+<h1><%=title%></h1>
+<div ng-app="myApp">
+    <div ng-controller="myController">
+        <form name="myForm" novalidate ng-submit='submit( myForm )'>
+            <h3 class="ui dividing header">hoge title</h3>
+                <div class="inline fields">
+                    <div class="field required">
+                        <label>Question:1</label>
+                    </div>
+                    <div class="field" ng-click="toggleIsHoge(myForm, true)">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="isHoge" ng-model="isHoge" ng-checked="isHoge == true" required/>
+                            <label>Yes</label>
+                        </div>
+                    </div>
+                    <div class="field" ng-click="toggleIsHoge(myForm, false)">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="isHoge" ng-model="isHoge" ng-checked="isHoge == false" required/>
+                            <label>No</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <div class="field required">
+                        <label>Question:2</label>
+                    </div>
+                    <div class="field" ng-click="toggleIsFuga(myForm, 1)">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="isFuga" ng-model="isFuga" ng-checked="isFuga == 1" required/>
+                            <label>Fuga:1</label>
+                        </div>
+                    </div>
+                    <div class="field" ng-click="toggleIsFuga(myForm, 2)">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="isFuga" ng-model="isFuga" ng-checked="isFuga == 2" required/>
+                            <label>Fuga:2</label>
+                        </div>
+                    </div>
+                    <div class="field" ng-click="toggleIsFuga(myForm, 3)">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="isFuga" ng-model="isFuga" ng-checked="isFuga == 3" required/>
+                            <label>Fuga:3</label>
+                        </div>
+                    </div>
+                </div>
+            
+            <button type= 'submit' class="ui button button-default" ng-disabled='!myForm.$dirty')>設定</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('myController', function($scope) {
+        
+        $scope.isHoge = null;
+        
+        $scope.isHogeSet = function(){
+            return typeof $scope.isHoge != "undefined"; 
+        }
+        $scope.toggleIsHoge= function(form, bool){
+            $scope.isHoge = bool;
+            form.$setDirty();
+            
+        };
+        $scope.toggleIsFuga = function(form, v){
+            $scope.isFuga = v;
+            form.$setDirty();
+        }
+
+        $scope.hasError = function (elm, attr, target) {
+            return elm[attr].$error[target] && ( elm[attr].$dirty || elm.$submitted );
+        };
+        
+        $scope.submit = function(form){
+            if (form.$invalid) {
+                alert("cannot submit because of some error!");
+                console.log("form.$invalid", form.$invalid);
+                console.log("form", form);
+                return false;
+            }
+            alert("submit!");
+            console.log(form);
+        }
+    });
+</script>

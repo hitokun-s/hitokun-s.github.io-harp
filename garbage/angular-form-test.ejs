@@ -1,0 +1,44 @@
+<%- include('../_lib') %>
+<% title = "Angular Form test" %>
+<% dependsOn(title, ["angular"]); %>
+
+<h1><%=title%></h1>
+<div ng-app="myApp">
+    <div ng-controller="myController">
+        <form name="myForm" novalidate ng-submit='submit( myForm )'>
+            <label for="email">Email:</label>
+            <input id="email" type="email" name="email" ng-model="email" required ng-maxlength="20">
+            <!--<span ng-show="myForm.email.$error.required">入力してください</span>-->
+            <span class="ui red left pointing prompt label transition visible" ng-if='hasError(myForm, "email", "required")'>入力してください</span>
+            <span ng-show="myForm.email.$error.maxlength">もっと短くして</span>
+
+            <ul>
+                <li><input type='radio' name='myRadio' ng-model="myRadio" required value="hoge1">hoge1</li>
+                <li><input type='radio' name='myRadio' ng-model="myRadio" required value="hoge2">hoge2</li>
+            </ul>
+            
+            <button type= 'submit' class="ui button button-default" ng-disabled='!myForm.$dirty')>設定</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('myController', function($scope) {
+
+        $scope.hasError = function (elm, attr, target) {
+            return elm[attr].$error[target] && ( elm[attr].$dirty || elm.$submitted );
+        };
+        
+        $scope.submit = function(form){
+            if (form.$invalid) {
+                alert("cannot submit because of some error!");
+                console.log("form.$invalid", form.$invalid);
+                console.log("form", form);
+                return false;
+            }
+            alert("submit!");
+            console.log(form);
+        }
+    });
+</script>

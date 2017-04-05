@@ -6,6 +6,9 @@
     {"href":"three-js-test.html", "title":"three.js demo"},
     {"href":"bs-treemap-bar-chart.html", "title":"B/S treemap bar chart"},
     {"href":"c3-test.html", "title":"c3.js test"},
-    {"href":"export-svg-as-image.html", "title":"export svg as image"}
+    {"href":"export-svg-as-image.html", "title":"export svg as image"},
+    {"href":"angular-form-test.html", "title":"Angular Form Test"},
+    {"href":"angular-sub-form-test.html", "title":"Angular Sub Form Test"},
+    {"href":"angular-semantic-form-test.html", "title":"Angular and Semantic-UI Form Test"}
   ]
 }

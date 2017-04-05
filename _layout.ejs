@@ -4,18 +4,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="author" content="<%= author%>">
+    <meta property="article:author" content="<%= author%>">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@hitokuns">
     
     <% if(description){ %><meta name="description" content="<%= description %>"><% } %>
     <% if(keywords){    %><meta name="Keywords" content="<%= keywords %>"><%        } %>
-    <% if(image){       %><meta property="og:image" content="<%= image %>"/><%     } %>
+    <% if(image){       %><meta property="og:image" content="<%= baseUrl + image %>"/><%     } %>
+    <% if(url){       %><meta property="og:url" content="<%= baseUrl + url %>"/><%     } %>
     <% if(description){       %><meta property="og:description" content="<%= description %>"/><%     } %>
     
     <meta property="og:title" content="<%= title %>" />
     <meta property="og:type" content="article" />
-    <meta property="og:url" content="<%= url%>%>" />
 
     <title><%= title %> | Hitokun's</title>
     

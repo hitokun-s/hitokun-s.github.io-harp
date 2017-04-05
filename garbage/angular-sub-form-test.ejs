@@ -1,0 +1,50 @@
+<%- include('../_lib') %>
+<% title = "Angular Sub Form test" %>
+<% dependsOn(title, ["angular"]); %>
+
+<h1><%=title%></h1>
+<div ng-app="myApp">
+    <div ng-controller="myController">
+        <form name="myForm" novalidate ng-submit='submit( myForm )'>
+            <label for="email">Email:</label>
+            <input id="email" type="email" name="email" ng-model="email" required ng-maxlength="20">
+            <!--<span ng-show="myForm.email.$error.required">入力してください</span>-->
+            <span class="ui red left pointing prompt label transition visible" ng-if='hasError(myForm, "email", "required")'>入力してください</span>
+            <span ng-show="myForm.email.$error.maxlength">もっと短くして</span>
+            
+            <p>Sub Form --- from here</p>
+            <ng-form name="subForm" ng-model='subForm' novalidate='novalidate'>
+                <label for="address">Address:</label>
+                <input id="address" type="text" name="my.address" ng-model="address" required ng-minlength="10">
+                <span class="ui red left pointing prompt label transition visible" ng-if='hasError(subForm, "my.address", "required")'>入力してください</span>
+                <span class="ui red left pointing prompt label transition visible" ng-if='hasError(subForm, "my.address", "minlength")'>短すぎます</span>
+            </ng-form>
+            <p>Sub Form --- to here</p>
+            
+            <button type= 'submit' class="ui button button-default" ng-disabled='!myForm.$dirty')>設定</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    var app = angular.module('myApp', []);
+    app.controller('myController', function($scope) {
+
+        $scope.hasError = function (form, attr, target) {
+            console.log(form);
+            return form[attr].$error[target] && ( form[attr].$dirty || form.$submitted );
+        };
+        
+        $scope.submit = function(form){
+            form.subForm.$setSubmitted();
+            console.log(form.$invalid);
+            console.log(form.$error);
+
+            if (form.$invalid || form.subForm.$invalid) {
+                alert("cannot submit because of some error!");
+                return false;
+            }
+            alert("submit!");
+        }
+    });
+</script>

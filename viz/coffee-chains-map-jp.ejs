@@ -5,7 +5,8 @@
 
 <% description = "Coffee Chains Location Map in Japan" %>
 <% keywords = "coffee,cafe,chain,map,location,Japan" %>
-<% image = "img/coffee-chains-map-jp.png" %>
+<% image = "viz/img/coffee-chains-map-jp.png" %>
+<% url = "viz/coffee-chains-map-jp.html" %>
 <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-providers/1.1.15/leaflet-providers.min.js"></script>-->
 
 <style>
@@ -29,21 +30,27 @@
         height:100%;
         position: relative;
     }
-    
+    #chain-selector div{
+        margin-left: 10px;
+    }
 </style>
 
 <div class="coffee-header">
     <h1><%= title %></h1>
     <div id="chain-selector">
-        <div class="ui checkbox" v-for="chain in chains">
+        <div class="ui checkbox mobile hidden" v-for="chain in chains">
             <input type="checkbox" id="{{ chain}}" value="{{chain}}" checked="true" v-model="checkedChains" v-on:click="clicked">
             <label for="{{chain}}" class="lbl-chain"><img src="img/{{chain}}.png" alt=""></label>
+        </div>
+        <div class="ui checkbox mobile only" v-for="chain in chains">
+            <input type="checkbox" id="{{ chain}}" value="{{chain}}" checked="true" v-model="checkedChains" v-on:click="clicked">
+            <label for="{{chain}}" class="lbl-chain">{{chain}}</label>
         </div>
     </div>    
 </div>
 <script>
     var layerTitles = [
-            "starbucks","komeda","doutor","tullys"
+            "saintmarc", "tullys","doutor","komeda","starbucks"
     ];
     var chains = new Vue({
         el: '#chain-selector',
@@ -57,9 +64,6 @@
             }
         },
         watch: {
-            "checkedChains": function(v){
-                console.log(v);
-            }
         },
         components: {
         }
@@ -93,7 +97,8 @@
                 .defer(d3.csv, "data/komeda.csv")
                 .defer(d3.csv, "data/doutor.csv")
                 .defer(d3.csv, "data/tullys.csv")
-                .await(function(error, starbucks, komeda, doutor, tullys) {
+                .defer(d3.csv, "data/saintmarc.csv")
+                .await(function(error, starbucks, komeda, doutor, tullys, saintmarc) {
                     if (error) {
                         console.error('Oh dear, something went wrong: ' + error);
                         return;
@@ -124,13 +129,13 @@
                         markers.set("name", name);
                         map.addLayer(markers);
                     };
-                    addMarkers(starbucks, "red", "starbucks");
+                    addMarkers(tullys, "brown", "saintmarc");
+                    addMarkers(tullys, "red", "tullys");
+                    addMarkers(doutor, "black", "doutor");
                     addMarkers(komeda, "blue", "komeda");
-                    addMarkers(doutor, "green", "doutor");
-                    addMarkers(tullys, "brown", "tullys");
+                    addMarkers(starbucks, "green", "starbucks");
 
                     map.on("pointerdrag", function(){
-                        console.log(chains.checkedChains);
                         map.getLayers().getArray().forEach(function(l,i){
                             if(i == 0)return;
                             l.setVisible(false);
@@ -148,4 +153,8 @@
                 });
         
     });
+    $(window).on('load resize', function () {
+        $("#map").css("padding-top", $(".coffee-header").height());
+    });
+
 </script>
