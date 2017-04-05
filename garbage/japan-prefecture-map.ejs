@@ -1,0 +1,87 @@
+<%- include('../_lib') %>
+<% title = "Japan Prefecture Map" %>
+<% dependsOn(title, ["d3.v3", "topojson"]); %>
+
+<% description = "Japan Prefecture Map" %>
+<% keywords = "Japan,prefecture,map" %>
+<% url = "garbage/japan-prefecture-map.html" %>
+
+<style type="text/css">
+    .pref {
+        cursor: pointer;
+    }
+    .answer{
+        border-bottom: 3px solid black;
+        display: inline-block;
+        min-width:100px;
+    }
+    svg{
+        position: absolute !important;
+        top: 0px;
+    }
+</style>
+
+<script>
+    var width = 900,
+            height = 960;
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+    var projection = d3.geo.mercator()
+            .center([136, 35.5])
+            .scale(2000)
+            .translate([width / 2, height / 2]);
+
+    var path = d3.geo.path().projection(projection);
+    
+    $(function () {
+        d3.json("data/japan.json", function (error, japan) {
+//            var topo = topojson.object(japan, japan.objects.pref).geometries; // <= old syntax
+            var topo = topojson.feature(japan, japan.objects.pref).features;
+            svg.selectAll(".pref")
+                    .data(topo)
+                    .enter()
+                    .append("path")
+                    .attr("class", function (d, i) {
+//                        return "pref pref" + pref[d.properties.name_local];
+                        return "pref pref" + i;
+                    })
+                    .attr({
+                        fill: "transparent",
+                        stroke: "darkgrey"
+                    })
+                    .attr("d", path)
+                    .on("mouseover", function (d) {
+                        d3.select(this).attr({
+                            fill: "lavenderblush",
+                            stroke: "red"
+                        });
+                        indication.prefName = d.properties.name + "(" + d.properties.name_local + ")";
+                    })
+                    .on("mouseout", function () {
+                        d3.select(this).attr({
+                            fill: "transparent",
+                            stroke: "darkgrey"
+                        });
+                        indication.prefName = "";
+                    });
+        });
+    });
+    
+</script>
+<h1><%=title%></h1>
+<p>Please move mouse on map to know the name of a prefecture.</p>
+<p id="indication">The prefecture is <span class="answer"><b>{{ prefName }}</b></span></p>
+
+<script>
+    var indication = new Vue({
+        el: '#indication',
+        data: {
+            prefName: ""
+        }
+    });
+</script>
+
+
