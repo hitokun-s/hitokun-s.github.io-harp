@@ -1,0 +1,42 @@
+<%- include('../_lib') %>
+<% title = "rotate - Adventure of HelloWorld" %>
+<% dependsOn(title, ["font-awesome", "jquery"]); %>
+
+        <script src="js/prefixfree.min.js"></script>
+        <style>
+            ul *{
+                display:inline-block;
+                vertical-align:top;
+            }
+            li{
+                animation-name: rotate-animation;
+                animation-duration: 2s;
+                animation-iteration-count:infinite;
+                animation-timing-function:ease-in-out;
+            }
+            @keyframes rotate-animation{
+                0% {transform: rotate(0deg) ;}
+                100% {transform: rotate(360deg) ;}
+            }
+        </style>
+        <div id="content">
+            <p>I got rotated!</p>
+            <div class="text-center">
+                <ul>
+                    <li>H</li>
+                    <li>e</li>
+                    <li>l</li>
+                    <li>l</li>
+                    <li>o</li>
+                    <li>w</li>
+                    <li>o</li>
+                    <li>r</li>
+                    <li>l</li>
+                    <li>d</li>
+                    <li>!</li>
+                </ul>
+            </div>
+        </div>
+        <script>
+            $("ul").css("font-size", $("#content").width() / 15);
+        </script>

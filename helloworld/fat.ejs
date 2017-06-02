@@ -1,0 +1,41 @@
+<%- include('../_lib') %>
+<% title = "Fat - Adventure of HelloWorld" %>
+<% dependsOn(title, ["font-awesome", "jquery", "d3.v3"]); %>
+
+        <style>
+            svg{
+                width:100%;
+                height:200px;
+            }
+        </style>
+        <div id="content">
+            <p>I got fat!</p>
+            <div id="src-html" class="text-center">
+                <svg></svg>
+            </div>
+        </div>
+        <script>
+            var temp_font_size = 10;
+            var temp_stroke_width = 1;
+            
+            $(function() {
+                var text = d3.select("svg").append("text").text("Hello World!").attr({
+                    "font-size": temp_font_size,
+                    "stroke":"black", // this seems necessary for changing stroke-width
+                    "stroke-width": temp_stroke_width,
+                    y: parseInt(d3.select("svg").style("height")) / 2 ,// centering
+                    "dominant-baseline": "middle" // centering
+                });
+                // get ratio of current text width : svg width
+                var ratio = parseInt(d3.select("svg").style("width")) / text.node().getBBox().width;
+                
+                // magnify text to fit svg width 
+                text.attr("font-size", temp_font_size * ratio);
+                
+                // make HelloWorld fat!
+                text.transition().delay(0).duration(2000).attr({
+                    "stroke-width":temp_stroke_width * ratio 
+                });
+            });
+        </script>
+

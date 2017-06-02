@@ -1,0 +1,43 @@
+<%- include('../_lib') %>
+<% title = "Reverse - Adventure of HelloWorld" %>
+<% dependsOn(title, ["font-awesome", "jquery"]); %>
+
+        <style>
+            ul *{
+                display:inline-block;
+                vertical-align:top;
+            }
+            li{
+                transform-style: preserve-3d;
+                animation-name: reverse-animation;
+                animation-duration: 2s;
+                animation-iteration-count:infinite;
+                animation-timing-function:ease-in-out;
+            }
+            @keyframes reverse-animation{
+                0% {transform: rotateY(0deg) ;}
+                100% {transform: rotateY(360deg) ;}
+            }
+        </style>
+        <div id="content">
+            <p>I got reversed!</p>
+            <div id="src-html" class="text-center">
+                <ul>
+                    <li>H</li>
+                    <li>e</li>
+                    <li>l</li>
+                    <li>l</li>
+                    <li>o</li>
+                    <li>w</li>
+                    <li>o</li>
+                    <li>r</li>
+                    <li>l</li>
+                    <li>d</li>
+                    <li>!</li>
+                </ul>
+            </div>
+        </div>
+        <script>
+            $("ul").css("font-size", $("#content").width() / 15);
+        </script>
+

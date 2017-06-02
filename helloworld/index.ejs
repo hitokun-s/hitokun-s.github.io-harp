@@ -1,0 +1,19 @@
+<% title = "Adventure of Helloworld" %>
+
+<h1>Adventure of HelloWorld</h1>
+<p>Everything begins with a <a href="http://en.wikipedia.org/wiki/%22Hello,_world!%22_program">"Hello World"</a>.</p>
+<p>This is a collection of various effects/technics that Mr.HelloWorld experiences.</p>
+
+<div class="row">
+    <div class="ui link cards">
+        <% for(var article of public.helloworld._data.articles){ %>
+        <a href="<%= article.href %>" class="card ui raised">
+            <div class="content">
+                <div class="header"><%= article.title %></div>
+            </div>
+        </a>
+        <% } %>
+    </div>
+</div>
+
+</div>

@@ -1,0 +1,53 @@
+<%- include('../_lib') %>
+<% title = "Bigger - Adventure of HelloWorld" %>
+<% dependsOn(title, ["font-awesome", "jquery"]); %>
+
+        <style>
+            ul *{
+                display:inline-block;
+                vertical-align:top;
+            }
+        </style>
+        <div id="content">
+            <p>I got bigger!</p>
+            <div class="text-center">
+                <ul>
+                    <li>H</li>
+                    <li>e</li>
+                    <li>l</li>
+                    <li>l</li>
+                    <li>o</li>
+                    <li>w</li>
+                    <li>o</li>
+                    <li>r</li>
+                    <li>l</li>
+                    <li>d</li>
+                    <li>!</li>
+                </ul>
+            </div>
+        </div>
+        <script>
+            
+            $("ul").css("font-size",$("#content").width()/15);
+            
+            var Iterator = function(selection) {
+                var idx = -1;
+                this.next = function() {
+                    idx++;
+//                    if (idx >= selection.size())
+                    if (idx >= selection.length)
+                        return null;
+                    return selection.eq(idx);
+                };
+            };
+            var it = new Iterator($("ul").children());
+            var interval = setInterval(function() {
+                $(".active").removeClass("active").animate({"font-size": "1em"});
+                var elm = it.next();
+                if (elm) {
+                    $(elm).addClass("active").animate({"font-size": "2em"});
+                } else {
+                    window.clearInterval(interval);
+                }
+            }, 500);
+        </script>

@@ -1,0 +1,118 @@
+<%- include('../_lib') %>
+<% title = "Video Player - Adventure of HelloWorld" %>
+<% dependsOn(title, ["font-awesome", "jquery","d3.v3"]); %>
+
+        <style>
+            svg{
+                position: absolute;
+                z-index : 2;
+            }
+            video{
+                width:100%;
+            }
+            text{
+                stroke: white;
+                fill: white;
+                font-size: 30px;
+            }
+            text:hover{
+                cursor:pointer;
+            }
+            rect:hover{
+                cursor:pointer;
+            }
+        </style>
+        <div id="content">
+            <p>I got video-playered!</p>
+            <p>I am &lt;svg&gt; overlayed on &lt;video&gt; element.</p>
+            <div id="src-html" class="text-center">
+                <svg></svg>
+                <video id="video" loop>
+                    <source src="movie/Reaktorplayer-FractalRevolution393_512kb.mp4">
+                    <source src="movie/Reaktorplayer-FractalRevolution393.ogv">
+                </video>
+            </div>
+            <p>video source:
+                <a href="https://archive.org/details/Reaktorplayer-FractalRevolution393-3" target="_blank">
+                    https://archive.org/details/Reaktorplayer-FractalRevolution393-3
+                </a>
+            </p>
+        </div>
+        <script>
+            var svg = d3.select("svg");
+            var video = $("#video")[0];
+
+            window.requestAnimFrame = (function() {
+                return  window.requestAnimationFrame ||
+                        window.webkitRequestAnimationFrame ||
+                        window.mozRequestAnimationFrame ||
+                        function(callback) {
+                            window.setTimeout(callback, 1000 / 60);
+                        };
+            })();
+            var animate = function() {
+                played_time.text(video.currentTime);
+                requestAnimFrame(animate);
+            };
+
+            var addBorder = function(text, opt) {
+                var text_width = text.node().getBBox().width;
+                var text_height = text.node().getBBox().height;
+
+                text.attr("dominant-baseline", "middle");
+
+                var padding_left = opt["padding-left"] || 10;
+                var padding_right = opt["padding-right"] || 10;
+                var padding_top = opt["padding-top"] || 3;
+                var padding_bottom = opt["padding-bottom"] || 3;
+
+                d3.select(text.node().parentNode).append("rect").attr({
+                    width: text_width + padding_left + padding_right,
+                    height: text_height + padding_top + padding_bottom,
+                    y: -text_height / 2 - padding_top,
+                    x: -padding_left,
+                    rx: 10,
+                    ry: 10,
+                    fill: "none",
+                    stroke: "white",
+                    "stroke-width": 3
+                });
+            };
+
+            $("#video").bind("loadedmetadata", function() {
+//                    var width = this.videoWidth;
+//                    var height = this.videoHeight; // not available                     
+                svg.attr("width", $("#video").width());
+                svg.attr("height", $("#video").height());
+                svg.append("text").text("Hello World!").attr({x: 60, y: 80});
+
+                var btn_play = svg.append("g").attr("transform", "translate(70,120)");
+                btn_play.append("text").text("play").attr({
+                    x: 0,
+                    y: 0
+                }).on("click", function() {
+                    if (video.paused) {
+                        $("#video")[0].play();
+                    }
+                }).call(addBorder, {});
+
+                var btn_pause = svg.append("g").attr("transform", "translate(160,120)");
+                btn_pause.append("text").text("stop").attr({
+                    x: 0,
+                    y: 0
+                }).on("click", function() {
+                    if (!video.paused) {
+                        $("#video")[0].pause();
+                    }
+                }).call(addBorder, {});
+
+                svg.append("text").text("Time:").attr({x: 60, y: 180});
+                var played_time = svg.append("text").attr({x: 60, y: 210});
+
+                (function animate() {
+                    played_time.text(video.currentTime);
+                    requestAnimFrame(animate);
+                })();
+            });
+        </script>
+

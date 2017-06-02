@@ -1,0 +1,48 @@
+<%- include('../_lib') %>
+<% title = "Starwars - Adventure of HelloWorld" %>
+<% dependsOn(title, ["font-awesome", "jquery"]); %>
+
+        <script src="js/prefixfree.min.js"></script>
+        <script>
+            $(function(){
+                $("#btn-source").click(function() {
+                    $("#frame").hide();
+                });
+            });
+        </script>
+
+        <style>
+            #frame{
+                background-image: url("img/nebula.jpg");
+                background-size: cover;
+                position: absolute;
+                top: 100px;
+            }
+            #stage{
+                text-shadow: 0px 0px 80px black;
+                color : white;
+                transform-origin: 50% 100%;
+                transform-style: preserve-3d;
+                transform: perspective(300px) rotateX(40deg);
+            }
+        </style>
+        <div id="content">
+            <p>I got starwarsed!</p>
+            <div id="src-html" class="text-center">
+                <div id="frame">
+                    <div id="stage" class="text-center">
+                        <p>Adventure</p>
+                        <p>of</p>
+                        <p>Hello World</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(function() {
+                $("#frame").width($("#frame").parent().width());
+                $("#stage").css("font-size", $("#content").width() / 8);
+                $("#stage").css("margin-top", -$("#content").width() / 4);
+            });
+        </script>
+

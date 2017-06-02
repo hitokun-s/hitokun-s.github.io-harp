@@ -1,0 +1,82 @@
+<%- include('../_lib') %>
+<% title = "peep - Adventure of HelloWorld" %>
+<% dependsOn(title, ["font-awesome", "jquery"]); %>
+
+        <style>
+            #canvas{
+                width:100%;
+            }
+        </style>
+        <div id="content">
+            <p>I got peeped!</p>
+            <div class="text-center">
+                <canvas id="canvas"></canvas>
+            </div>
+        </div>
+        <script>
+            window.requestAnimFrame = (function() {
+                return  window.requestAnimationFrame ||
+                        window.webkitRequestAnimationFrame ||
+                        window.mozRequestAnimationFrame ||
+                        function(callback) {
+                            window.setTimeout(callback, 1000 / 60);
+                        };
+            })();
+
+            var TEXT = "HELLO WORLD!";
+
+            // velocity vector of hole center 
+            var v = {x: 2, y: 1.2};
+
+            // hole position and radius
+            var p = {x: 0, y: 0, r: 0};
+
+            $(function() {
+                var c = document.getElementById('canvas');
+                c.width = $("#canvas").width();
+                c.height = c.width / 2;
+                ctx = c.getContext('2d');
+
+                // adjust font size as the text fits to canvas width 
+                var temp_font_size = c.height / 3;
+                ctx.font = 'italic ' + temp_font_size + 'pt Calibri';
+                var ratio = c.width / ctx.measureText(TEXT).width;
+                var font_size = ~~temp_font_size * ratio;
+                ctx.font = 'italic ' + font_size + 'pt Calibri';
+
+                p.r = ~~(c.height / 4); // arbitrary
+                p.x = p.y = p.r; // start from left-top corner
+
+                var draw = function() {
+                    // ctx.clearRect(0, 0, w, h); // not necessary
+                    ctx.fillStyle = 'lightgray';
+                    ctx.fillRect(0, 0, c.width, c.height);
+                    ctx.fillStyle = 'black';
+                    ctx.fillText(TEXT, 0, (c.height + font_size) / 2);
+
+                    ctx.beginPath();
+                    // ctx.fillStyle = 'transparent'; // not necessary
+                    ctx.lineWidth = 5;
+                    ctx.strokeStyle = 'black';
+                    ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.globalCompositeOperation = 'destination-in';
+                    ctx.fill();
+                    ctx.globalCompositeOperation = 'source-over'; // set default
+                };
+
+                (function animate() {
+                    p.x += v.x;
+                    p.y += v.y;
+                    if (p.x <= p.r || c.width - p.x <= p.r) {
+                        v.x = -v.x;
+                    }
+                    if (p.y <= p.r || c.height - p.y <= p.r) {
+                        v.y = -v.y;
+                    }
+                    draw();
+                    requestAnimFrame(animate);                
+                })();
+            });
+        </script>
+
