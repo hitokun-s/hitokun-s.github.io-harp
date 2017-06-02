@@ -17,6 +17,7 @@
     {"href":"stacked-cards.html", "img": ""},
     {"href":"finance-sheet.html", "img": ""},
     {"href":"dreamland.html", "img": "../images/dreamland.png", "description":"Twitter data visualization"},
+    {"href":"pyramid-graph-with-pattern.html", "description":"Pyramid graph with pattern"},
     {"href":"helloworld", "img": "../images/helloworld.png", "description":"The world of HelloWorld"}
   ]
 }

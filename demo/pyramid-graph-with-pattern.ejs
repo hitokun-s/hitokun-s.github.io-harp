@@ -1,0 +1,48 @@
+<%- include('../_lib') %>
+<% title = "Pyramid graph with pattern" %>
+
+    <style>
+
+    </style>
+
+<div class="container">
+    <div class="row">
+        <h1><%=title%></h1>
+        <div class="pull-left">
+            <canvas id="canvas" width="500px" height="500px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#57a08b";
+        ctx.fillRect(0, 0, 500, 500);
+
+        var img = new Image();
+        img.src='img/pyramid.png';
+
+        img.onload = function () {
+            var pattern = ctx.createPattern(img,'repeat');
+            
+            ctx.fillStyle = pattern;
+//            ctx.fillStyle = "#7b738c";
+            ctx.beginPath();
+            ctx.moveTo(20,480);
+            ctx.lineTo(250,10);
+            ctx.lineTo(480,480);
+            ctx.fill();
+
+            ctx.fillStyle = "#e5e5e5";
+            ctx.beginPath();
+            ctx.moveTo(20,480);
+            ctx.lineTo(250,10);
+            ctx.lineTo(100,480);
+            ctx.fill();
+        };
+    });
+</script>
