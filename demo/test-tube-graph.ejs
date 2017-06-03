@@ -1,0 +1,96 @@
+<%- include('../_lib') %>
+<% title = "test tube graph" %>
+<% dependsOn(title, ["jquery", "semantic-ui-range"]); %>
+
+<style>
+    div [class*="left floated"] {
+        float: left;
+        margin-left: 1em;
+    }
+    #range1, #range2{
+        width:300px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <h1><%=title%></h1>
+        <div class="left floated">
+            <canvas id="canvas" width="240px" height="260px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+        <div class="left floated">
+            <p>Left test tube:</p>
+            <div class="ui range" id="range1"></div>
+            <p>Right test tube:</p>
+            <div class="ui range" id="range2"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function() {
+
+        var h1,h2,ratio1 = 0.5,ratio2 = 0.5;
+        
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#57a08b";
+        ctx.fillRect(0, 0, 240, 260);
+
+        var img = new Image();
+        img.src='img/test_tube.png';
+
+        img.onload = function () {
+            draw();
+        };
+        
+        var draw = function(){
+            
+            ctx.fillStyle = "#57a08b";
+            ctx.fillRect(0, 0, 240, 260);
+
+            ctx.drawImage(img, 50, 50);
+
+            ctx.beginPath();
+            ctx.fillStyle = "yellow";
+            ctx.globalAlpha = 0.5;
+            ctx.arc(65, 202, 9, Math.PI, 0, true);
+            ctx.fill();
+            h1 = (202 - 50) * ratio1;
+            ctx.fillRect(65 - 9, 202 - h1, 18, h1);
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "red";
+            ctx.globalAlpha = 0.4;
+            ctx.arc(170, 202, 9, Math.PI, 0, true);
+            ctx.fill();
+            h2 = (202 - 50) * ratio2;
+            ctx.fillRect(170 - 9, 202 - h2, 18, h2);
+            ctx.closePath();
+        };
+
+        $('#range1').range({
+            min: 0,
+            max: 100,
+            start: 50,
+            onChange: function(val){
+                ratio1 = val / 100;
+                draw();
+            }
+        });
+
+        $('#range2').range({
+            min: 0,
+            max: 100,
+            start: 50,
+            onChange: function(val){
+                ratio2 = val / 100;
+                draw();
+            }
+        });
+    });
+</script>
