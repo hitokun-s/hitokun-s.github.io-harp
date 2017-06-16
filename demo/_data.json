@@ -18,6 +18,7 @@
     {"href":"finance-sheet.html", "img": ""},
     {"href":"dreamland.html", "img": "../images/dreamland.png", "description":"Twitter data visualization"},
     {"href":"pyramid-graph-with-pattern.html", "description":"Pyramid graph with pattern"},
+    {"href":"business-man-graph.html", "description":"Business man graph"},
     {"href":"test-tube-graph.html", "description":"test tube graph"}
   ]
 }

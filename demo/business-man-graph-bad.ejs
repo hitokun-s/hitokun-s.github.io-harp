@@ -1,0 +1,139 @@
+<%- include('../_lib') %>
+<% title = "business man graph (bad implementation)" %>
+<% dependsOn(title, ["jquery", "semantic-ui-range"]); %>
+
+<style>
+    div [class*="left floated"] {
+        float: left;
+        margin-left: 1em;
+    }
+    #range1, #range2{
+        width:300px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <h1><%=title%></h1>
+        <p>!!! This is bad implementation !!!</p>
+        <div class="left floated">
+            <canvas id="canvas" width="240px" height="320px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+        <div class="left floated">
+            <p>Left body:</p>
+            <div class="ui range" id="range1"></div>
+            <p>Right body:</p>
+            <div class="ui range" id="range2"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function rgbToHex(r, g, b) {
+        return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+    
+    $(function() {
+        
+        var h, ratio1, ratio2 = 0.5;
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        var img = new Image();
+        img.src='img/businessman.png';
+
+        var imgBk = new Image();
+        imgBk.src='img/businessman_bk.png';
+
+        var pattern;
+
+        imgBk.onload = function () {
+            console.log("bk image height: " + imgBk.height);
+            draw();
+        };
+
+        var draw = function() {
+            
+            var targetHeight1 = imgBk.height * ratio1;
+            var targetHeight2 = imgBk.height * ratio2;
+
+            ctx.fillStyle = "#57a08b";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.drawImage(imgBk, 50, 0);
+
+            var src = ctx.getImageData(0, 0, canvas.width, canvas.height);
+//            var dst = ctx.createImageData(canvas.width, canvas.height);
+            
+            // target color: 99d6c4
+            for (var i = 0; i < src.data.length; i=i+4) {
+//                dst.data[i]   = 255 - src.data[i];    //R
+//                dst.data[i+1] = 255 - src.data[i+1];  //G
+//                dst.data[i+2] = 255 - src.data[i+2];  //B
+//                dst.data[i+3] = src.data[i+3];        //A
+                
+                var pixelIdx = i / 4;
+                var w = pixelIdx % canvas.width;
+                var h = canvas.height - parseInt(pixelIdx / canvas.width);
+                
+                var hex = rgbToHex(src.data[i], src.data[i+1], src.data[i+2]);
+                
+                if(hex == "99d6c4"){
+                    if(h < targetHeight1 && w <= canvas.width / 2){
+                        src.data[i] = 255;
+                        src.data[i+1] = 255;
+                        src.data[i+2] = 0;
+                    }
+                    if(h < targetHeight2 && w > canvas.width / 2){
+                        src.data[i] = 255;
+                        src.data[i+1] = 153;
+                        src.data[i+2] = 0;
+                    }
+                }
+                
+            }
+
+//            ctx.putImageData(src, 0, 0);
+//
+//            var tmp = new Image();
+//            tmp.src = canvas.toDataURL();
+//            tmp.onload = function(){
+//                ctx.fillStyle = "#57a08b";
+//                ctx.fillRect(0, 0, canvas.width, canvas.height);
+//
+//                ctx.drawImage(tmp,0,0);
+//                ctx.drawImage(img, 60, 10);
+//            }
+
+            
+            ctx.putImageData(src, 0, 0);
+            ctx.drawImage(img, 60, 10);
+            
+            
+        };
+
+        $('#range1').range({
+            min: 0,
+            max: 100,
+            start: 50,
+            onChange: function(val){
+                ratio1 = val / 100;
+                draw();
+            }
+        });
+
+        $('#range2').range({
+            min: 0,
+            max: 100,
+            start: 50,
+            onChange: function(val){
+                ratio2 = val / 100;
+                draw();
+            }
+        });
+    });
+</script>

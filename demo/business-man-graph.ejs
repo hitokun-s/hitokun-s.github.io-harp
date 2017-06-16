@@ -1,0 +1,152 @@
+<%- include('../_lib') %>
+<% title = "business man graph" %>
+<% dependsOn(title, ["jquery", "semantic-ui-range"]); %>
+
+<style>
+    div [class*="left floated"] {
+        float: left;
+        margin-left: 1em;
+    }
+    #range1, #range2{
+        width:300px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <h1><%=title%></h1>
+        <div class="left floated">
+            <canvas id="canvas" width="240px" height="320px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+        <div class="left floated" style="display: none">
+            <canvas id="canvas2" width="240px" height="320px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+        <div class="left floated">
+            <p>Left body:</p>
+            <div class="ui range" id="range1"></div>
+            <p>Right body:</p>
+            <div class="ui range" id="range2"></div>
+        </div>
+    </div>
+    <br>
+    <div class="row" style="clear: left;">
+        <a href="business-man-graph-bad.html">bad implementation is here</a>
+    </div>
+</div>
+
+<script>
+
+    function rgbToHex(r, g, b) {
+        return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+    
+    $(function() {
+        
+        var h, ratio1, ratio2 = 0.5;
+        var canvas = document.getElementById('canvas');
+        var canvas2 = document.getElementById('canvas2');
+        var ctx = canvas.getContext('2d');
+        var ctx2 = canvas2.getContext('2d');
+
+        var img = new Image();
+        img.src='img/businessman.png';
+
+        var imgBk = new Image();
+        imgBk.src='img/businessman_bk.png';
+
+        var pattern;
+
+        imgBk.onload = function () {
+            console.log("bk image height: " + imgBk.height);
+            draw();
+        };
+
+        var draw = function() {
+            
+            var targetHeight1 = imgBk.height * ratio1;
+            var targetHeight2 = imgBk.height * ratio2;
+
+            ctx.fillStyle = "#57a08b";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+//            ctx2.imageSmoothingEnabled = true; // not working
+            ctx2.clearRect(0,0,canvas.width, canvas.height);
+            ctx2.drawImage(imgBk, 50, 0);
+
+            var src = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
+            
+            // target color: 99d6c4
+            for (var i = 0; i < src.data.length; i=i+4) {
+                
+                var pixelIdx = i / 4;
+                var w = pixelIdx % canvas2.width;
+                var h = canvas.height - parseInt(pixelIdx / canvas2.width);
+                
+                var hex = rgbToHex(src.data[i], src.data[i+1], src.data[i+2]);
+                
+                if(hex == "99d6c4" || src.data[i+3] != 1){  
+                    if(h < targetHeight1 && w <= canvas2.width / 2){
+                        src.data[i] = 255;
+                        src.data[i+1] = 255;
+                        src.data[i+2] = 0;
+                    }
+                    if(h < targetHeight2 && w > canvas2.width / 2){
+                        src.data[i] = 255;
+                        src.data[i+1] = 153;
+                        src.data[i+2] = 0;
+                    }
+                }else{
+                    // important for smoothing!!!
+                    src.data[i] = 255;
+                    src.data[i+1] = 255;
+                    src.data[i+2] = 255;
+                    src.data[i+3] = 1;
+                }
+                
+            }
+
+            ctx2.putImageData(src, 0, 0);
+
+            var tmp = new Image();
+            tmp.src = canvas2.toDataURL();
+            tmp.onload = function(){
+//                ctx.fillStyle = "#57a08b";
+//                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.drawImage(tmp,0,0);
+                ctx.drawImage(img, 60, 10);
+            }
+            
+        };
+
+        $('#range1').range({
+            min: 0,
+            max: 100,
+            start: 50,
+            onChange: function(val){
+                ratio1 = val / 100;
+//                draw();
+            }
+        });
+
+        $('#range2').range({
+            min: 0,
+            max: 100,
+            start: 50,
+            onChange: function(val){
+                ratio2 = val / 100;
+//                draw();
+            }
+        });
+
+        $("#range1,#range2").mouseup(function(){
+            draw();
+        });
+    });
+</script>
