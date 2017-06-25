@@ -9,7 +9,7 @@
 
 <h1><%=title%></h1>
 
-<canvas id="canvas" width="240px" height="260px">
+<canvas id="canvas" width="240px" height="320px">
     Your browser does not support HTML5 canvas.
 </canvas>
 
@@ -17,7 +17,16 @@
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
     
-    var drawScore = function(score, x, y){
+    var drawScore = function(score, x, y, lightDirection){
+        
+        if(lightDirection){
+            ctx.fillStyle = "rgba(91, 91, 91, 0.3)";
+            if(lightDirection == "left"){
+                ctx.fillRect(x + 3, y - 18 , 80, 15);    
+            }else{
+                ctx.fillRect(x - 3, y - 18 , 80, 15);
+            }
+        }
         
         var lColor,dColor;
         if(score >= 0){
@@ -60,11 +69,61 @@
             ctx.lineTo(x + 13, y - 7.5);
             ctx.stroke();
         }
-        
     };
     
-    drawScore(12.34, 0, 15);
-    drawScore(-12.34, 0, 35);
+    var drawBaloon = function(amount, title, x, y, direction, withShadow){
+        var direction = direction || "left";
+
+        if(withShadow){
+            ctx.fillStyle = "rgba(91, 91, 91, 0.3)";
+            if(direction == "left"){
+                ctx.fillRect(x + 3, y - 53 , 80, 50);
+            }else{
+                ctx.fillRect(x - 3, y - 53 , 80, 50);
+            }
+        }
+        
+        ctx.fillStyle = "#99d6c4";
+        ctx.fillRect(x, y - 50, 80, 50);
+
+        ctx.fillStyle = "#000";
+        ctx.font = "Bold 18px Roboto";
+        ctx.fillText(amount, x + 8, y - 27);
+        ctx.font = "12px Roboto";
+        ctx.fillText(title, x + 8, y - 10);
+
+        ctx.fillStyle = "#99d6c4";
+        ctx.beginPath();
+        switch(direction){
+            case "left": {
+                ctx.moveTo(x, y - 30);
+                ctx.lineTo(x - 8, y - 25);
+                ctx.lineTo(x, y - 20);
+                break;
+            }
+            case "right":{
+                ctx.moveTo(x + 80, y - 30);
+                ctx.lineTo(x + 88, y - 25);
+                ctx.lineTo(x + 80, y - 20);
+                break;
+            }    
+        }
+        ctx.fill();
+    };
+
+    var drawBaloonWithScore = function(amount, title, score, x, y, direction){
+        drawBaloon(amount, title, x, y, direction, true);
+        drawScore(score, x + 25, y - 45, direction);
+    };
+    
+    drawScore(12.34, 10, 20, "left");
+    drawScore(-12.34, 120, 20, "right");
+    
+    drawBaloon("53.57%", "Equity Ratio", 10, 110, "left", true);
+    drawBaloon("12.34%", "Equity Ratio", 120, 110, "right", true);
+
+    drawBaloonWithScore("53.57%", "Equity Ratio", 12.34, 10, 200, "left");
+    drawBaloonWithScore("53.57%", "Equity Ratio", 12.34, 120, 200, "right");
     
     
 </script>
