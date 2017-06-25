@@ -10,6 +10,7 @@
     {"href":"angular-form-test.html", "title":"Angular Form Test"},
     {"href":"angular-sub-form-test.html", "title":"Angular Sub Form Test"},
     {"href":"angular-semantic-form-test.html", "title":"Angular and Semantic-UI Form Test"},
-    {"href":"japan-prefecture-map.html", "title":"Japan Prefecture Map"}
+    {"href":"japan-prefecture-map.html", "title":"Japan Prefecture Map"},
+    {"href":"infographic-components-for-canvas.html", "title":"Infographic Components for Canvas"}
   ]
 }
