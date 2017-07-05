@@ -1,0 +1,204 @@
+<%- include('../_lib') %>
+<% title = "CT scan man graph" %>
+<% dependsOn(title, ["jquery", "semantic-ui-range"]); %>
+
+<style>
+    div [class*="left floated"] {
+        float: left;
+        margin-left: 1em;
+    }
+    #range1, #range2, #range3{
+        width:300px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <h1><%=title%></h1>
+        <div class="left floated">
+            <canvas id="canvas" width="140px" height="320px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+        <div class="left floated">
+            <canvas id="canvas2" width="240px" height="320px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+        <div class="left floated">
+            <p>Left body:</p>
+            <div class="ui range" id="range1"></div>
+            <p>Right body 1:</p>
+            <div class="ui range" id="range2"></div>
+            <p>Right body 2:</p>
+            <div class="ui range" id="range3"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function rgbToHex(r, g, b) {
+        return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+
+    function hexToRgb(hex) {
+        // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+        var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+            return r + r + g + g + b + b;
+        });
+
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+//        return result ? {
+//            r: parseInt(result[1], 16),
+//            g: parseInt(result[2], 16),
+//            b: parseInt(result[3], 16)
+//        } : null;
+        return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
+    }
+    
+    var subtractRGB = function(arr1, arr2){
+        return [arr1[0] - arr2[0], arr1[1] - arr2[1], arr1[2] - arr2[2]].map(function(v){
+            return v >= 0 ? v : 0;
+        });
+    };
+
+    var ratio1, ratio2, ratio3 = 0.5;
+    
+    $(function() {
+        
+        var h;
+        var canvas = document.getElementById('canvas');
+        var canvas2 = document.getElementById('canvas2');
+        var ctx = canvas.getContext('2d');
+        var ctx2 = canvas2.getContext('2d');
+
+//        var img = new Image();
+//        img.src='img/ctscan.png';
+
+        var imgBk = new Image();
+        imgBk.src='img/ctscan.png';
+
+        var pattern;
+
+        imgBk.onload = function () {
+            console.log("bk image height: " + imgBk.height);
+            draw();
+        };
+        
+        var leftColors = ["#5ca793", "#74b7a5"];
+        var rightColors = ["#575070", "#6a627f", "#756e8e"];
+
+        var draw = function() {
+
+//            ctx2.imageSmoothingEnabled = true; // not working
+            
+            ctx2.width = imgBk.width;
+            ctx2.height = imgBk.height;
+            canvas2.width = imgBk.width;
+            canvas2.height = imgBk.height;
+
+            var targetHeight1 = imgBk.height * ratio1;
+            var targetHeight2 = imgBk.height * ratio2;
+            var targetHeight3 = imgBk.height * ratio3;
+            
+            ctx2.clearRect(0,0,canvas.width, canvas.height);
+            ctx2.drawImage(imgBk, 0, 0);
+
+            var src = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
+            
+            // target color: 99d6c4
+            for (var i = 0; i < src.data.length; i=i+4) {
+                
+                var pixelIdx = i / 4;
+                var w = pixelIdx % canvas2.width;
+                var h = canvas2.height - parseInt(pixelIdx / canvas2.width);
+                
+                var hex = rgbToHex(src.data[i], src.data[i+1], src.data[i+2]);
+                
+                if(src.data[i+3] != 1){  
+//                if(hex == "e8e8e8"){  
+                    // #e8e8e8（= (232, 232, 232)）との差分を引く（ことで骨の部分を濃くする）
+//                    if(h < targetHeight1 && w <= canvas2.width / 2){
+                    var baseColor, c;
+                    if(w <= canvas2.width / 2){
+                        baseColor = h < targetHeight1 ? leftColors[0] : leftColors[1];
+                        c = subtractRGB(hexToRgb(baseColor), subtractRGB([232,232,232], [src.data[i], src.data[i+1], src.data[i+2]]));
+                        src.data[i] = c[0];
+                        src.data[i+1] = c[1];
+                        src.data[i+2] = c[2];
+                    }
+                    if(w > canvas2.width / 2){
+                        if(h > targetHeight2){
+                            baseColor = rightColors[2];
+                        }else if(h > targetHeight3){
+                            baseColor = rightColors[1];
+                        }else{
+                            baseColor = rightColors[0];
+                        }
+                        c = subtractRGB(hexToRgb(baseColor), subtractRGB([232,232,232], [src.data[i], src.data[i+1], src.data[i+2]]));
+                        src.data[i] = c[0];
+                        src.data[i+1] = c[1];
+                        src.data[i+2] = c[2];
+                    }
+                }else{
+                    // important for smoothing!!!
+                    src.data[i] = 255;
+                    src.data[i+1] = 255;
+                    src.data[i+2] = 255;
+                    src.data[i+3] = 1;
+                }
+                
+            }
+
+            ctx2.putImageData(src, 0, 0);
+
+            var tmp = new Image();
+            tmp.src = canvas2.toDataURL();
+            tmp.onload = function(){
+                ctx.drawImage(tmp,0,0, ctx2.width / 2, ctx2.height/2);
+            }
+            
+        };
+
+        $('#range1').range({
+            min: 0,
+            max: 100,
+            start: 50,
+            onChange: function(val){
+                ratio1 = val / 100;
+//                draw();
+            }
+        });
+
+        $('#range2').range({
+            min: 0,
+            max: 100,
+            start: 75,
+            onChange: function(val){
+                ratio2 = val / 100;
+                if(ratio3 > ratio2){
+                    $('#range3').range('set value', 100 * ratio2);
+                }
+            }
+        });
+
+        $('#range3').range({
+            min: 0,
+            max: 100,
+            start: 25,
+            onChange: function(val){
+                ratio3 = val / 100;
+                if(ratio3 > ratio2){
+                    $('#range2').range('set value', 100 * ratio3);
+                }
+            }
+        });
+
+        $("#range1,#range2, #range3").mouseup(function(){
+            draw();
+        });
+    });
+</script>
