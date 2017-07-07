@@ -54,6 +54,22 @@
 
     var ratio = 0.5;
     
+    var getMultiLines = function(ctx, text, maxWidth){
+        var texts = text.split(" ");
+        var res = [];
+        var tmp = "";
+        texts.forEach(function(w){
+            if(ctx.measureText(tmp + " " + w).width > maxWidth){
+                res.push(tmp);
+                tmp = w;
+            }else{
+                tmp = tmp + " " + w;
+            }
+        });
+        res.push(tmp);
+        return res;
+    };
+    
     $(function() {
         
         var canvas = document.getElementById('canvas');
@@ -124,7 +140,7 @@
             ctx.arc(x, y, 56.5, 0, Math.PI*2, false);
             ctx.stroke();
             
-            // text
+            // main text
             ctx.save();
             ctx.translate(x, y);
             ctx.fillStyle = "#000";
@@ -132,9 +148,14 @@
             ctx.textAlign="center";
             ctx.fillText(Math.round(ratio * 100) + "%", 0, 0);
 
+            // sub text
             ctx.fillStyle = "#333333";
             ctx.font = "10px Roboto";
-            ctx.fillText("hogehoge", 0, 11);
+            var lines = getMultiLines(ctx, "Long-Term Debt to Asset Ratio", 100);
+            console.log(lines);
+            for(var i = 0;i < lines.length;i++){
+                ctx.fillText(lines[i], 0, 11 * (i + 1));    
+            }
             
             ctx.restore();
             
