@@ -19,6 +19,7 @@
     {"href":"dreamland.html", "img": "../images/dreamland.png", "description":"Twitter data visualization"},
     {"href":"pyramid-graph-with-pattern.html", "description":"Pyramid graph with pattern"},
     {"href":"business-man-graph.html", "description":"Business man graph"},
+    {"href":"ct-scan-graph.html", "description":"CT scan graph"},
     {"href":"ct-scan-man-graph.html", "description":"CT scan man graph"},
     {"href":"test-tube-graph.html", "description":"test tube graph"}
   ]

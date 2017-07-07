@@ -1,6 +1,6 @@
 <%- include('../_lib') %>
 <% title = "Infographic Components for canvas" %>
-<% dependsOn(title, []); %>
+<% dependsOn(title, ["fontface-observer"]); %>
 
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 <style>
@@ -9,11 +9,34 @@
 
 <h1><%=title%></h1>
 
-<canvas id="canvas" width="240px" height="320px">
+<canvas id="canvas" width="320px" height="320px">
     Your browser does not support HTML5 canvas.
 </canvas>
 
 <script type="text/javascript">
+
+    var font = new FontFaceObserver('Roboto', {
+        weight: 400
+    });
+
+    font.load().then(function () {
+        console.log('Font is available');
+        drawMeter(0.6, 20, 280);
+
+        drawScore(12.34, 10, 20, "left");
+        drawScore(-12.34, 120, 20, "right");
+
+        drawBaloon("53.57%", "Equity Ratio", 10, 110, "left", true);
+        drawBaloon("12.34%", "Equity Ratio", 120, 110, "right", true);
+
+        drawBaloon("12.34%", "Equity Ratio", 230, 110, "down", true);
+
+        drawBaloonWithScore("53.57%", "Equity Ratio", 12.34, 10, 200, "left");
+        drawBaloonWithScore("53.57%", "Equity Ratio", 12.34, 120, 200, "right");
+    }, function () {
+        console.log('Font is not available');
+    });
+    
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
     
@@ -72,26 +95,31 @@
     };
     
     var drawBaloon = function(amount, title, x, y, direction, withShadow){
+        var WIDTH = 80;
+        var HEIGHT = 50;
         var direction = direction || "left";
 
         if(withShadow){
             ctx.fillStyle = "rgba(91, 91, 91, 0.3)";
-            if(direction == "left"){
-                ctx.fillRect(x + 3, y - 53 , 80, 50);
+            if(direction == "left" || direction == "down"){
+                ctx.fillRect(x + 3, y - HEIGHT - 3 , WIDTH, HEIGHT);
             }else{
-                ctx.fillRect(x - 3, y - 53 , 80, 50);
+                ctx.fillRect(x - 3, y - HEIGHT - 3 , WIDTH, HEIGHT);
             }
         }
         
         ctx.fillStyle = "#99d6c4";
-        ctx.fillRect(x, y - 50, 80, 50);
+        ctx.fillRect(x, y - HEIGHT, WIDTH, HEIGHT);
 
         ctx.fillStyle = "#000";
         ctx.font = "Bold 18px Roboto";
-        ctx.fillText(amount, x + 8, y - 27);
-        ctx.font = "12px Roboto";
-        ctx.fillText(title, x + 8, y - 10);
-
+        ctx.fillText(amount, x + 8, y - HEIGHT + 22 );
+        
+        if(title){
+            ctx.font = "12px Roboto";
+            ctx.fillText(title, x + 8, y - 10);
+        }
+        
         ctx.fillStyle = "#99d6c4";
         ctx.beginPath();
         switch(direction){
@@ -102,11 +130,17 @@
                 break;
             }
             case "right":{
-                ctx.moveTo(x + 80, y - 30);
-                ctx.lineTo(x + 88, y - 25);
-                ctx.lineTo(x + 80, y - 20);
+                ctx.moveTo(x + WIDTH, y - 30);
+                ctx.lineTo(x + WIDTH + 8, y - 25);
+                ctx.lineTo(x + WIDTH, y - 20);
                 break;
-            }    
+            }
+            case "down":{
+                ctx.moveTo(x + WIDTH / 2 - 4, y);
+                ctx.lineTo(x + WIDTH / 2, y + 8);
+                ctx.lineTo(x + WIDTH / 2 + 4, y);
+                break;
+            }
         }
         ctx.fill();
     };
@@ -116,14 +150,35 @@
         drawScore(score, x + 25, y - 45, direction);
     };
     
-    drawScore(12.34, 10, 20, "left");
-    drawScore(-12.34, 120, 20, "right");
-    
-    drawBaloon("53.57%", "Equity Ratio", 10, 110, "left", true);
-    drawBaloon("12.34%", "Equity Ratio", 120, 110, "right", true);
+    var drawMeter = function(ratio, x, y){
+        
+        ctx.beginPath();
+        ctx.strokeStyle = "#e8e8e8";
+        ctx.lineWidth = 5;
+        ctx.arc(x, y, 17.5, 0, Math.PI*2, false);
+        ctx.stroke();
 
-    drawBaloonWithScore("53.57%", "Equity Ratio", 12.34, 10, 200, "left");
-    drawBaloonWithScore("53.57%", "Equity Ratio", 12.34, 120, 200, "right");
-    
+        ctx.beginPath();
+        ctx.strokeStyle = "#117899";
+        ctx.arc(x, y, 17.5, - Math.PI / 2, Math.PI * (2 * ratio - 0.5), false);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.fillStyle = "#2b5568";
+        ctx.arc(x, y, 4, 0, Math.PI*2, false);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(x, y); // 回転の処理前に原点を移動
+        ctx.rotate(Math.PI * 2 * ratio);
+
+        ctx.beginPath();
+        ctx.moveTo(-3, 0);
+        ctx.lineTo(0, -12);
+        ctx.lineTo(3, 0);
+        ctx.fill();
+
+        ctx.restore();
+    };
     
 </script>

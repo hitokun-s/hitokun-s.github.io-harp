@@ -1,0 +1,161 @@
+<%- include('../_lib') %>
+<% title = "CT scan graph" %>
+<% dependsOn(title, ["jquery", "semantic-ui-range", "fontface-observer"]); %>
+
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+<style>
+    div [class*="left floated"] {
+        float: left;
+        margin-left: 1em;
+    }
+    #range{
+        width:300px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <h1><%=title%></h1>
+        <div class="left floated">
+            <canvas id="canvas" width="240px" height="240px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+        <div class="left floated">
+            <p>Ratio:</p>
+            <div class="ui range" id="range"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function rgbToHex(r, g, b) {
+        return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+
+    function hexToRgb(hex) {
+        // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+        var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+            return r + r + g + g + b + b;
+        });
+
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+//        return result ? {
+//            r: parseInt(result[1], 16),
+//            g: parseInt(result[2], 16),
+//            b: parseInt(result[3], 16)
+//        } : null;
+        return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
+    }
+
+    var ratio = 0.5;
+    
+    $(function() {
+        
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        
+        var leftColors = ["#5ca793", "#74b7a5"];
+        var rightColors = ["#575070", "#6a627f", "#756e8e"];
+
+        var draw = function() {
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // imnportant for anti-aliasing!
+            
+            var x = canvas.width / 2; 
+            var y = canvas.height / 2;
+
+            ctx.beginPath();
+            ctx.strokeStyle = "#f3f3f5";
+            ctx.lineWidth = 2;
+            ctx.arc(x, y, 81.5, 0, Math.PI*2, false);
+            ctx.stroke();
+
+            // base
+            ctx.beginPath();
+            ctx.strokeStyle = "#4e93ae"; // 117899
+            ctx.lineWidth = 15;
+            ctx.arc(x, y, 60, 0, Math.PI*2, false);
+            ctx.stroke();
+            
+            // main graph
+            ctx.beginPath();
+            ctx.strokeStyle = "#0f7899";
+            ctx.lineWidth = 15;
+            ctx.arc(x, y, 60, - Math.PI / 2 , Math.PI * ( - 0.5 + 2 * ratio), false);
+            ctx.stroke();
+            
+            // edges of maiin graph
+            ctx.fillStyle = "#0f7899";
+            ctx.save();
+            ctx.translate(x, y - 60);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 6, 7.5, 0, Math.PI / 2, - Math.PI / 2, false); // cx, cy, radiusX, radiusY, rotation, startAngle, endAngle, anticlockwise
+            ctx.fill();
+            ctx.restore();
+
+            ctx.beginPath();
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(Math.PI * 2 * ratio);
+            ctx.translate(0, - 60);
+            ctx.ellipse(0, 0, 6, 7.5, 0, - Math.PI / 2, Math.PI / 2, false);
+            ctx.fill();
+
+            // special edge when over 100%
+            if(ratio > 0.97){
+                ctx.beginPath();
+                ctx.strokeStyle = "rgba(10,10,10,0.4)";
+                ctx.lineWidth = 3;
+                ctx.ellipse(0, 0, 6, 7.5, 0, - Math.PI / 2 + 0.15, Math.PI / 2 - 0.15, false);
+                ctx.stroke();    
+            }
+            
+            ctx.restore();
+            
+            // shadow
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(60,60,60,0.2)";
+            ctx.lineWidth = 7;
+            ctx.arc(x, y, 56.5, 0, Math.PI*2, false);
+            ctx.stroke();
+            
+            // text
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.fillStyle = "#000";
+            ctx.font = "Bold 18px Roboto";
+            ctx.textAlign="center";
+            ctx.fillText(Math.round(ratio * 100) + "%", 0, 0);
+
+            ctx.fillStyle = "#333333";
+            ctx.font = "10px Roboto";
+            ctx.fillText("hogehoge", 0, 11);
+            
+            ctx.restore();
+            
+        };
+
+        var font = new FontFaceObserver('Roboto', {
+            weight: 400
+        });
+
+        font.load().then(function () {
+            console.log('Font is available');
+            
+            $('#range').range({
+                min: 0,
+                max: 150,
+                start: 40,
+                onChange: function(val){
+                    ratio = val / 100;
+                    draw();
+                }
+            });
+        });
+    });
+</script>

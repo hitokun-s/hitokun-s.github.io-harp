@@ -95,17 +95,20 @@
 
 //            ctx2.imageSmoothingEnabled = true; // not working
             
-            ctx2.width = imgBk.width;
-            ctx2.height = imgBk.height;
-            canvas2.width = imgBk.width;
-            canvas2.height = imgBk.height;
+            var w = 120;
+            var h = imgBk.height * 120 / imgBk.width;
+            
+            ctx.width = ctx2.width = w;
+            ctx.height = ctx2.height = h;
+            canvas.width = canvas2.width = w;
+            canvas.height = canvas2.height = h;
 
             var targetHeight1 = imgBk.height * ratio1;
             var targetHeight2 = imgBk.height * ratio2;
             var targetHeight3 = imgBk.height * ratio3;
             
-            ctx2.clearRect(0,0,canvas.width, canvas.height);
-            ctx2.drawImage(imgBk, 0, 0);
+            ctx2.clearRect(0,0, w, h);
+            ctx2.drawImage(imgBk, 0, 0, w, h);
 
             var src = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
             
@@ -158,7 +161,7 @@
             var tmp = new Image();
             tmp.src = canvas2.toDataURL();
             tmp.onload = function(){
-                ctx.drawImage(tmp,0,0, ctx2.width / 2, ctx2.height/2);
+                ctx.drawImage(tmp,0,0);
             }
             
         };
