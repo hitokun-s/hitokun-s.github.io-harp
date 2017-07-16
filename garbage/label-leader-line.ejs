@@ -1,0 +1,105 @@
+<%- include('../_lib') %>
+<% title = "Label Leader Line" %>
+<% dependsOn(title, ["fontface-observer"]); %>
+
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+<style>
+
+</style>
+
+<h1><%=title%></h1>
+
+<canvas id="canvas" width="500px" height="320px">
+    Your browser does not support HTML5 canvas.
+</canvas>
+
+<script type="text/javascript">
+
+    var font = new FontFaceObserver('Roboto', {
+        weight: 400
+    });
+
+    font.load().then(function () {
+        console.log('Font is available');
+
+        drawtext(ctx, "Test", 50, 50, {
+            moustache: {target:{x: 200, y: 200}},
+            font: 'bold 14px Roboto',
+            fillStyle: "#5ca793",
+            iconImg: "img/icon1.png",
+            subText: "hogehoge"
+        });
+
+        drawtext(ctx, "Test2", 250, 250, {
+            moustache: {target:{x: 0, y: 300}},
+            font: 'bold 14px Roboto',
+            fillStyle: "#575070",
+            iconImg: "img/icon3.png",
+            subText: "hoge2hoge2"
+    });
+    }, function () {
+        console.log('Font is not available');
+    });
+    
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    
+    var drawMoustache = function(ctx, start, end){
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        var halfX = (start.x + end.x) / 2;
+        ctx.bezierCurveTo(halfX, start.y, halfX, end.y, end.x, end.y);
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = "#ccc";
+        ctx.stroke();
+    };
+    
+    var drawtext = function(ctx, text, x, y, option){
+        var MARGIN = 5;
+        var opt = option || {};
+        
+        if(opt.font){
+            ctx.font = opt.font;
+        }
+        if(opt.fillStyle){
+            ctx.fillStyle = opt.fillStyle;
+        }
+        
+        var met = ctx.measureText(text);
+        var netWidth = met.width;
+        var lineHeight = ctx.measureText('M').width;
+        console.log("lineHeight:" + lineHeight);
+
+        var oriX = x;
+        if(opt.iconImg){
+            var iconHeight = lineHeight;
+            var img = new Image();
+            img.src = opt.iconImg;
+            img.onload = function(){
+                ctx.drawImage(img, oriX, y - iconHeight, iconHeight, iconHeight);
+            };
+            x = x + iconHeight + MARGIN;
+            netWidth += iconHeight + MARGIN;
+        }
+        
+        ctx.fillText(text, x, y);
+        x = oriX;
+        
+        if(opt.moustache){
+            var start = { y: y - lineHeight / 2};
+            if(opt.moustache.target.x < x){
+                start.x = x - MARGIN;
+            }else if(x + netWidth < opt.moustache.target.x){
+                start.x = x + netWidth + MARGIN;
+            }
+            drawMoustache(ctx, start, opt.moustache.target);
+        }
+        if(opt.subText){
+            ctx.font = "bold 10px Roboto";
+            ctx.fillStyle = "#707071";            
+            lineHeight = ctx.measureText('M').width;
+            ctx.fillText(opt.subText, x, y + lineHeight + MARGIN);
+        }
+    }
+    
+</script>
