@@ -21,6 +21,7 @@
     {"href":"business-man-graph.html", "description":"Business man graph"},
     {"href":"ct-scan-graph.html", "description":"CT scan graph"},
     {"href":"ct-scan-man-graph.html", "description":"CT scan man graph"},
-    {"href":"test-tube-graph.html", "description":"test tube graph"}
+    {"href":"test-tube-graph.html", "description":"test tube graph"},
+    {"href":"track-run-graph.html", "description":"track run graph"}
   ]
 }
