@@ -61,7 +61,7 @@
     var path = d3.geo.path().projection(projection);
     
     $(function () {
-        d3.json("data/ne_110m_admin_0_countries.geo.json", function (error, json) {
+        d3.json("../data/ne_110m_admin_0_countries.geo.json", function (error, json) {
 //            var topo = topojson.object(japan, japan.objects.pref).geometries; // <= old syntax
             console.log(d3.geo.bounds(json)); // [​[left, bottom], [right, top]​]
 
