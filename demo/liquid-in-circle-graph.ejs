@@ -1,6 +1,6 @@
 <%- include('../_lib') %>
 <% title = "liquid in circle graph" %>
-<% dependsOn(title, ["jquery", "semantic-ui-range", "underscore"]); %>
+<% dependsOn(title, ["jquery", "semantic-ui-range", "underscore", "vue"]); %>
 
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
@@ -19,12 +19,12 @@
     <div class="row">
         <h1><%=title%></h1>
         <div class="left floated">
-            <canvas id="canvas" width="240px" height="240px">
+            <canvas id="canvas" width="280px" height="350px">
                 Your browser does not support HTML5 canvas.
             </canvas>
         </div>
         <div class="left floated">
-            <p>Ratio:</p>
+            <p id="indication">Ratio: <b>{{ ratio }}</b> %</p>
             <div class="ui range" id="range"></div>
         </div>
     </div>
@@ -51,49 +51,62 @@
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
         
-        var draw = function(){
+        var img = new Image();
+        img.src = "img/drop2x.png";
+        img.onload = function(){
             
-            ctx.clearRect(0,0,240, 240);
-            ctx.lineWidth = 1;
-            ctx.fillStyle = "lightblue";
+            var draw = function(){
 
-            ctx.save();
-            ctx.translate(120,120);
+                ctx.clearRect(0,0,280, 350);
+                ctx.lineWidth = 1;
+                ctx.fillStyle = "lightblue";
 
-            ctx.beginPath();
+                ctx.save();
+                ctx.translate(140,220);
 
-            ctx.moveTo(-100, - wave(-1) * 100);
-            for(var i = -99; i <= 100;i++){
-                ctx.lineTo(i, - wave(parseFloat(i) / 100) * 100);
-            }
-            ctx.lineTo(100, 100);
-            ctx.lineTo(-100, 100);
-            ctx.fill();
+                ctx.beginPath();
+
+                ctx.moveTo(-100, - wave(-1) * 100);
+                for(var i = -99; i <= 100;i++){
+                    ctx.lineTo(i, - wave(parseFloat(i) / 100) * 100);
+                }
+                ctx.lineTo(100, 100);
+                ctx.lineTo(-100, 100);
+                ctx.fill();
 //        ctx.stroke();
 
-            ctx.beginPath();
+                ctx.beginPath();
 
-            ctx.arc(0, 0, 100, 0, Math.PI * 2, false);
-            ctx.stroke();
-            ctx.globalCompositeOperation = 'destination-in';
+                ctx.arc(0, 0, 100, 0, Math.PI * 2, false);
+                ctx.globalCompositeOperation = 'destination-in';
+                ctx.fill();
+                ctx.globalCompositeOperation = 'source-over'; // set default
+                ctx.drawImage(img, -123, -215);
 
-            ctx.fill();
+                ctx.restore();
+            };
 
-            ctx.restore();
+            $('#range').range({
+                min: 0,
+                max: 100,
+                start: 50,
+                onChange: function(val){
+                    ratio = val / 100;
+                    indication.ratio = val;
+                    diff = _.min(data, function(d){
+                        return Math.abs(ratio - d[1]);
+                    })[0];
+                    draw();
+                }
+            });
         };
-
-        $('#range').range({
-            min: 0,
-            max: 100,
-            start: 40,
-            onChange: function(val){
-                ratio = val / 100;
-                diff = _.min(data, function(d){
-                    return Math.abs(ratio - d[1]);
-                })[0];
-                draw();
-            }
-        });
         
+    });
+
+    var indication = new Vue({
+        el: '#indication',
+        data: {
+            ratio: 50
+        }
     });
 </script>
