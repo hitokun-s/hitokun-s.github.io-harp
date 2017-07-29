@@ -1,0 +1,99 @@
+<%- include('../_lib') %>
+<% title = "liquid in circle graph" %>
+<% dependsOn(title, ["jquery", "semantic-ui-range", "underscore"]); %>
+
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+<style>
+    div [class*="left floated"] {
+        float: left;
+        margin-left: 1em;
+    }
+    #range{
+        width:300px;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <h1><%=title%></h1>
+        <div class="left floated">
+            <canvas id="canvas" width="240px" height="240px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+        <div class="left floated">
+            <p>Ratio:</p>
+            <div class="ui range" id="range"></div>
+        </div>
+    </div>
+    <br>
+    <div class="row" style="clear: left;">
+        <p>'ratio' is corresponding to the water area precisely. Details: <a href="https://github.com/hitokun-s/playground-math/blob/master/liquid_in_circle.py">here.</a></p>
+    </div>
+</div>
+
+<script>
+    
+    var diff = 0;
+    var ratio = 0;
+
+    $.getJSON("data/liquid_in_circle.json", function(data) {
+        console.log(data);
+
+        // 単位円に対する波
+        var wave = function(x){
+//            diff = ratio * 2 - 1;
+            return Math.sin(Math.PI * x) / 8 + diff;
+        };
+        
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        
+        var draw = function(){
+            
+            ctx.clearRect(0,0,240, 240);
+            ctx.lineWidth = 1;
+            ctx.fillStyle = "lightblue";
+
+            ctx.save();
+            ctx.translate(120,120);
+
+            ctx.beginPath();
+
+            ctx.moveTo(-100, - wave(-1) * 100);
+            for(var i = -99; i <= 100;i++){
+                ctx.lineTo(i, - wave(parseFloat(i) / 100) * 100);
+            }
+            ctx.lineTo(100, 100);
+            ctx.lineTo(-100, 100);
+            ctx.fill();
+//        ctx.stroke();
+
+            ctx.beginPath();
+
+            ctx.arc(0, 0, 100, 0, Math.PI * 2, false);
+            ctx.stroke();
+            ctx.globalCompositeOperation = 'destination-in';
+
+            ctx.fill();
+
+            ctx.restore();
+        };
+
+        $('#range').range({
+            min: 0,
+            max: 100,
+            start: 40,
+            onChange: function(val){
+                ratio = val / 100;
+                diff = _.min(data, function(d){
+                    return Math.abs(ratio - d[1]);
+                })[0];
+                draw();
+            }
+        });
+        
+    });
+</script>
