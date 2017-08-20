@@ -37,8 +37,6 @@
 
 <script>
 
-    var ratio = 0.5;
-    
     var load = function(imgPaths){
         
         var promises = imgPaths.map(function(v){
@@ -51,7 +49,7 @@
             return d.promise();
         });
         return Promise.all(promises);
-    }
+    };
     
     $(function() {
         

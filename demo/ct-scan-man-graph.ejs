@@ -103,9 +103,9 @@
             canvas.width = canvas2.width = w;
             canvas.height = canvas2.height = h;
 
-            var targetHeight1 = imgBk.height * ratio1;
-            var targetHeight2 = imgBk.height * ratio2;
-            var targetHeight3 = imgBk.height * ratio3;
+            var targetHeight1 = h * ratio1;
+            var targetHeight2 = h * ratio2;
+            var targetHeight3 = h * ratio3;
             
             ctx2.clearRect(0,0, w, h);
             ctx2.drawImage(imgBk, 0, 0, w, h);
@@ -141,6 +141,7 @@
                         }else{
                             baseColor = rightColors[0];
                         }
+                        console.log(subtractRGB([232,232,232], [src.data[i], src.data[i+1], src.data[i+2]]));
                         c = subtractRGB(hexToRgb(baseColor), subtractRGB([232,232,232], [src.data[i], src.data[i+1], src.data[i+2]]));
                         src.data[i] = c[0];
                         src.data[i+1] = c[1];
@@ -148,6 +149,7 @@
                     }
                 }else{
                     // important for smoothing!!!
+                    console.log("no data!");
                     src.data[i] = 255;
                     src.data[i+1] = 255;
                     src.data[i+2] = 255;

@@ -1,0 +1,131 @@
+<%- include('../_lib') %>
+<% title = "Cafe(chain store) Location Map in Japan" %>
+<% dependsOn(title, ["d3.v3","d3-queue","leaflet"]); %>
+
+<% description = "Cafe(chain store) Location Map in Japan" %>
+<% keywords = "cafe,chain,map,location,Japan" %>
+<!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-providers/1.1.15/leaflet-providers.min.js"></script>-->
+
+<h1><%= title %></h1>
+
+<div id="map" style="width: 100%; height: 900px"></div>
+<script>
+    $(function () {
+        
+//        var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+//            maxZoom: 14,
+//            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+//        });
+//
+//        var map = L.map('map').addLayer(tiles);
+
+//        L.geoJson(geoJsonData, {
+//            onEachFeature: function (feature, layer) {
+//                layer.bindPopup(feature.properties.popup);
+//            }
+//        });
+//        markers.addLayer(geoJsonLayer);
+//        map.addLayer(markers);
+//        map.fitBounds(markers.getBounds());
+
+//        var map = L.map('map').setView([35.671062, 139.758496], 6);
+
+//        L.tileLayer(
+//                'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//                    attribution: '&copy; ' + mapLink + ' Contributors',
+//                    maxZoom: 18,
+//                }).addTo(map);
+        
+        // How to create MapBox Light style OSM map?
+        // refs: https://www.mapbox.com/studio/styles/mapbox/light-v9/share/
+
+        var baseLayer = L.tileLayer(
+                'https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaGl0b2t1biIsImEiOiJjaXVqYnd0NXUwMGRwMm9tc3RvcGZ1ZDZ5In0.Q4wyiiGDLH_lTi3zzFcAtA', {
+                    attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> Contributors',
+                    maxZoom: 18,
+                });
+
+//        L.tileLayer.provider('CartoDB.Positron').addTo(map);
+
+        d3.queue()
+                .defer(d3.csv, "data/starbucks.csv")
+                .defer(d3.csv, "data/komeda.csv")
+                .await(function(error, data, data2) {
+                    if (error) {
+                        console.error('Oh dear, something went wrong: ' + error);
+                        return;
+                    }
+                    var starbucks = data.map(function(d){
+                        return L.circle([d.lat, d.lng], 500, {
+                            color: '#3388ff',
+                            fillColor: '#3388ff',
+                            fillOpacity: 1
+                        }).bindPopup(d.name);
+                    });
+                    var komeda = data2.map(function(d){
+                        return L.circle([d.lat, d.lng], 500, {
+                            color: 'red',
+                            fillColor: 'red',
+                            fillOpacity: 1
+                        }).bindPopup(d.name);
+                    });
+
+                    komeda = L.layerGroup(komeda);
+                    starbucks = L.layerGroup(starbucks);
+
+                    var map = L.map('map', {
+                        center: [37.8, 138],
+                        zoom: 6,
+                        layers: [baseLayer, starbucks, komeda]
+                    });
+//                    map.dragging.disable();
+                    
+                    map.on("dragstart", function(e){
+                        console.log("dragstart", e);
+                        console.log(map.getBounds());
+                    });
+                    map.on("dragend", function(e){
+                        console.log("dragend", e);
+                        console.log(map.getBounds());
+                        var center = map.getCenter();
+
+                        map.dragging.disable();
+
+                    });
+                    map.on("mouseup", function(e){
+                        console.log("mouseup");
+                        map.dragging.disable();
+                        L.DomEvent.stopPropagation(e);
+                    });
+
+                    return;
+                    
+                    var isDragging = false;
+                    var latlng;
+                    var center;
+                    map.on("mouseup", function(e){
+                        console.log("mouseup");
+                        isDragging = false;
+                        latlng = null;
+                        center = null;
+                    });
+                    map.on("mousedown", function(e){
+                        console.log("mousedown", e.latlng);
+                        center = map.getCenter();
+                        console.log("center", center);
+                        isDragging = true;
+                        latlng = e.latlng;
+                    });
+                    map.on("mousemove", function(e){
+                        if(!isDragging)return;
+                        var diffLat = e.latlng.lat - latlng.lat;
+                        var diffLng = e.latlng.lng - latlng.lng;
+                        map.panTo(new L.LatLng(center.lat + diffLat, center.lng + diffLng));
+                        latlng = e.latlng;
+                        center = map.getCenter();
+                    });
+                });
+        return;
+        
+    });
+</script>

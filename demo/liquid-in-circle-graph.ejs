@@ -2,6 +2,9 @@
 <% title = "liquid in circle graph" %>
 <% dependsOn(title, ["jquery", "semantic-ui-range", "underscore", "vue"]); %>
 
+<% description = "Liquid in Circle Graph" %>
+<% image = "demo/img/liquid-in-circle-graph.png" %>
+
 <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
 <style>
@@ -20,6 +23,11 @@
         <h1><%=title%></h1>
         <div class="left floated">
             <canvas id="canvas" width="280px" height="350px">
+                Your browser does not support HTML5 canvas.
+            </canvas>
+        </div>
+        <div class="left floated">
+            <canvas id="canvas2" width="280px" height="350px">
                 Your browser does not support HTML5 canvas.
             </canvas>
         </div>
@@ -50,38 +58,42 @@
         
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
+
+        var canvas2 = document.getElementById('canvas2');
+        var ctx2 = canvas2.getContext('2d');
         
         var img = new Image();
         img.src = "img/drop2x.png";
         img.onload = function(){
             
-            var draw = function(){
+            var draw = function(ctx, x, y, R){
+                
+                var innerRadius = R * 100 / 127;
 
-                ctx.clearRect(0,0,280, 350);
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 ctx.lineWidth = 1;
                 ctx.fillStyle = "lightblue";
 
                 ctx.save();
-                ctx.translate(140,220);
+                ctx.translate(x, y);
 
                 ctx.beginPath();
 
-                ctx.moveTo(-100, - wave(-1) * 100);
-                for(var i = -99; i <= 100;i++){
-                    ctx.lineTo(i, - wave(parseFloat(i) / 100) * 100);
+                ctx.moveTo(-innerRadius, - wave(-1) * innerRadius);
+                for(var i = -innerRadius + 1; i <= innerRadius;i++){
+                    ctx.lineTo(i, - wave(parseFloat(i) / innerRadius) * innerRadius);
                 }
-                ctx.lineTo(100, 100);
-                ctx.lineTo(-100, 100);
+                ctx.lineTo(innerRadius, innerRadius);
+                ctx.lineTo(-innerRadius, innerRadius);
                 ctx.fill();
-//        ctx.stroke();
 
                 ctx.beginPath();
 
-                ctx.arc(0, 0, 100, 0, Math.PI * 2, false);
+                ctx.arc(0, 0, innerRadius, 0, Math.PI * 2, false);
                 ctx.globalCompositeOperation = 'destination-in';
                 ctx.fill();
                 ctx.globalCompositeOperation = 'source-over'; // set default
-                ctx.drawImage(img, -123, -215);
+                ctx.drawImage(img, - R * 123 / 127, - R * 215 / 127, R * 2, img.height * R * 2 / img.width);
 
                 ctx.restore();
             };
@@ -93,10 +105,14 @@
                 onChange: function(val){
                     ratio = val / 100;
                     indication.ratio = val;
-                    diff = _.min(data, function(d){
+                    var target = _.min(data, function(d){
                         return Math.abs(ratio - d[1]);
-                    })[0];
-                    draw();
+                    });
+                    diff = target[0];
+                    console.log("diff", diff);
+                    console.log("ratio", target[1]);
+                    draw(ctx, 140, 220, 127);
+                    draw(ctx2, 140, 220, 80);
                 }
             });
         };

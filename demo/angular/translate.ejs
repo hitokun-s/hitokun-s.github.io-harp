@@ -1,0 +1,54 @@
+<%- include('../../_lib') %>
+<% title = "Angular Translate" %>
+<% dependsOn(title, ["angular", "angular-cookies", "angular-translate"]); %>
+
+<div ng-app="app">
+    <div ng-controller="controller">
+        <h1><%=title%></h1>
+        Example Button:
+        <button class="button" translate="common.save" ng-click="changeLang()"></button>
+    </div>
+</div>
+
+<script>
+    // refs: http://mame0112.hatenablog.com/entry/2015/05/19/192840
+    
+    var app = angular.module("app", ['ngCookies',"pascalprecht.translate"]);
+    
+    app.config(['$translateProvider', function($translateProvider) {
+
+        // useStaticFilesLoaderは外部のjsonを読み込みますよ、という意味
+        // /langフォルダ内、lang_で始まり、.jsonで終わるファイルを指す。例：lang_ja.json
+        $translateProvider.useStaticFilesLoader({
+            prefix : '../lang/lang_',
+            suffix : '.json'
+        });
+        $translateProvider.determinePreferredLanguage();
+
+        $translateProvider.preferredLanguage('ja'); // 初期設定言語
+        $translateProvider.fallbackLanguage('en'); // 初期設定言語がなかった場合のバックアップ言語
+        
+        // jsonに定義していない文言があると、それを見つけてエラーを吐くようにする
+        $translateProvider.useMissingTranslationHandlerLog();
+        
+        $translateProvider.useLocalStorage();
+        $translateProvider.useSanitizeValueStrategy('escaped');
+
+    }]);
+
+    app.controller('controller', ['$scope', '$translate', function($scope, $translate){
+//        alert("change lang after 1 sec...");
+//        setTimeout(function(){
+//            $translate.use('en');
+//        }, 1000);
+        $scope.changeLang = function(){
+            var current = $translate.use();
+            console.log("current:", current);
+
+            $translate.use(current == 'ja' ? 'en': 'ja');
+        };
+    }]);
+
+</script>
+</body>
+</html>

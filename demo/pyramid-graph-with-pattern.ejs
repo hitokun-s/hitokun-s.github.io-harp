@@ -36,7 +36,8 @@
         var ctx = canvas.getContext('2d');
 
         var img = new Image();
-        img.src='img/pyramid.png';
+//        img.src='img/pyramid.png';
+        img.src='img/tree50.png';
 
         var pattern;
 
@@ -52,14 +53,16 @@
             
             h = (480 - 10) * ratio;
             
-            ctx.fillStyle = pattern;
             ctx.beginPath();
             ctx.moveTo(20,480);
             ctx.lineTo(250,480 - h);
             ctx.lineTo(480,480);
+            ctx.fillStyle = "#6a627f";
+            ctx.fill();
+            ctx.fillStyle = pattern;
             ctx.fill();
 
-            ctx.fillStyle = "#e5e5e5";
+            ctx.fillStyle = "rgba(40,40,40,0.3)";
             ctx.beginPath();
             ctx.moveTo(20,480);
             ctx.lineTo(250,480 - h);
