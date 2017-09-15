@@ -129,6 +129,14 @@
     {
       "href": "angular",
       "header": "Angular Demos"
+    },
+    {
+      "href": "canvas",
+      "header": "Canvas Demos"
+    },
+    {
+      "href": "investors.html",
+      "header": "Investors"
     }
   ]
 }

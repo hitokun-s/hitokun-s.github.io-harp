@@ -20,14 +20,6 @@
     <title><%= title %> | Hitokun's</title>
     
     <%- getModules(); %>
-    
-    <% modules[title] = modules[title] || []; %>
-    <% modules[title].push("jquery"); %>
-    <% modules[title].push("vue"); %>
-    <% if(modules[title].indexOf("bootstrap") == -1) modules[title].push("semantic-ui"); %>
-    <% modules[title].filter(function(item, pos) {return modules[title].indexOf(item) == pos;}).forEach(function(v){ %>
-        <%- partial("modules/_" + v) %>
-    <% }) %>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -52,8 +44,9 @@
 <% if(typeof(layout) != "undefined" && layout){ %>
 <%- include('layout/_' + layout) %>
 <% } else { %>
-<%- include(modules[title].indexOf("bootstrap") > -1 ? 'layout/_bootstrap' :'layout/_semantic'); %>
+<%- include(global.libs["bootstrap"] ? 'layout/_bootstrap' :'layout/_semantic'); %>
 <% } %>
 <% layout = null %>
 </body>
 </html>
+<% clean(); %>

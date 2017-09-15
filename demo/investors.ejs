@@ -1,0 +1,171 @@
+<% title = "Investors" %>
+<% dependsOn("vue.v2", "semantic-ui", "datatable", "faker", "underscore"); %>
+
+<!--<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/dataTables.semanticui.min.css">-->
+<!--<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.4.2/css/buttons.semanticui.min.css">-->
+
+<style>
+    #example{
+        background: lightgreen;
+        padding:10px;
+    }
+    table.dataTable td.focus {
+        outline: 2px solid green;
+        /*outline-offset: -3px;*/
+    }
+    tr td:nth-child(1),
+    tr td:nth-child(2),
+    tr td:nth-child(6),
+    tr td:nth-child(7) {
+        background: #ddffdd;
+    }
+    .focus input{
+        outline: none !important;
+        border: none !important;
+        width: 100% !important;
+    }
+    
+    table th, table td {
+        padding-top: 5px !important;
+        padding-bottom: 4px !important;
+    }
+    select#sel-round {
+        height:48px !important;
+    }
+
+    p.right.floated {
+        float: right;
+        margin-right: 0.25em;
+    }
+    .total{
+        font-size: 3em;
+        font-weight: bold;
+        margin: 8px;
+    }
+</style>
+
+<div id="example" class="container">
+    <h1><%= title %></h1>
+
+    
+        <p class="right floated">Total Capital:<span class="total">{{ total | currency }}</span></p>
+    
+
+    <span>Select Round:</span>
+    <select id="sel-round" class="ui search dropdown" v-on:change="sel()" v-model="selRound">
+        <option value="">All</option>
+        <option v-for="round in rounds" :value="round">{{round}}</option>
+    </select>
+    
+    <table id="dt" class="ui celled table" cellspacing="0" width="100%">
+        <thead>
+        <tr>
+            <th>Round</th>
+            <th>Name</th>
+            <th>Common</th>
+            <th>Preferred</th>
+            <th>2017 Equity Plan</th>
+            <th>Total</th>
+            <th>Ratio(%)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(item, index) in items">
+            <td>{{ item.round }}</td>
+            <td>{{ item.name }}</td>
+            <td :data-order="item.common" :at:dblclick="item.focus.common = true;focus($event, item);" v-bind:class="{ focus: item.focus.common }">
+                {{item.focus.common ? null : item.common | currency  }}
+                <input v-if="item.focus.common === true" v-model = "item
+                .common" :at:keyup.enter = "item.focus.common=false;setOrder($event);" :at:blur="item.focus.common=false;" />
+            </td>
+            <td :data-order="item.preferred" :at:dblclick="item.focus.preferred = true;focus($event, item);" v-bind:class="{ focus: item.focus.preferred }">
+                {{item.focus.preferred ? null : item.preferred | currency }}
+                <input v-if="item.focus.preferred == true" v-model = "item.preferred" :at:keyup.enter = "item.focus.preferred=false;setOrder($event);" :at:blur="item.focus.preferred=false;" />
+            </td>
+            <td :data-order="item.equityPlan" :at:dblclick="item.focus.equityPlan = true;focus($event, item);" v-bind:class="{ focus: item.focus.equityPlan }">
+                {{item.focus.equityPlan ? null : item.equityPlan | currency }}
+                <input v-if="item.focus.equityPlan == true" v-model = "item.equityPlan" :at:keyup.enter = "item.focus.equityPlan=false;setOrder($event);" :at:blur="item.focus.equityPlan=false;" />
+            </td>
+            <td :data-order="sum(item)">{{ sum(item) | currency }}</td>
+            <td :data-order="ratio(item)">{{ ratio(item) }} %</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script>
+
+    var rounds = ["round 1","round 2","round 3","round 4"];
+    var investors = _.range(10).map(function(){
+      return faker.name.findName();
+    });
+    
+
+  var example = new Vue({
+    el: '#example',
+    data: {
+      selRound: "",
+      rounds: rounds,
+      items: _.range(50).map(function(){
+        return {
+          focus: {common: false, preferred: false, equityPlan: false},
+          round: rounds[_.random(0, rounds.length - 1)],
+          name: investors[_.random(0, investors.length - 1)],
+          common: faker.random.number(),
+          preferred: faker.random.number(),
+          equityPlan: faker.random.number()
+        };
+      })
+    },
+    filters: {
+      currency: function (value) {
+        if(!value) return null;
+        return value.toLocaleString();
+      }
+    },
+    methods: {
+        focus: function(e, item){
+          console.log(item.focus.common);
+          console.log(e.target);
+          setTimeout(function(){
+            var input = $(e.target).find("input");
+            console.log("input", input);
+            input.show();
+            input.focus();
+          }, 100);
+          
+        },
+      sum: function(item){
+          return parseInt(item.common) + parseInt(item.preferred) + parseInt(item.equityPlan);
+      },
+      ratio: function(item){
+        return Number((100 * this.sum(item) / this.total).toFixed(2));
+      },
+      sel: function(){
+        table.column(0).search(this.selRound).draw();
+      },
+      setOrder: function(e){
+        table.row($(e.target).closest("tr")[0]).invalidate().draw();
+      }
+    },
+    computed: {
+      total: function () {
+        var res = 0;
+        var self = this;
+        this.items.forEach(function(item){
+          res += self.sum(item);
+        });
+        return res;
+      }
+    }
+  });
+    
+var table;  
+  $(document).ready(function () {
+    table = $('#dt').DataTable({
+//      keys: true
+    });
+    console.log(table);
+
+  });
+  
+</script>
