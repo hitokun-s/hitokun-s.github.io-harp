@@ -2,18 +2,22 @@
   "articles": [
     {
       "href": "http://hitokun-s.github.io/ht-markdown/",
-      "title": "markdown",
+      "header": "markdown",
       "description": "Online Markdown Editor"
     },
     {
       "href": "https://github.com/hitokun-s/ted-easy-downloader",
-      "title": "TED Easy Downloader",
+      "header": "TED Easy Downloader",
       "description": "Download TED movie automatically"
     },
     {
       "href": "https://github.com/hitokun-s/multilingualizer.js",
-      "title": "Multilingualizer",
+      "header": "Multilingualizer",
       "description": "Tiny JS library for creating a multilingual site without server-side processing"
+    },
+    {
+      "href": "vue-canvas.html",
+      "header": "vue-canvas"
     }
   ]
 }

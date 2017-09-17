@@ -1,0 +1,68 @@
+<% title = "vue-canvas" %>
+<% dependsOn(["vue.v2", "underscore"]); %>
+
+<style>
+    canvas {
+        border: 2px solid black;
+    }
+</style>
+<script type="text/javascript" src="js/vue-canvas.js"></script>
+
+<h1><%= title %></h1>
+<div id="target" class="container">
+  <canvas id="canvas" v-canvas:cb="onRendered" width="600" height="400">
+    <v-bg path="img/world.svg" ord="1"></v-bg>
+    <v-text ord="2" x="300" y="200" :message="message"></v-text>
+  </canvas>
+</div>
+<script>
+
+  Vue.component('v-bg', Vue.extend({
+    props: ["ord", "path"],
+    methods: {
+      draw: function (ctx, done) {
+        var img = new Image();
+        img.src = this.path;
+        img.onload = function(){
+          ctx.drawImage(img, 0, 0);
+          done();
+        }
+      }
+    }
+  }));
+
+  Vue.component('v-text', Vue.extend({
+    props: ["ord", "message", "x", "y"],
+    methods: {
+      draw: function (ctx, done) {
+        var canvas = ctx.canvas;
+        ctx.textAlign = "center";
+        ctx.fillStyle = "black";
+        ctx.font = "bold 30pt Courier";
+        ctx.fillText(this.message, parseInt(this.x), parseInt(this.y));
+        done();
+      }
+    }
+  }));
+
+  var vc = new Vue({
+    el: '#canvas',
+    data: {
+      message: "Hello!"
+    },
+    methods: {
+      onRendered: function (ctx) {
+        ctx.textAlign = "start";
+        ctx.fillStyle = "red";
+        ctx.fillText("rendering done!", 10, 30);
+      }
+    }
+  });
+
+  setTimeout(function () {
+    vc.message = "Good-bye!";
+  }, 2000);
+
+
+</script>
+
