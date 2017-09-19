@@ -1,0 +1,221 @@
+
+<% title = "Infographic Components for canvas" %>
+<% dependsOn( ["fontface-observer"]); %>
+
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+<style>
+
+</style>
+
+<h1><%=title%></h1>
+
+<canvas id="canvas" width="500px" height="320px">
+    Your browser does not support HTML5 canvas.
+</canvas>
+
+<script type="text/javascript">
+
+    var font = new FontFaceObserver('Roboto', {
+        weight: 400
+    });
+
+    font.load().then(function () {
+        console.log('Font is available');
+        drawMeter(0.6, 20, 280);
+
+        drawScore(12.34, 10, 20, "left");
+        drawScore(-12.34, 120, 20, "right");
+
+        drawBaloon("53.57%", "Equity Ratio", 10, 110, "left", true);
+        drawBaloon("12.34%", "Equity Ratio", 120, 110, "right", true);
+        drawBaloon("12.34%", "Equity Ratio", 230, 110, "down", true);
+
+        drawBaloonWithYear("$489M", "2013", 340, 110);
+
+        drawBaloonWithScore("53.57%", "Equity Ratio", 12.34, 10, 200, "left");
+        drawBaloonWithScore("53.57%", "Equity Ratio", 12.34, 120, 200, "right");
+    }, function () {
+        console.log('Font is not available');
+    });
+    
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    
+    var drawScore = function(score, x, y, lightDirection){
+        
+        if(lightDirection){
+            ctx.fillStyle = "rgba(91, 91, 91, 0.3)";
+            if(lightDirection == "left"){
+                ctx.fillRect(x + 3, y - 18 , 80, 15);    
+            }else{
+                ctx.fillRect(x - 3, y - 18 , 80, 15);
+            }
+        }
+        
+        var lColor,dColor;
+        if(score >= 0){
+            lColor = "#c0e072";
+            dColor = "#91c532";
+        }else{
+//            lColor = "#ed7d3e";
+            lColor = "rgb(241,151,101)";
+            dColor = "#e55d27";
+        }
+        
+        ctx.fillStyle = lColor;
+        ctx.fillRect(x, y - 15, 80, 15);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "Bold 14px Roboto";
+        ctx.fillText((score >= 0 ? "+" : "-") + Math.abs(score) + "%", x + 20, y - 2);
+
+        // arrow box
+        ctx.fillStyle = dColor;
+        ctx.fillRect(x, y - 15, 15, 15);
+        ctx.strokeStyle = lColor;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        
+        if(score >= 0){
+            ctx.moveTo(x + 7.5, y - 2);
+            ctx.lineTo(x + 7.5, y - 13);
+            ctx.stroke();
+            ctx.moveTo(x + 2, y - 7.5);
+            ctx.lineTo(x + 7.5, y - 13);
+            ctx.lineTo(x + 13, y - 7.5);
+            ctx.stroke();
+        }else{
+            ctx.moveTo(x + 7.5, y - 2);
+            ctx.lineTo(x + 7.5, y - 13);
+            ctx.stroke();
+            ctx.moveTo(x + 2, y - 7.5);
+            ctx.lineTo(x + 7.5, y - 2);
+            ctx.lineTo(x + 13, y - 7.5);
+            ctx.stroke();
+        }
+    };
+    
+    // option : direction, withShadow, bgColor
+    var drawBaloon = function(amount, title, x, y, option){
+        
+        var WIDTH = 80;
+        var HEIGHT = title ? 50 : 30;
+        
+        var opt = option || {};
+        var direction = opt.direction || "left";
+        var bgColor = opt.bgColor || "#99d6c4";
+
+        if(opt.withShadow){
+            ctx.fillStyle = "rgba(91, 91, 91, 0.3)";
+            if(direction == "left" || direction == "down"){
+                ctx.fillRect(x + 3, y - HEIGHT - 3 , WIDTH, HEIGHT);
+            }else{
+                ctx.fillRect(x - 3, y - HEIGHT - 3 , WIDTH, HEIGHT);
+            }
+        }
+        
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(x, y - HEIGHT, WIDTH, HEIGHT);
+        
+        var drawText = function(){
+            ctx.fillStyle = "#000";
+            ctx.font = "Bold 18px Roboto";
+            ctx.fillText(amount, x + 8, y - HEIGHT + 22 );
+
+            if(title){
+                ctx.font = "12px Roboto";
+                ctx.fillText(title, x + 8, y - 10);
+            }
+        };
+
+        // bgImage
+        if(opt.bgImage){
+            var img = new Image();
+            img.src = opt.bgImage;
+            img.onload = function(){
+                ctx.drawImage(img, x, y - HEIGHT);
+                drawText();
+            }
+        }else{
+            drawText();
+        }
+        
+        
+        ctx.fillStyle = bgColor;
+        ctx.beginPath();
+        switch(direction){
+            case "left": {
+                ctx.moveTo(x, y - 30);
+                ctx.lineTo(x - 8, y - 25);
+                ctx.lineTo(x, y - 20);
+                break;
+            }
+            case "right":{
+                ctx.moveTo(x + WIDTH, y - 30);
+                ctx.lineTo(x + WIDTH + 8, y - 25);
+                ctx.lineTo(x + WIDTH, y - 20);
+                break;
+            }
+            case "down":{
+                ctx.moveTo(x + WIDTH / 2 - 4, y);
+                ctx.lineTo(x + WIDTH / 2, y + 8);
+                ctx.lineTo(x + WIDTH / 2 + 4, y);
+                break;
+            }
+        }
+        ctx.fill();
+    };
+
+    var drawBaloonWithScore = function(amount, title, score, x, y, direction){
+        drawBaloon(amount, title, x, y, direction, true);
+        drawScore(score, x + 25, y - 45, direction);
+    };
+
+    var drawBaloonWithYear = function(text, year, x, y){
+        drawBaloon(text, null, x, y, {
+            direction: "down",
+            bgColor: "#f3f3f5",
+            bgImage: "img/calc.png"
+        });
+        ctx.save();
+        ctx.translate(x - 7, y - 2);
+        ctx.rotate(- Math.PI / 2);
+
+        ctx.strokeStyle = "#000";
+        ctx.fillStyle = "#000";
+        ctx.fillText(year, 0, 0);
+        ctx.restore();
+    };
+    
+    var drawMeter = function(ratio, x, y){
+        
+        ctx.beginPath();
+        ctx.strokeStyle = "#e8e8e8";
+        ctx.lineWidth = 5;
+        ctx.arc(x, y, 17.5, 0, Math.PI*2, false);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.strokeStyle = "#117899";
+        ctx.arc(x, y, 17.5, - Math.PI / 2, Math.PI * (2 * ratio - 0.5), false);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.fillStyle = "#2b5568";
+        ctx.arc(x, y, 4, 0, Math.PI*2, false);
+        ctx.fill();
+
+        ctx.save();
+        ctx.translate(x, y); // 回転の処理前に原点を移動
+        ctx.rotate(Math.PI * 2 * ratio);
+
+        ctx.beginPath();
+        ctx.moveTo(-3, 0);
+        ctx.lineTo(0, -12);
+        ctx.lineTo(3, 0);
+        ctx.fill();
+
+        ctx.restore();
+    };
+    
+</script>
