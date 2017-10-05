@@ -1,7 +1,9 @@
 <% title = "Starbucks Latte Index" %>
 <% dependsOn(["d3.v3", "d3-queue", "d3-tip", "d3-legend", "topojson", "underscore"]); %>
-<% description = "World Country Map" %>
-<% keywords = "world,country,map" %>
+<% description = "Starbucks Latte Index map by country" %>
+<% keywords = "starbucks,latte,country,map" %>
+<% image = "viz/img/starbucks-latte-index.png" %>
+<% url = "viz/starbucks-latte-index-map.html" %>
 
 <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
 
@@ -26,12 +28,13 @@
     }
 </style>
 <h1><%= title %></h1>
+data-source(2016): <a href="https://www.valuepenguin.com/countries-where-buying-starbucks-most-and-least-extravagant
+">here</a>
 <div id="stage"></div>
 <script>
 
-  // resource: https://www.valuepenguin.com/countries-where-buying-starbucks-most-and-least-extravagant
 
-  var color = d3.scale.linear().domain([-0.2, 0.33, 0.66, 1]).range(["lightcoral", "lightyellow", "lightgreen", "lightblue"]);
+//  var color = d3.scale.linear().domain([-0.2, 0.33, 0.66, 1]).range(["lightcoral", "lightyellow", "lightgreen", "lightblue"]);
 
   // メルカトル図法は投影方法上、そもそも北極点や南極点を描画できないので、適当な緯度で切るしかない。
   // 緯度を決めてそこからアスペクト比を割り出してもいいが、最初からサイズを決めてしまっても同じこと。
@@ -70,19 +73,10 @@
         });
         
         var colorRange = [
-          "rgb(191,223,255)",
-          "rgb(153,204,255)",
-          "rgb(115,185,253)",
-          "rgb(77,166,255)",
-          "rgb(38,147,255)",
-          "rgb(0,128,255)",
-          "rgb(0,109,217)",
-          "rgb(0,89,178)",
-          "rgb(0,70,140)",
-          "rgb(0,51,102)"
+          "#BDECDA",
+          "#04703F",
+          "#000000"
         ];
-
-        
         
         var min = d3.min(csv, function (d) {
             return d.price;
@@ -90,10 +84,14 @@
         var max = d3.max(csv, function (d) {
           return d.price;
         })
+        console.log("min", min);
+        console.log("max", max);
 
-        var color = d3.scale.quantize()
+        var color = 
+//          d3.scale.quantize()
+        d3.scale.linear()
           .range(colorRange)
-          .domain([Math.floor(min), Math.ceil(max)]);
+          .domain([Math.floor(min), (min+max)/2,  Math.ceil(max)]);
 
         var hoge = csv.filter(function (rec) {
           return _.find(json.features, function (d) {
@@ -159,18 +157,16 @@
 ////          .useClass(true)
 //          .scale(color);
 
-        var linear = d3.scale.linear()
-          .domain([Math.floor(min), Math.ceil(max)])
-          .range(colorRange);
-
         var legendLinear = d3.legend.color()
+          .ascending(true)
 //          .shapeWidth(30)
           .labelFormat(function(d){
-            return "$" + d;
+            return "$" + d + "～";
           })
-          .cells(Math.floor(max) - Math.floor(min) + 2)
+//          .cells(Math.floor(max) - Math.floor(min) + 2)
+          .cells(d3.range(Math.floor(min), Math.ceil(max), 1.0))
 //          .orient('horizontal')
-          .scale(linear);
+          .scale(color);
 
         svg.select(".legendQuant")
           .call(legendLinear);
