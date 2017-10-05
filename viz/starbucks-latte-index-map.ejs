@@ -1,130 +1,185 @@
-
 <% title = "Starbucks Latte Index" %>
-<% dependsOn( ["d3.v3", "d3-queue", "topojson", "underscore"]); %>
-
+<% dependsOn(["d3.v3", "d3-queue", "d3-tip", "d3-legend", "topojson", "underscore"]); %>
 <% description = "World Country Map" %>
 <% keywords = "world,country,map" %>
 
+<link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+
 <style type="text/css">
-    .country {
+    svg .country {
         cursor: pointer;
+        fill: white;
     }
-    .answer{
-        border-bottom: 3px solid black;
-        display: inline-block;
-        min-width:200px;
-    }
-    #indication{
-        line-height: 30px;
-        max-height: 30px;
-    }
-    svg{
+
+    svg {
         /*position: absolute !important;*/
         /*top: 0px;*/
         border: 2px black solid;
     }
-</style>
-<h1><%=title%></h1>
-<p id="indication">The country is <span class="answer"><b>{{ countryName }}</b></span></p>
-<div id="stage"></div>
-<script>
-    
-    // resource: https://www.valuepenguin.com/countries-where-buying-starbucks-most-and-least-extravagant
 
-    var color = d3.scale.linear().domain([-0.2, 0.33, 0.66, 1]).range(["lightcoral", "lightyellow", "lightgreen", "lightblue"]);
-
-    function rand_color(){
-//        var r = Math.floor( Math.random() * 255 ).toString(16);
-//        var g = Math.floor( Math.random() * 255 ).toString(16);
-//        var b = Math.floor( Math.random() * 255 ).toString(16);
-//        return "#" + r + g + b;
-        return color(Math.random());
+    #stage {
+        width: 100%;
     }
 
-    // メルカトル図法は投影方法上、そもそも北極点や南極点を描画できないので、適当な緯度で切るしかない。
-    // 緯度を決めてそこからアスペクト比を割り出してもいいが、最初からサイズを決めてしまっても同じこと。
-    var width = 900;
-    var height = 500;
-
-    var svg = d3.select("#stage").append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
-    var projection = d3.geo.mercator()
-            .center([0, 0])
-            .scale(100)
-            .translate([width / 2, height / 2]);
-
-    projection = d3.geo.mercator()
-            .rotate([205,0]) // 3 dimentional rotation. set Japan as center
-            .translate([width * 0.5, height * 0.65]) // 赤道を中心にすると南極が大きく入りすぎてバランスが悪い
-            .scale(width / ( Math.PI * 2 ) );
-
-    var path = d3.geo.path().projection(projection);
-    
-    $(function () {
-
-
-      d3.queue()
-        .defer(d3.json, "../data/ne_110m_admin_0_countries.geo.json")
-        .defer(d3.csv, "data/latte_index_2016.csv")
-        .await(function(error, json, csv){
-          
-          console.log(json);
-
-
-          var hoge = csv.filter(function(rec){
-            return _.find(json.features, function(d){
-              return rec.country == d.properties.formal_en || rec.country == d.properties.name;
-            }) == null;
-          });
-          console.log(hoge);
-          
-//            var topo = topojson.object(japan, japan.objects.pref).geometries; // <= old syntax
-            console.log(d3.geo.bounds(json)); // [​[left, bottom], [right, top]​]
-
-            //left is the minimum longitude, 
-            // bottom is the minimum latitude, 
-            // right is maximum longitude, 
-            // top is the maximum latitude.
-            
-            svg.selectAll('path')
-                    .data(json.features)
-                    .enter()
-                    .append('path')
-                    .attr('d', path)
-                    .attr('stroke', '#00ac97')
-                    .attr('stroke-width', 0.5)
-                    .classed("country", true)
-                    .style('fill', function(d){
-                        return "#fff"; // TODO color by price
-                    })
-                    .on("mouseover", function (d) {
-                        d3.select(this).attr({
-                            stroke: "red",
-                            'stroke-width': 1
-                        });
-                        indication.countryName = d.properties.name + "(" + d.properties.formal_en + ")";
-                    })
-                    .on("mouseout", function () {
-                        d3.select(this).attr({
-//                            fill: "transparent",
-                            stroke: "darkgrey",
-                            'stroke-width': 0.5
-                        });
-                        indication.countryName = "";
-                    });
-        });
-    });
-    
-</script>
+    .d3-tip p {
+        margin-bottom: 0px;
+    }
+</style>
+<h1><%= title %></h1>
+<div id="stage"></div>
 <script>
-    var indication = new Vue({
-        el: '#indication',
-        data: {
-            countryName: ""
-        }
-    });
+
+  // resource: https://www.valuepenguin.com/countries-where-buying-starbucks-most-and-least-extravagant
+
+  var color = d3.scale.linear().domain([-0.2, 0.33, 0.66, 1]).range(["lightcoral", "lightyellow", "lightgreen", "lightblue"]);
+
+  // メルカトル図法は投影方法上、そもそも北極点や南極点を描画できないので、適当な緯度で切るしかない。
+  // 緯度を決めてそこからアスペクト比を割り出してもいいが、最初からサイズを決めてしまっても同じこと。
+  // アスペクト比は9:5にしておく
+  var width = $("#stage").width();
+  var height = $("#stage").width() * 5 / 9;
+
+  var svg = d3.select("#stage").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  var projection = d3.geo.mercator()
+    .center([0, 0])
+    .scale(100)
+    .translate([width / 2, height / 2]);
+
+  projection = d3.geo.mercator()
+    .rotate([205, 0]) // 3 dimentional rotation. set Japan as center
+    .translate([width * 0.5, height * 0.65]) // 赤道を中心にすると南極が大きく入りすぎてバランスが悪い
+    .scale(width / ( Math.PI * 2 ));
+
+  var path = d3.geo.path().projection(projection);
+
+  $(function () {
+
+    d3.queue()
+      .defer(d3.json, "../data/ne_110m_admin_0_countries.geo.json")
+      .defer(d3.csv, "data/latte_index_2016.csv")
+      .await(function (error, json, csv) {
+
+        console.log(json);
+        console.log(csv);
+
+        csv.forEach(function (d) {
+          d.price = +d.price.substring(1);
+        });
+        
+        var colorRange = [
+          "rgb(191,223,255)",
+          "rgb(153,204,255)",
+          "rgb(115,185,253)",
+          "rgb(77,166,255)",
+          "rgb(38,147,255)",
+          "rgb(0,128,255)",
+          "rgb(0,109,217)",
+          "rgb(0,89,178)",
+          "rgb(0,70,140)",
+          "rgb(0,51,102)"
+        ];
+
+        
+        
+        var min = d3.min(csv, function (d) {
+            return d.price;
+          });
+        var max = d3.max(csv, function (d) {
+          return d.price;
+        })
+
+        var color = d3.scale.quantize()
+          .range(colorRange)
+          .domain([Math.floor(min), Math.ceil(max)]);
+
+        var hoge = csv.filter(function (rec) {
+          return _.find(json.features, function (d) {
+            return rec.country == d.properties.formal_en || rec.country == d.properties.name || rec.country == d.properties.admin;
+          }) == null;
+        });
+        console.log(hoge);
+
+        var data = _.object(_.map(csv, function (item) {
+          return [item.country, item.price];
+        }));
+
+        json.features.forEach(function (d) {
+          var price = data[d.properties.formal_en] || data[d.properties.name] || data[d.properties.admin];
+          if (price) {
+            d.price = price;
+          }
+        });
+
+//            var topo = topojson.object(japan, japan.objects.pref).geometries; // <= old syntax
+        console.log(d3.geo.bounds(json)); // [​[left, bottom], [right, top]​]
+
+        //left is the minimum longitude, 
+        // bottom is the minimum latitude, 
+        // right is maximum longitude, 
+        // top is the maximum latitude.
+
+        /* Initialize tooltip */
+        var tip = d3.tip().attr('class', 'd3-tip').html(function (d) {
+          return "<p>" + d.properties.name + "</p><span>$" + d.price + "</span>";
+        });
+        tip.offset(function () {
+          return [this.getBBox().height / 2, 0]
+        });
+
+        svg.selectAll('path')
+          .data(json.features)
+          .enter()
+          .append('path')
+          .attr('d', path)
+          .attr('stroke', '#00ac97')
+          .attr('stroke-width', 0.5)
+          .classed("country", true)
+          .filter(function (d) {
+            return d.price;
+          })
+          .call(tip)
+          .style('fill', function (d) {
+            return color(d.price);
+          })
+          .on('mouseover', tip.show)
+          .on('mouseout', tip.hide);
+
+
+        // legend
+
+        svg.append("g")
+          .attr("class", "legendQuant");
+//          .attr("transform", "translate(20," + height -  ")");
+
+//        var colorLegend = d3.legend.color()
+//          .labelFormat(d3.format(".2f"))
+////          .useClass(true)
+//          .scale(color);
+
+        var linear = d3.scale.linear()
+          .domain([Math.floor(min), Math.ceil(max)])
+          .range(colorRange);
+
+        var legendLinear = d3.legend.color()
+//          .shapeWidth(30)
+          .labelFormat(function(d){
+            return "$" + d;
+          })
+          .cells(Math.floor(max) - Math.floor(min) + 2)
+//          .orient('horizontal')
+          .scale(linear);
+
+        svg.select(".legendQuant")
+          .call(legendLinear);
+
+        var bbox = svg.select(".legendQuant").node().getBBox();
+        svg.select(".legendQuant").attr("transform", "translate(20," + (height - bbox.height - 10) +  ")");
+      });
+  });
+
 </script>
 
 
