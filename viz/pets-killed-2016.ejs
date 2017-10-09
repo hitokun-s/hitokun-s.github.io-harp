@@ -1,5 +1,5 @@
 <% title = "Japan Pets Killed Data 2016" %>
-<% dependsOn(["d3.v3", "d3-queue", "topojson"]); %>
+<% dependsOn(["d3.v3", "d3-queue", "topojson", "underscore"]); %>
 <% description = "Japan Pets Killed Data 2016" %>
 <% keywords = "Japan,pets,dog,cat,killed,map" %>
 <% url = "viz/japan-prefecture-map.html" %>
@@ -25,6 +25,16 @@
 
 <h1><%= title %></h1>
 data-source(2016): <a href="#">here</a>
+<!--<div id="chain-selector">-->
+    <!--<div class="ui checkbox mobile hidden" v-for="chain in chains">-->
+        <!--<input type="checkbox" id="{{ chain}}" value="{{chain}}" checked="true" v-model="checkedChains" v-on:click="clicked">-->
+        <!--<label for="{{chain}}" class="lbl-chain"><img src="img/{{chain}}.png" alt=""></label>-->
+    <!--</div>-->
+    <!--<div class="ui checkbox mobile only" v-for="chain in chains">-->
+        <!--<input type="checkbox" id="{{ chain}}" value="{{chain}}" checked="true" v-model="checkedChains" v-on:click="clicked">-->
+        <!--<label for="{{chain}}" class="lbl-chain">{{chain}}</label>-->
+    <!--</div>-->
+<!--</div>-->
 <div id="stage"></div>
 
 <script>
@@ -51,7 +61,42 @@ data-source(2016): <a href="#">here</a>
       .defer(d3.csv, "data/chukaku.csv")
       .await(function (error, japan, pets, seirei, chukaku) {
 
+        pets.forEach(function (d) {
+          d.dog = +d.dog;
+          d.cat = +d.cat;
+        });
+
+        var colorRange = [
+          "#BDECDA",
+          "#04703F",
+          "#000000"
+        ];
+
+        var min = d3.min(pets, function (d) {
+          return d.dog;
+        });
+        var max = d3.max(pets, function (d) {
+          return d.dog;
+        })
+        console.log("min",min);
+        console.log("max",max);
+        var color = d3.scale.linear()
+            .range(colorRange)
+            .domain([Math.floor(min), (min+max)/2,  Math.ceil(max)]);
+
         var topo = topojson.feature(japan, japan.objects.pref).features;
+
+        console.log(topo);
+        topo.forEach(function (d) {
+          var found = _.find(pets, function(p){
+            return p.pref == d.properties.name_local;
+          });
+          if (found) {
+            d.dog = found.dog;
+          }
+        });
+        
+        
         svg.selectAll(".pref")
           .data(topo)
           .enter()
@@ -59,25 +104,12 @@ data-source(2016): <a href="#">here</a>
           .attr("class", function (d, i) {
             return "pref pref" + i;
           })
-          .attr({
-            fill: "transparent",
-//            stroke: "darkgrey"
+          .attr("fill", function(d){
+            console.log(d);
+            return color(d.dog);
           })
-          .attr("d", path)
-          .on("mouseover", function (d) {
-            d3.select(this).attr({
-              fill: "lavenderblush",
-              stroke: "red"
-            });
-            indication.prefName = d.properties.name + "(" + d.properties.name_local + ")";
-          })
-          .on("mouseout", function () {
-            d3.select(this).attr({
-              fill: "transparent",
-              stroke: "darkgrey"
-            });
-            indication.prefName = "";
-          });
+          .attr("d", path);
+
         // move Okinawa
         svg.select(".pref46").attr("transform", "translate(650, -250)");
         
