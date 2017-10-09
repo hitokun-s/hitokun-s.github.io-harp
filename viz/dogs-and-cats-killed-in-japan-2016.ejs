@@ -1,0 +1,325 @@
+<% title = "Dogs and Cats killed in Japan(2016)" %>
+<% dependsOn(["d3.v3", "d3-queue", "d3-legend", "d3-tip", "topojson", "underscore", "vue.v2"]); %>
+<% description = "Dogs and Cats killed in Japan(2016)" %>
+<% keywords = "Japan,pets,dog,cat,killed,map" %>
+<% image = "viz/img/dogs_and_cats_killed_in_japan_2016.png" %>
+<% url = "viz/dogs-and-cats-killed-in-japan-2016.html" %>
+
+<link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+<style type="text/css">
+    body{
+        font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, メイリオ, Osaka, 'MS PGothic', arial, helvetica, sans-serif;
+    }
+    .pref {
+        cursor: pointer;
+    }
+
+    svg {
+        stroke: darkgrey;
+    }
+
+    #stage {
+        width: 800px;
+        height: 840px;
+        position: relative;
+    }
+    label{
+        font-size: 1.5em !important;
+    }
+    #title{
+        font-size: 100px;
+        line-height: 120px;
+        position: absolute;
+        top: 20px;
+        left: 160px;
+    }
+</style>
+
+
+<h1><%= title %></h1>
+
+<form class="ui aligned grid form">
+    <div class="left floated six wide column">
+        <div id="animal-selector">
+            <div class="field">
+                <div class="inline fields">
+                    <div class="field" v-for="animal in animals">
+                        <div class="ui radio checkbox">
+                            <input type="radio" :value="animal.name" id="animal.name" v-model="checkedAnimals"/>
+                            <label for="{{animal.name}}">{{ animal.name }}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right floated right aligned six wide column">
+        <a href="https://www.env.go.jp/nature/dobutsu/aigo/2_data/statistics/dog-cat.html">data source(2016)</a>
+    </div>
+</form>
+<div>
+    <div id="stage">
+        <span id="title" v-bind:style="{ color: getColor()}" v-html="getTitle()"></span>
+    </div>
+</div>
+
+
+
+<script>
+    
+    var math = {
+      floor: function(val, num){
+        var h = Math.pow(10, num);
+        return Math.floor(val / h) * h;
+      },
+      ceil: function(val, num){
+        var h = Math.pow(10, num);
+        return Math.ceil(val / h) * h;
+      }
+    }
+
+  var width = $("#stage").width();
+  var height = $("#stage").height();
+
+  var svg = d3.select("#stage").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  var projection = d3.geo.mercator()
+    .center([137, 38.4])
+    .scale(2500)
+    .translate([width / 2, height / 2]);
+
+  var path = d3.geo.path().projection(projection);
+
+  var colorRange = [
+    "#BDECDA",
+    "#04703F",
+    "#000000"
+  ];
+  var colorRanges = {
+    dog: [
+      "#e0f3db",
+      "#7bccc4",
+      "#0868ac"
+    ],
+    cat: [
+      "#fef0d9",
+      "#fc8d59",
+      "#b30000"
+    ],
+    all: [
+      "#edf8fb",
+      "#8c96c6",
+      "#810f7c"
+    ],
+  }
+  
+  var sum = function(arr, prop){
+    var res = 0;
+    arr.forEach(function(d){
+      res += d[prop];
+    });
+    return res;
+  }
+
+  d3.queue()
+    .defer(d3.json, "data/japan.json")
+    .defer(d3.csv, "data/pets_killed_2016.csv")
+    .defer(d3.csv, "data/seirei.csv")
+    .defer(d3.csv, "data/chukaku.csv")
+    .await(function (error, japan, pets, seirei, chukaku) {
+
+      pets.forEach(function (d) {
+        d.dog = +d.dog;
+        d.cat = +d.cat;
+        d.all = d.dog + d.cat;
+        d.type = +d.type;
+      });
+      
+      var prefMap = _.object(pets.map(function(d){
+        d.cities = [];
+        return [d.pref, d];
+      }));
+      
+      seirei.forEach(function(d){
+        if(prefMap[d.pref]){
+          prefMap[d.pref].cities.push(d.city);
+        }
+      });
+      chukaku.forEach(function(d){
+        if(prefMap[d.pref]){
+          prefMap[d.pref].cities.push(d.city);
+        }
+      });
+
+      pets = pets.filter(function(d){
+        return d.type == 1;
+      });
+      console.log(pets);
+      
+      pets.forEach(function (d) {
+        if(d.cities.length > 0){
+          d.dog += sum(d.cities.map(function(c){return prefMap[c]}), "dog");
+          d.cat += sum(d.cities.map(function(c){return prefMap[c]}), "cat");
+          d.all += sum(d.cities.map(function(c){return prefMap[c]}), "all");
+        }
+      });
+      
+      var colors = _.object(["dog", "cat", "all"].map(function(target){
+        var min = d3.min(pets, function (d) {
+          return d[target];
+        });
+        var max = d3.max(pets, function (d) {
+          return d[target];
+        });
+        var color = d3.scale.linear()
+          .range(colorRanges[target])
+          .domain([Math.floor(min), (min + max) / 2, Math.ceil(max)]);
+        
+        return [target, color];
+      }));
+
+      var topo = topojson.feature(japan, japan.objects.pref).features;
+
+      topo.forEach(function (d) {
+        var found = _.find(pets, function (p) {
+          return p.pref == d.properties.name_local;
+        });
+        if (found) {
+          d.pets = found;
+        }
+      });
+      
+      var target = "all";
+      
+      var prefs = svg.selectAll(".pref")
+        .data(topo)
+        .enter()
+        .append("path")
+        .attr("class", function (d, i) {
+          return "pref pref" + i;
+        })
+        .attr("fill", function (d) {
+          if(d.pets){
+            return colors[target](d.pets[target]);
+          }
+          return "transparent";
+        })
+        .attr("d", path);
+
+      // move Okinawa
+      svg.select(".pref46").attr("transform", "translate(650, -250)");
+
+      // draw a line separating Okinawa
+      var lineFunction = d3.svg.line()
+        .x(function (d) {
+          return d.x;
+        })
+        .y(function (d) {
+          return d.y;
+        })
+        .interpolate("linear");
+      var lineData = [
+        {"x": 510, "y": 830},
+        {"x": 600, "y": 630},
+        {"x": 790, "y": 630}
+      ];
+      svg.append("path")
+        .attr("d", lineFunction(lineData))
+        .attr("stroke-width", 2)
+        .attr("fill", "none");
+      
+      
+      // legend
+      var drawLegend = function (target) {
+
+        svg.select(".legendQuant").remove();
+        
+        var domain = colors[target].domain();
+
+        svg.append("g").attr("class", "legendQuant");
+        var legendLinear = d3.legend.color()
+          .ascending(true)
+          .labelFormat(function (d) {
+            return d + "～";
+          })
+          .cells(d3.range(math.floor(domain[0], 2), math.ceil(domain[2], 2), 100))
+          .scale(colors[target]);
+        svg.select(".legendQuant")
+          .call(legendLinear);
+
+        var bbox = svg.select(".legendQuant").node().getBBox();
+        svg.select(".legendQuant").attr("transform", "translate(20, 30)");
+      }
+
+      drawLegend(target);
+
+      /* Initialize tooltip */
+      var tip = d3.tip().attr('class', 'd3-tip').html(function (d) {
+        return "<p>" + d.properties.name_local + "</p><span>" + d.pets[target] + "</span>";
+      });
+      tip.offset(function () {
+        return [this.getBBox().height / 2 - 20, 0]
+      });
+      prefs.call(tip)
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
+      
+      var title = new Vue({
+        el: "#title",
+        data: {
+          target: target
+        },
+        methods: {
+          getColor: function(){
+            return colorRanges[this.target][1];
+          },
+          getTitle: function(){
+            switch(this,target){
+              case "dog": return "Dogs";
+              case "cat": return "Cats";
+              default: return "Dogs <br>& Cats";
+            }
+          }
+        }
+      });
+      
+      // vue.js for selector
+      var selection = new Vue({
+        el: '#animal-selector',
+        data: {
+          checkedAnimals: "all",
+          animals: [
+            {
+              name: 'dog'
+            },
+            {
+              name: 'cat'
+            },
+            {
+              name: 'all'
+            }
+          ]
+        },
+        watch: {
+          "checkedAnimals": function (val) {
+            target = val; // dog. cat, all
+            prefs.attr("fill", function (d) {
+              if(d.pets){
+                return colors[target](d.pets[target]);
+              }
+              return "transparent";
+            });
+            drawLegend(target);
+            title.target = target;
+          }
+        }
+      });
+
+    });
+
+  
+</script>
+
+
