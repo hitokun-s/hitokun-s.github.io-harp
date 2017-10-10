@@ -1,0 +1,236 @@
+
+<% title = "tag it" %>
+<% dependsOn( ["jquery", "vue.v2", "underscore"]); %>
+
+<style>
+    .stage{
+        min-height: 40px;
+        display: block;
+        padding: 8px 40px 0 8px;
+        border-radius: 5px;
+        border: 1px solid #e8e8e8;
+        background: #fff;
+    }
+    .formula-wrap{
+        display: inline;
+        box-sizing: border-box;
+        text-align: left;
+    }
+    .tag{
+        position: relative;
+        display: inline-block;
+        padding: 2px 10px 4px 10px;
+        margin-right:5px;
+        border-radius: 5px;
+        color: #fff;
+        line-height: 1;
+        background: #41b883;
+        margin-bottom: 8px;
+        white-space: nowrap;
+        box-sizing: border-box;
+    }
+    .op{
+        background: white;
+        color: grey;
+    }
+    .num{
+        background: white;
+        color: grey;
+    }
+    .formula-input{
+        position: relative;
+        display: inline-block;
+        min-height: 20px;
+        line-height: 20px;
+        border-top: none;
+        border-right: none;
+        border-left: none;
+        border-bottom: 3px solid black;
+        background: #fff;
+        padding: 1px 0 0 5px;
+        transition: border .1s ease;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+        touch-action: manipulation;
+        outline: 0;
+        width:50px;
+    }
+</style>
+
+<div class="container">
+    <div class="row" id="app">
+        <h1><%= title %></h1>
+        <div class="stage">
+            <div class="formula-wrap">
+                <input name="formula-input" v-model="searchText" type="text" autocomplete="off" placeholder="" class="formula-input" v-on:keyup.left="left" v-on:keyup.right="right" v-on:keyup.delete="delete" v-on:keyup="all" v-on:keyup.down="down" v-on:keyup.up="up" v-on:keyup.enter="enter">
+            </div>
+        </div>
+        <table class="ui celled table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(item, index) in filter()" v-bind:style="{ background: selectId == index ? 'red':''}">
+                <td>{{item.id}}</td>
+                <td>{{item.name}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+
+
+  (function($) {
+    $.fn.getCursorPosition = function() {
+      var input = this.get(0);
+      if (!input) return; // No (input) element found
+      if (document.selection) {
+        // IE
+        input.focus();
+      }
+      return 'selectionStart' in input ? input.selectionStart:'' || Math.abs(document.selection.createRange().moveStart('character', -input.value.length));
+    }
+  })(jQuery);
+    
+  function doGetCaretPosition (oField) {
+
+    // Initialize
+    var iCaretPos = 0;
+
+    // IE Support
+    if (document.selection) {
+
+      // Set focus on the element
+      oField.focus();
+
+      // To get cursor position, get empty selection range
+      var oSel = document.selection.createRange();
+
+      // Move selection start to 0 position
+      oSel.moveStart('character', -oField.value.length);
+
+      // The caret position is selection length
+      iCaretPos = oSel.text.length;
+    }
+
+    // Firefox support
+    else if (oField.selectionStart || oField.selectionStart == '0')
+      iCaretPos = oField.selectionStart;
+
+    // Return results
+    return iCaretPos;
+  }
+  
+  $(function(){
+    
+    new Vue({
+      el: '#app',
+      data: {
+        searchText: "",
+        prevPos: 0,
+        items: [
+          {id: 1, name: 'lime'},
+          {id: 2, name: 'orange'},
+          {id: 3, name: 'cherry'},
+          {id: 4, name: 'apple'},
+          {id: 5, name: 'raspberry'},
+          {id: 6, name: 'banana'}
+        ],
+        selectId: 0,
+        filteredItems:[]
+      },
+      methods: {
+        filter: function(){
+          console.log("filter");
+          var self = this;
+          return this.items.filter(function(item){
+            return item.name.indexOf(self.searchText) > -1;
+          });
+        },
+        left: function(){
+          console.log("lleft");
+
+          var pos = $(".formula-input").getCursorPosition();
+
+          if(pos == 0 && this.prevPos == 0){
+            $(".formula-input").prev().before($(".formula-input"));
+            $(".formula-input").focus();
+            $(".formula-input").val("");
+          }
+          this.prevPos = pos;
+        },
+        right: function(){
+          console.log("right");
+          var pos = $(".formula-input").getCursorPosition();
+
+          console.log(pos);
+          if(pos == $(".formula-input").val().length && this.prevPos == $(".formula-input").val().length){
+            if($(".formula-input").next().length > 0){
+              $(".formula-input").next().after($(".formula-input"));
+              $(".formula-input").focus();
+              $(".formula-input").val("");
+            }
+          }
+          this.prevPos = pos;
+        },
+        all: function(e){
+          console.log("all", e);
+
+          if(e.keyCode == 8){
+            this.delete();
+            return;
+          }
+
+          var pos = $(".formula-input").getCursorPosition();
+          this.prevPos = pos;
+        },
+        delete: function(){
+          var pos = $(".formula-input").getCursorPosition();
+          console.log("in delete pos:", pos);
+          if(pos == 0 && this.prevPos == 0){
+            console.log("hey");
+            $(".formula-input").prev().remove();
+          }
+          this.prevPos = pos;
+        },
+        down: function(){
+          console.log("down");
+          if(this.selectId < this.filter().length - 1)
+          this.selectId = this.selectId + 1;
+        },
+        up: function(){
+          console.log("up");
+          if(this.selectId > 0){
+            this.selectId = this.selectId - 1;
+          }
+        },
+        enter: function(){
+          if(_.contains(["+","-","*","/","(",")"], this.searchText)) {
+            console.log("iildf");
+            $(".formula-input").before($("<span class=\"tag op\"><span>" + this.searchText + "</span></span>"));
+          }else if(this.searchText != "" && !isNaN(this.searchText)){
+            console.log("num");
+            $(".formula-input").before($("<span class=\"tag num\"><span>" + this.searchText + "</span></span>"));
+          }else{
+            if(this.filter().length == 0){
+              console.log("invalid!!!");
+              return;
+            }
+            $(".formula-input").before($("<span class=\"tag\"><span>" + this.filter()[this.selectId].name + "</span></span>"));  
+          }
+          this.searchText = "";
+        }
+        
+      }
+    });
+
+    $(".formula-input").focus();
+  })
+  
+  
+</script>
