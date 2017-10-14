@@ -1,15 +1,16 @@
 
-<% title = "Formula Maker" %>
+<% title = "Save variables as formula" %>
 <% dependsOn( ["jquery", "vue.v2", "underscore"]); %>
+<script src="js/formula.js"></script>
 
 <style>
     .stage{
-        min-height: 40px;
         display: block;
-        padding: 8px 40px 0 8px;
+        padding: 6px 40px 0 8px;
         border-radius: 5px;
         border: 1px solid #e8e8e8;
         background: #fff;
+        width: 600px;
     }
     .formula-wrap{
         display: inline;
@@ -25,7 +26,7 @@
         color: #fff;
         line-height: 1;
         background: #41b883;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
         white-space: nowrap;
         box-sizing: border-box;
     }
@@ -50,181 +51,78 @@
         padding: 1px 0 0 5px;
         transition: border .1s ease;
         box-sizing: border-box;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
         touch-action: manipulation;
         outline: 0;
         width:30px;
+    }
+    .selRow{
+        outline: thick solid red;
+    }
+    table tr{
+        line-height: 3px;
+    }
+    table td{
+        height: 30px;
+        line-height: 30px;
+        padding-top: 2px !important;
+        padding-bottom: 0px !important;
+    }
+    .exp{
+        display: block;
+        font-size: 1.2em;
+        margin-bottom: 4px;
+        
     }
 </style>
 
 <div class="container">
     <div class="row" id="app">
         <h1><%= title %></h1>
-        <div class="stage">
-            <div class="formula-wrap">
-                <input name="formula-input" v-model="searchText" type="text" autocomplete="off" placeholder="" class="formula-input" v-on:keyup.left="left" v-on:keyup.right="right" v-on:keyup.delete="delete" v-on:keyup="all" v-on:keyup.down="down" v-on:keyup.up="up" v-on:keyup.enter="enter">
+
+        <div class="ui horizontal list">
+            <div class="ui input item" >
+                <span class="exp">variable name:</span>
+                <input type="text" v-model="valName">
+            </div>
+            <div class="item">
+                <span class="exp">formula:  (acceptable input: number, +, -, *, /, (, ), and registered variable name)</span>
+                <div class="stage">
+                    <div class="formula-wrap formula-main">
+                        <input name="formula-input" v-model="searchText" type="text" autocomplete="off" placeholder="" class="formula-input" v-on:keyup.left="left" v-on:keyup.right="right" v-on:keyup.delete="delete" v-on:keyup="all" v-on:keyup.down="down" v-on:keyup.up="up" v-on:keyup.enter="enter">
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <button class="ui primary button" v-on:click="regist">register</button>
             </div>
         </div>
+        <ul>
+            <li>move cursor inside formula => <span class="ui label">left</span><span class="ui label">right</span></li>
+            <li>complete input inside formula => <span class="ui label">enter</span></li>
+            <li>select registered variable inside formula => <span class="ui label">up</span><span class="ui label">down</span>( input some alphabet to filter variables shown )</li>
+        </ul>
+        
         <table class="ui celled table">
             <thead>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
+                <th>name</th>
+                <th>formula</th>
+                <th>json</th>
+                <th>value</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(item, index) in filter()" v-bind:style="{ background: selectId == index ? 'red':''}">
-                <td>{{item.id}}</td>
-                <td>{{item.name}}</td>
+            <tr v-for="(variable, index) in filter()" v-bind:class="{ 'selRow': selectId == index }">
+                <td>{{variable.name}}</td>
+                <td v-html="variable.formula"></td>
+                <td>{{variable.json}}</td>
+                <td>{{ val(variable.json) }}</td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
-
-<script>
-    
-    // 演算子だけが親ノードになれる
-    
-    // 演算子がきたとき、もし焦点ノード演算子以下の強さ（優先度）ならば、
-    // => 同じ強さなら、自身で焦点ノードを置換する
-    // => 自身が弱いなら、焦点ノードから親をたどっていって最初に見つけた同じ強さのノードを置換する
-    // （元のノードは、自身のleft childにする）
-    // もし焦点ノード演算子より強ければ、
-    // => 焦点ノードのright childにする
-    
-    // 数値がきたとき
-    // 焦点ノードのright child にする
-    
-    var foundSameLevelNode = function(node){
-      var ans;
-      while(!ans && node.parent){
-        if(node.parent.op == "+" || node.parent.op == "-"){
-          ans = node.parent;
-        }
-        node = node.parent;
-      }
-      return ans;
-    }
-    
-    var findRoot = function(node){
-      var ans;
-      while(!ans){
-        if(!node.parent){
-          ans = node;
-        }
-        node = node.parent;
-      }
-      return ans;
-    }
-    
-    var replaceNode = function(oldNode, newNode){
-       newNode.parent = oldNode.parent;
-       newNode.left = oldNode;
-       oldNode.parent = newNode;
-      return newNode;
-    }
-    
-    var findChildArray= function(arr, i){
-      var leftParenthesisCount = 1;
-      var rightParenthesisCount = 0;
-      var newArr = [];
-      for(var j = i + 1;j < arr.length;j++){
-        if(arr[j] == "("){
-          leftParenthesisCount++;
-        }else if(arr[j] == ")"){
-          rightParenthesisCount++;
-        }
-        if(leftParenthesisCount == rightParenthesisCount){
-          return newArr;
-        }
-        newArr.push(arr[j]);
-      }
-    }
-    
-    var createTree = function(arr){
-      
-      console.log("createTree!", arr);
-      var focusNode;
-      
-      for(var i = 0;i < arr.length;i++){
-        var c = arr[i];
-        if(_.contains(["+","-","*","/"], c)){
-          var currentNode = {op: c};
-          if(focusNode.value){
-            replaceNode(focusNode, currentNode);
-          }else{
-            if((focusNode.op == "*" || focusNode.op == "/") && (c == "+" || c == "-")){
-              var sameLevelNode = foundSameLevelNode(focusNode);
-              replaceNode(sameLevelNode, currentNode);
-            }else if((focusNode.op == "+" || focusNode.op == "-") && (c == "*" || c == "/")){
-              currentNode.parent = focusNode;
-              currentNode.left = focusNode.right;
-              focusNode.right = currentNode;
-            }else{
-              replaceNode(focusNode, currentNode);
-            }
-          }
-          focusNode = currentNode;
-        }else if(c == "("){
-          var childArr = findChildArray(arr, i);
-          focusNode.right = createTree(childArr);
-          i += (childArr.length + 1);
-        }else{
-          var currentNode = {value: parseFloat(c)};
-          if(focusNode){
-            focusNode.right = currentNode;
-          }else{
-            focusNode = currentNode
-          }
-        }
-      }
-      // find root
-      console.log("-----");
-      console.log("arr", arr);
-      console.log("focusNode", focusNode);
-      console.log("root",findRoot(focusNode));
-      
-      return findRoot(focusNode);
-    }
-    
-    var test = "3 + 2 * ( 6 - 1 ) - 10 / 4";
-//    test = "3 + 2 * 6 - 10 / 5";
-    
-    var arr = test.split(" ");
-    
-    console.log(createTree(arr));
-    
-    var toObject = function(node){
-      var res = {};
-      if(node.value){
-        return node.value;
-      }
-      res[node.op] = [toObject(node.left), toObject(node.right)];
-      return res;
-    }
-
-    var obj = toObject(createTree(arr));
-    console.log(JSON.stringify(obj));
-    
-    var calc = function(node){
-      if(node.value){
-        return node.value;
-      }
-      var left = calc(node.left);
-      var right = calc(node.right);
-      
-      switch(node.op){
-        case "+": return left + right;
-        case "-": return left - right;
-        case "*": return left * right;
-        case "/": return left / right;
-      }
-    }
-    
-    console.log("answer", calc(createTree(arr)));
-    
-</script>
 
 <script>
 
@@ -275,29 +173,26 @@
     new Vue({
       el: '#app',
       data: {
+        valName: "",
         searchText: "",
         prevPos: 0,
-        items: [
-          {id: 1, name: 'lime'},
-          {id: 2, name: 'orange'},
-          {id: 3, name: 'cherry'},
-          {id: 4, name: 'apple'},
-          {id: 5, name: 'raspberry'},
-          {id: 6, name: 'banana'}
-        ],
         selectId: 0,
+        variables: [
+          {name: "a", formula: "<span class=\"tag num\"><span>3</span></span>", json:"3"},
+          {name: "b", formula: "<span class=\"tag num\"><span>3</span></span><span class=\"tag op\"><span>+</span></span><span class=\"tag\"><span>a</span></span>", json:"{\"+\":[3,\"a\"]}"},
+          {name: "c", formula: "<span class=\"tag\"><span>a</span></span><span class=\"tag op\"><span>+</span></span><span class=\"tag op\"><span>(</span></span><span class=\"tag\"><span>b</span></span><span class=\"tag op\"><span>-</span></span><span class=\"tag num\"><span>1</span></span><span class=\"tag op\"><span>)</span></span><span class=\"tag op\"><span>*</span></span><span class=\"tag num\"><span>2</span></span>", json:"{\"+\":[\"a\",{\"*\":[{\"-\":[\"b\",1]},2]}]}"},
+        ],
         filteredItems:[]
       },
       methods: {
         filter: function(){
           console.log("filter");
           var self = this;
-          return this.items.filter(function(item){
+          return this.variables.filter(function(item){
             return item.name.indexOf(self.searchText) > -1;
           });
         },
         left: function(){
-          console.log("lleft");
 
           var pos = $(".formula-input").getCursorPosition();
 
@@ -309,7 +204,6 @@
           this.prevPos = pos;
         },
         right: function(){
-          console.log("right");
           var pos = $(".formula-input").getCursorPosition();
 
           console.log(pos);
@@ -368,13 +262,66 @@
             $(".formula-input").before($("<span class=\"tag\"><span>" + this.filter()[this.selectId].name + "</span></span>"));  
           }
           this.searchText = "";
+        },
+        regist:function(){
+          
+          var html = $(".formula-main .tag").map(function(i,elm){
+            console.log("---");
+            console.log(elm);
+            console.log(elm.outerHTML);
+          return elm.outerHTML;
+        }).get().join("");
+          console.log(html);
+
+          var arr = $(".formula-main .tag span").map(function(i,elm){
+            return $(elm).text();
+          })
+          console.log(toObject(createTree(arr)));
+          
+          this.variables.push({
+            name: this.valName,
+            formula: html,
+            json: JSON.stringify(toObject(createTree(arr)))
+          })
+        },
+        val: function(json){
+          console.log(json);
+          
+          var obj;
+
+          if(typeof json !== 'object'){
+            try{
+              obj = JSON.parse(json);
+            }catch(e){
+              var found = _.find(this.variables, function(v){return v.name == json});
+              return this.val(found.json);
+            }
+            if(!isNaN(obj)){
+              return obj;
+            }
+          }else{
+            obj = json;
+          }
+          var op = Object.keys(obj)[0];
+          
+          var values = obj[op];
+          var left = this.val(values[0]);
+          var right = this.val(values[1]);
+
+          switch(op){
+            case "+": return left + right;
+            case "-": return left - right;
+            case "*": return left * right;
+            case "/": return left / right;
+            default: throw Error;
+          }
         }
         
       }
     });
 
     $(".formula-input").focus();
-  })
+  });
   
   
 </script>
