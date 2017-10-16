@@ -64,7 +64,12 @@ var createTree = function(arr){
 
   for(var i = 0;i < arr.length;i++){
     var c = arr[i];
+    var prev = arr[i - 1];
+    
     if(_.contains(["+","-","*","/"], c)){
+      if(prev && _.contains(["+","-","*","/"], prev)){
+        throw Error;
+      }
       var currentNode = {op: c};
       if(focusNode.value){
         replaceNode(focusNode, currentNode);
@@ -82,10 +87,16 @@ var createTree = function(arr){
       }
       focusNode = currentNode;
     }else if(c == "("){
+      if(prev && !_.contains(["+","-","*","/","("], prev)){
+        throw Error;
+      }
       var childArr = findChildArray(arr, i);
       focusNode.right = createTree(childArr);
       i += (childArr.length + 1);
     }else{
+      if(prev && !_.contains(["+","-","*","/"], prev)){
+        throw Error;
+      }
       var currentNode = {value: isNaN(c) ? c : parseFloat(c)};
       if(focusNode){
         focusNode.right = currentNode;

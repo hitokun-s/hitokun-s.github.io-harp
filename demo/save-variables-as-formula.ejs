@@ -77,7 +77,9 @@
         display: block;
         font-size: 1.2em;
         margin-bottom: 4px;
-        
+    }
+    .message{
+        position: absolute !important;
     }
 </style>
 
@@ -89,6 +91,9 @@
             <div class="ui input item" >
                 <span class="exp">variable name:</span>
                 <input type="text" v-model="valName">
+                <div class="ui pointing red basic label message" v-show="!valName && errorMessageValName">
+                    {{errorMessageValName}}
+                </div>
             </div>
             <div class="item">
                 <span class="exp">formula:  (acceptable input: number, +, -, *, /, (, ), and registered variable name)</span>
@@ -96,6 +101,9 @@
                     <div class="formula-wrap formula-main">
                         <input name="formula-input" v-model="searchText" type="text" autocomplete="off" placeholder="" class="formula-input" v-on:keyup.left="left" v-on:keyup.right="right" v-on:keyup.delete="delete" v-on:keyup="all" v-on:keyup.down="down" v-on:keyup.up="up" v-on:keyup.enter="enter">
                     </div>
+                </div>
+                <div class="ui pointing red basic label message" v-show="errorMessage">
+                    {{errorMessage}}
                 </div>
             </div>
             <div class="item">
@@ -106,6 +114,7 @@
             <li>move cursor inside formula => <span class="ui label">left</span><span class="ui label">right</span></li>
             <li>complete input inside formula => <span class="ui label">enter</span></li>
             <li>select registered variable inside formula => <span class="ui label">up</span><span class="ui label">down</span>( input some alphabet to filter variables shown )</li>
+            <li>delete => <span class="ui label">backspace</span></li>
         </ul>
         
         <table class="ui celled table">
@@ -178,6 +187,8 @@
     new Vue({
       el: '#app',
       data: {
+        errorMessageValName: null,
+        errorMessage: null,
         valName: "",
         searchText: "",
         prevPos: 0,
@@ -223,9 +234,14 @@
         },
         all: function(e){
           console.log("all", e);
+          this.errorMessage = null;
 
           if(e.keyCode == 8){
             this.delete();
+            return;
+          }
+          if(this.searchText.length == 1 && _.contains(["+","-","*","/","(",")"], this.searchText[0])){
+            this.enter();
             return;
           }
 
@@ -270,24 +286,39 @@
         },
         regist:function(){
           
+          if(!this.valName){
+            this.errorMessageValName = "Set variable name!";
+            return;
+          }
+          
           var html = $(".formula-main .tag").map(function(i,elm){
-            console.log("---");
-            console.log(elm);
-            console.log(elm.outerHTML);
-          return elm.outerHTML;
-        }).get().join("");
+            return elm.outerHTML;
+          }).get().join("");
           console.log(html);
 
           var arr = $(".formula-main .tag span").map(function(i,elm){
             return $(elm).text();
-          })
-          console.log(toObject(createTree(arr)));
-          
+          });
+          var resObj;
+          try{
+            resObj = toObject(createTree(arr));
+            console.log(resObj);
+          }catch(e){
+            this.errorMessage = "Invalid formula!";
+            return;
+          }
+
           this.variables.push({
             name: this.valName,
             formula: html,
-            json: JSON.stringify(toObject(createTree(arr)))
-          })
+            json: JSON.stringify(resObj)
+          });
+          
+          this.errorMessageValName = null;
+          this.errorMessage = null;
+          this.valName = "";
+          this.searchText = "";
+          
         },
         val: function(json){
           console.log(json);
