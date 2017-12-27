@@ -16,6 +16,7 @@
     {"href":"label-leader-line.html", "title":"Label Leader Line"},
     {"href":"world-country-map.html", "title":"World Country Map"},
     {"href":"polar-area-diagram.html", "title":"Polar Area Diagram"},
-    {"href":"vue-canvas-example.html", "title":"vue-canvas example"}
+    {"href":"vue-canvas-example.html", "title":"vue-canvas example"},
+    {"href":"vue-mathjax.html", "title":"vue-mathjax example"}
   ]
 }

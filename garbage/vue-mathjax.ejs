@@ -1,0 +1,37 @@
+
+<% title = "Vue with Mathjax" %>
+<% dependsOn( ["fontface-observer", "vue.v2"]); %>
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+
+<h1><%=title%></h1>
+<div id="target">
+  <div v-html="equation">
+  </div>  
+  <button class="ui button" v-on:click="change">change</button>
+</div>
+
+<script type="text/javascript">
+  
+  var vc = new Vue({
+    el: '#target',
+    data: {
+      equation: "\\[\n" +
+      "  \\frac{\\pi}{2} =\n" +
+      "  \\left( \\int_{0}^{\\infty} \\frac{\\sin x}{\\sqrt{x}} dx \\right)^2 =\n" +
+      "  \\sum_{k=0}^{\\infty} \\frac{(2k)!}{2^{2k}(k!)^2} \\frac{1}{2k+1} =\n" +
+      "  \\prod_{k=1}^{\\infty} \\frac{4k^2}{4k^2 - 1}\n" +
+      "  \\]"
+    },
+    methods:{
+      change: function(){
+        this.equation = " \\( E = mc^2 \\)";
+        setTimeout(function(){
+          MathJax.Hub.Queue(["PreProcess",MathJax.Hub],["Reprocess",MathJax.Hub]);
+        }, 0);
+      }
+      
+    }
+  });
+
+</script>
