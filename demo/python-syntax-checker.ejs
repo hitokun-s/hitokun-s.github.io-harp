@@ -1,0 +1,82 @@
+<% title = "Python syntax checker" %>
+<% dependsOn( ["vue", "codemirror"]); %>
+
+<% description = "Python syntax checker" %>
+<% keywords = "python,syntax,checker,programming" %>
+<% url = "demo/python-syntax-checker.html" %>
+
+<script src="js/skulpt.min.js" type="text/javascript"></script>
+<script src="js/skulpt-stdlib.js" type="text/javascript"></script>
+
+<style>
+    .line-error{
+        background: darkorange;
+    }
+</style>
+
+<h1><%=title%></h1>
+
+<div class="ui grid" id="example">
+    <div class="eight wide column">
+        <textarea id="code" cols="85" rows="25"></textarea>
+    </div>
+    <div class="eight wide column">
+        <button v-on:click="check()" class="ui button">check</button>
+        <p v-show="errorLine == -1">No error!</p>
+        <p v-show="errorLine != null && errorLine >= 0">An error found!</p>
+    </div>
+</div>
+
+<script>
+
+  var example = new Vue({
+    el: '#example',
+    data: {
+      editor: null,
+      errorLine: null
+    },
+    mounted: function(){
+      this.editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+        mode: "python",
+        autofocus: true,
+        theme: "solarized dark",
+        styleActiveLine: true,
+        lineNumbers: true,
+        textWrapping: false,
+        indentUnit: 4,
+        height: "160px",
+        fontSize: "9pt",
+        autoCloseBrackets: true,
+        autoMatchParens: true,
+        extraKeys: {},
+        parserConfig: {'pythonVersion': 2, 'strictErrors': true}
+      });
+      var self = this;
+      this.editor.on("focus", function(){
+        if(self.errorLine != null && self.errorLine >= 0){
+          self.editor.removeLineClass(self.errorObj, "background", "line-error");
+          self.errorObj = null;
+          self.errorLine = null;
+        }
+      });
+      this.editor.setValue("print(\"implement me!\")")
+    },
+    methods: {
+      check: function(){
+        console.log(this.editor.getValue());
+        try{
+          Sk.compile(this.editor.getValue(), "test", "eval", true);
+          this.errorLine = -1;
+        }catch(e){
+          console.log(e);
+          this.errorLine = e.traceback[0].lineno - 1;
+          this.errorObj = this.editor.addLineClass(e.traceback[0].lineno - 1, 'background', 'line-error');
+          console.log(this.errorLine);
+        }
+      }
+    }
+  });
+    
+</script>
+
+</div>

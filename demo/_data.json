@@ -141,6 +141,10 @@
     {
       "href": "save-variables-as-formula.html",
       "header": "save variables as formula"
+    },
+    {
+      "href": "python-syntax-checker.html",
+      "header": "Python Syntax Checker"
     }
   ]
 }
