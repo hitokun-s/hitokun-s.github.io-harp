@@ -145,6 +145,14 @@
     {
       "href": "python-syntax-checker.html",
       "header": "Python Syntax Checker"
+    },
+    {
+      "href": "chat-ui-demo.html",
+      "header": "Chat UI"
+    },
+    {
+      "href": "chart/index.html",
+      "header": "Chart"
     }
   ]
 }
