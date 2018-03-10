@@ -9,6 +9,7 @@
             <i class="icon fa fa-user-circle"></i>
             <div class="dialog shadow dialog-mini"><span v-html="addBR(mes.value)"></span>
                 <i class="fa fa-pencil my-button-edit" v-on:click="show(mes)"></i>
+                <i class="fa fa-remove my-button-remove" v-on:click="remove(mes)"></i>
             </div>
         </div>
         
@@ -28,6 +29,8 @@
                 </div>
             </div>
         </modal>
+
+        <v-dialog/>
     </div>
     
 </template>
@@ -80,6 +83,28 @@
       },
       addBR(text){
         return text.split(/\r|\r\n|\n/).join("<br/>");
+      },
+      remove(mes){
+        console.log("remove target id:" + mes.id);
+        const self = this;
+        this.$modal.show('dialog', {
+          title: 'Really delete this comment?',
+//          text: 'You are too awesome',
+          buttons: [
+            {
+              title: 'Cancel',
+              default: true
+            },
+            {
+              title: 'Delete',
+              handler: () => {
+                _.remove(self.messages, { id: mes.id});
+                self.$modal.hide('dialog');
+                self.$forceUpdate();
+              }
+            }
+          ]
+        })
       }
     },
     watch:{
@@ -136,6 +161,12 @@
         height: 100%
     }
     .my-button-edit{
+        position: absolute;
+        top: 0px;
+        right:18px;
+        cursor: pointer;
+    }
+    .my-button-remove{
         position: absolute;
         top: 0px;
         right:0px;
