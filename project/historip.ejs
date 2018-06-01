@@ -1,6 +1,6 @@
 
 <% title = "Historip - A Social TimeMachine -" %>
-<% dependsOn( ["bootstrap", "d3.v3", "font-awesome", "three.53"]); %>
+<% dependsOn( ["jquery", "bootstrap", "d3.v3", "font-awesome", "three.46"]); %>
 
 <% image = "../images/historip_profile.jpg" %>
 <% description = "A Social Time-Machine" %>
@@ -62,7 +62,6 @@
         </div>
     </div>
 </div>
-<script src="/js/d3.v3.min.js"></script>
 <script src="/js/d3-operatable.js"></script>
 <script>
     var FRAME_COLOR = "#b45f06";
@@ -93,16 +92,26 @@
             trip(_year);
         });
 
-        $("#friendlist .my-list-group-item").live("click",
-                function () {
-                    var name = $(this).attr("id");
-                    var node = findNodeByKey(name);
-                    sel_family.lowlight();
-                    sel_family.refreshOnUpload(name);
-                    sel_family.highlight();
-                    showPersonInfo(node);
-                }
-        );
+        // $("#friendlist .my-list-group-item").live("click",
+        //         function () {
+        //             var name = $(this).attr("id");
+        //             var node = findNodeByKey(name);
+        //             sel_family.lowlight();
+        //             sel_family.refreshOnUpload(name);
+        //             sel_family.highlight();
+        //             showPersonInfo(node);
+        //         }
+        // );
+        // $(document).on('event', 'selector', function() {}); replaces .live().
+        $(document).on("click", "#friendlist .my-list-group-item", function(){
+          var name = $(this).attr("id");
+          var node = findNodeByKey(name);
+          sel_family.lowlight();
+          sel_family.refreshOnUpload(name);
+          sel_family.highlight();
+          showPersonInfo(node);
+        });
+
         $("#btn-wiki").click(function () {
             window.open('http://en.wikipedia.org/?curid=' + sel_family.pid);
         });
@@ -121,7 +130,7 @@
 
         //set timetunnel
         $("#timetunnel").height($(window).height());
-        var tunnel = new Timetunnel("timetunnel", "img/water.jpg");
+        var tunnel = new Timetunnel("timetunnel", "/img/water.jpg");
         tunnel.start();
 
         //set  timehandle
@@ -364,7 +373,7 @@
         force.stop();
         console.log("data load start.");
 
-        d3.json("/data/" + String(year).substr(0, 2) + "/" + year + ".json", function (error, graph) {
+        d3.json("data/" + String(year).substr(0, 2) + "/" + year + ".json", function (error, graph) {
             console.log("data load end.");
             console.log("calculation start.");
 
