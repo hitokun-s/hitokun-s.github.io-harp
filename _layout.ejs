@@ -23,7 +23,7 @@
 
     <title><%= title %> | Hitokun's</title>
     
-    <%- getModules(); %>
+    <%- getModules(title, description); %>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -45,6 +45,9 @@
     </style>
 </head>
 <body>
+
+<%- console.log("let's include layout!", typeof(layout) != "undefined"); %>
+
 <% if(typeof(layout) != "undefined" && layout){ %>
 <%- include('layout/_' + layout) %>
 <% } else { %>
