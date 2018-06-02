@@ -2,6 +2,9 @@
 <% title = "Historip - A Social TimeMachine -" %>
 <% dependsOn( ["jquery", "bootstrap", "d3.v3", "font-awesome", "three.46", "jszip", "axios", "vue.v2"]); %>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.webui-popover/1.2.1/jquery.webui-popover.min.css">
+<script src="https://cdn.jsdelivr.net/jquery.webui-popover/1.2.1/jquery.webui-popover.min.js"></script>
+
 <% image = "../images/historip_profile.jpg" %>
 <% description = "A Social Time-Machine" %>
 <% layout = "nolayout" %>
@@ -23,6 +26,7 @@
   //add window.onload event
   $(function() {
     $("#frame").height($(window).height() - $("#navbar").height());
+    $("table").addClass("table").addClass("table-bordered");
   });
 </script>
 
@@ -41,13 +45,28 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse navbar-ex1-collapse">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="about">About</a>
+        <li>
+          <a href="#" id="about">About</a>
+          <div class="webui-popover-content">
+            <%- partial("md/about.md") %>
+          </div>
+        </li>
+        <li>
+          <a href="#" id="operation">Operation</a>
+          <div class="webui-popover-content">
+            <%- partial("md/operation.md") %>
+          </div>
         </li>
       </ul>
     </div>
   </div>
 </nav>
 
+<script>
+  $(function(){
+    $('#about, #operation').webuiPopover({width:700, height: 500});
+  })
+</script>
 
 <div id="frame">
   <div id="tooltip">person name</div>
@@ -190,7 +209,13 @@
                             var dest_year = handle.getValue();
                             console.log("exit timetunnel! destination year : " + dest_year);
 
-                            $("#timehandle,#timetunnel,#time_indicator").fadeOut();
+                            $("#timehandle,#timetunnel,.panel-info").fadeOut();
+
+                            $(".ht-item").removeClass("ht-item-active");
+                            var target = $(".ht-item span:contains('" + dest_year + "')").parent();
+                            $("#ht-inner").css("left", - target.position().left);
+                            target.addClass("ht-item-active");
+
                             trip(dest_year);
                         });
                     }
@@ -203,7 +228,7 @@
 
         $("#back_to_machine").click(function(){
             force.stop();
-            $("#timehandle,#timetunnel,#time_indicator").fadeIn();
+            $("#timehandle,#timetunnel,.panel-info").fadeIn();
             tunnel.start();
         });
     });

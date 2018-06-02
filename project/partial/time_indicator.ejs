@@ -1,5 +1,25 @@
-<link href="css/time_indicator.css" rel="stylesheet">
-<div id="time_indicator"></div>
+<style>
+  #time_indicator{
+    position: fixed;
+    z-index: 3;
+    color: #ccff33;
+    font-size: 30px;
+    font-family:"indicator";
+    bottom: 3px;
+    right: 10px;
+  }
+  #time_info{
+    position: fixed;
+    z-index: 3;
+    color: darkorange;
+    font-size: 30px;
+    font-family:"indicator";
+    bottom: 3px;
+    left: 10px;
+  }
+</style>
+<div id="time_indicator" class="panel-info"></div>
+<div id="time_info" class="panel-info">A TIME STORM OCCURS IN 13 Century!!!</div>
 <script>
   window.setInterval(function(){
     $("#time_indicator").text((new Date).toUTCString());

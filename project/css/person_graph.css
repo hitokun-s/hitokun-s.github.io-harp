@@ -297,8 +297,7 @@ a.my-list-group-item.active > .badge{
 
 .show-val{
     font-weight: 400;
-    /*letter-spacing: -2px;*/
-    font-family: 'Lato', sans-serif;
+    font-family: "indicator", "Lato", sans-serif;
 }
 
 .th-btn-txt{

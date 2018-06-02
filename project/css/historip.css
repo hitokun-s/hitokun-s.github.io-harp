@@ -109,3 +109,8 @@ font-style: normal;
     padding-top: 15px;
 }
 
+.destination-year{
+    font-family: "indicator";
+    font-size: 30px
+}
+

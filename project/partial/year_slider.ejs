@@ -151,7 +151,6 @@
     var ttl_width = parseInt($('#ht-inner > div:first').css("width")) * 100;
     $("#ht-inner").css("width", ttl_width);
     $(".ht-knob")
-    // .css("font-size", $(".ht-knob").height())
     .mouseleave(function() {
       if (downing) {
         stop();
@@ -169,7 +168,6 @@
       $("#ht-inner").css("left", -offset);
     });
     $('#ht-inner > div').click(function(){
-      console.log($(this).text());
       $(".ht-item").removeClass("ht-item-active");
       $(this).addClass("ht-item-active");
       document.dispatchEvent(new CustomEvent('yearClick', {detail:{ year : $(this).text() }}));

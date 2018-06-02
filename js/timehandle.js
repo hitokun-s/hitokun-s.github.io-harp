@@ -59,8 +59,9 @@ var TimeHandle = function(parentSelector, opt, delegate) {
                 transform: "translate(0,-90)",
                 "text-anchor": "middle",
                 fill: txtColor,
-                "font-size": "20px"
-            }).text("Destination Time : [A.D.]");
+                "font-size": "20px",
+              class: "destination-year"
+            }).text("Destination Year : [A.D.]");
     textArea.append("text").classed("show-val", true)
             .attr({
                 "text-anchor": "middle",
