@@ -251,7 +251,7 @@ a.my-list-group-item.active > .badge{
     position: absolute;
     background-color: white;
     border: 2px solid black;
-    display: none;
+    display: block;
     padding:7px;
     border-radius: 5px;
     z-index: 3;
@@ -313,20 +313,6 @@ a.my-list-group-item.active > .badge{
 
 .th-btn-grp:hover{
     cursor:pointer;
-}
-
-#back_to_machine{
-    cursor:pointer;
-    padding-left:4px;
-    padding-right:4px;
-    /*bottom: 60px;*/
-    /*top: 100px;*/
-    left: 10px;
-    position: absolute;
-    border: solid 2px #000;
-    border-radius: 11px;
-    background-color: #d7ffc7;
-    z-index: 2;
 }
 
 .th-knob{

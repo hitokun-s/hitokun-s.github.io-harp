@@ -1,0 +1,193 @@
+<style>
+  #ht-slider{
+    height: 32px;
+    text-align: center;
+    background: floralwhite; /* same as viz background */
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+  }
+  #ht-slider *{
+    display: inline-block;
+    height: 100%;
+    box-sizing: border-box;
+  }
+  .ht-no-margin{
+    margin-right: -3px;
+  }
+
+  div.ht-item{
+    border-right: solid;
+    font-family: sans-serif;
+    font-size: 25px;
+    padding-left: 8px;
+    padding-right: 10px;
+  }
+
+  .ht-item-active span, .ht-item:hover span{
+    background: black !important;
+    color: white;
+  }
+
+  #ht-outer{
+    width: 80%;
+    overflow: hidden;
+    position: relative;
+  }
+  #ht-inner{
+    left:0px;
+    width: 600px;
+    position:absolute;
+    text-align: left;
+  }
+  .ht-item:not(.ht-item-active){
+    cursor: pointer;
+  }
+
+
+
+  .ht-knob{
+    vertical-align: top;
+    width: 4%;
+    text-align: center;
+    cursor: pointer;
+    background: floralwhite !important;
+    font-size: 25px;
+  }
+  .ht-edge{
+    width: 5%;
+  }
+
+  [class^="icon-"], [class*=" icon-"]{
+    line-height: 90%;
+    vertical-align: text-top;
+    background: transparent !important;
+    color: #b45f06;
+  }
+
+</style>
+<script>
+
+  $(function() {
+    $("#ht-slider").click(function(){
+      //pass message "slider in operation" to someone
+      document.dispatchEvent(new Event('sliderOperate'));
+    });
+    $("#ht-moveleft").mousedown(function() {
+      init();
+      downing = true;
+      moveright();
+    });
+    $("#ht-moveleft").mouseup(function() {
+      downing = false;
+      stop();
+    });
+
+    $("#ht-moveright").mousedown(function() {
+      init();
+      downing = true;
+      moveleft();
+    });
+
+    $("#ht-moveright").mouseup(function() {
+      downing = false;
+      stop();
+    });
+    $(".ht-item").click(function() {
+      console.log($(this).text());
+    });
+
+
+  });
+  var timer;
+  var INIT_V = 15;
+  var START_YEAR = 1200;
+  var END_YEAR = 1299;
+  var DEFAULT_IDX = 0; // as default selected index
+  var v = INIT_V;
+  var stopping = false;
+  var downing = false;
+  var moveleft = function() {
+    if (stopping) {
+      v--;
+    }
+    if (v <= 0) {
+      return;
+    }
+    var nowleft = $("#ht-inner").css("left");
+    $("#ht-inner").css("left", parseInt(nowleft) - v);
+    timer = setTimeout(moveleft, 50);
+  }
+  var init = function() {
+    //trigger 'operating' event
+    console.log("trigger!");
+
+    //$.event.trigger({type:"sliderClick"}); // not work...
+    //document.dispatchEvent(new Event('sliderOperate')); //pass message "slider in operation" to someone
+
+    v = INIT_V;
+    stopping = false;
+    //clearTimeout(timer);
+  }
+  var moveright = function() {
+    if (stopping) {
+      v--;
+    }
+    if (v <= 0) {
+      return;
+    }
+    var nowleft = $("#ht-inner").css("left");
+    $("#ht-inner").css("left", parseInt(nowleft) + v);
+    timer = setTimeout(moveright, 50);
+  }
+  var stop = function() {
+    stopping = true;
+  }
+
+  $(function() {
+    for (var i = START_YEAR; i <= END_YEAR; i++) {
+      $("#ht-inner").append($("<div class=\"ht-item ht-no-margin\"><span>" + i + "</span></div>"));
+    }
+    var ttl_width = parseInt($('#ht-inner > div:first').css("width")) * 100;
+    $("#ht-inner").css("width", ttl_width);
+    $(".ht-knob")
+    // .css("font-size", $(".ht-knob").height())
+    .mouseleave(function() {
+      if (downing) {
+        stop();
+        downing = false;
+      }
+    });
+    $("#ht-movefirst").click(function() {
+      clearTimeout(timer);
+      $("#ht-inner").css("left", 0);
+    });
+    $("#ht-movelast").click(function() {
+      clearTimeout(timer);
+      var last_child_left = $("#ht-inner > div:last-child").position().left;
+      var offset = last_child_left + $("#ht-inner > div:last-child").width() - $("#ht-outer").width();
+      $("#ht-inner").css("left", -offset);
+    });
+    $('#ht-inner > div').click(function(){
+      console.log($(this).text());
+      $(".ht-item").removeClass("ht-item-active");
+      $(this).addClass("ht-item-active");
+      document.dispatchEvent(new CustomEvent('yearClick', { detail : { year : $(this).text() }}));
+    });
+    //exec default select
+    $('#ht-inner > div').eq(DEFAULT_IDX).trigger("click");
+  });
+
+</script>
+
+<div id="ht-slider">
+  <div id="ht-movefirst" class="ht-knob ht-no-margin ht-edge"><i class="fa fa-fast-backward"></i></div>
+  <div id="ht-moveleft" class="ht-knob ht-no-margin"><i class="fa fa-step-backward"></i></div>
+  <div id="ht-outer" class="ht-no-margin">
+    <div id="ht-inner">
+    </div>
+  </div>
+  <div id="ht-moveright" class="ht-knob ht-no-margin"><i class="fa fa-step-forward"></i></div>
+  <div id="ht-movelast" class="ht-knob ht-no-margin ht-edge"><i class="fa fa-fast-forward"></i></div>
+</div>

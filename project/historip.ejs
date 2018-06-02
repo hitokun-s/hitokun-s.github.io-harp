@@ -1,6 +1,6 @@
 
 <% title = "Historip - A Social TimeMachine -" %>
-<% dependsOn( ["jquery", "bootstrap", "d3.v3", "font-awesome", "three.46", "jszip", "axios"]); %>
+<% dependsOn( ["jquery", "bootstrap", "d3.v3", "font-awesome", "three.46", "jszip", "axios", "vue.v2"]); %>
 
 <% image = "../images/historip_profile.jpg" %>
 <% description = "A Social Time-Machine" %>
@@ -13,10 +13,11 @@
 
 <link href="css/person_graph.css" rel="stylesheet">
 
-<script src="../js/Detector.js"></script>
-<script src="../js/RequestAnimationFrame.js"></script>
-<script src="../js/timetunnel.js"></script>
-<script src="../js/timehandle.js"></script>
+<script src="/js/Detector.js"></script>
+<script src="/js/RequestAnimationFrame.js"></script>
+<script src="/js/timetunnel.js"></script>
+<script src="/js/timehandle.js"></script>
+<script src="/js/d3-operatable.js"></script>
 
 <script>
   //add window.onload event
@@ -37,7 +38,6 @@
       <a class="navbar-brand" href="/">Hitokun's</a>
       <img src="image/historip_mini.png" />
     </div>
-
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse navbar-ex1-collapse">
       <ul class="nav navbar-nav navbar-right">
@@ -48,29 +48,27 @@
   </div>
 </nav>
 
-<div id="tooltip">person name</div>
+
 <div id="frame">
+  <div id="tooltip">person name</div>
     <div id="timetunnel"></div>
     <div id="graph"></div>
 
-    #{widget/people_indicator/people_indicator.html}
-    <div id="back_to_machine"><i class="icon-circle-arrow-left"></i>Back to TimeMachine</div>
+  <%- partial("partial/people_indicator") %>
+  <%- partial("partial/time_indicator") %>
+  <%- partial("partial/back_to_machine") %>
+
     <div id="person_info" class="col-sm-2 mynopadding">
         <div>
             <p id="name">name</p>
             <span id="portrait">
                 </span>
-
             <p>
                 <span id="life"> birth - death </span>
                 <button id="btn-wiki" class="btn btn-primary margin-bottom">Wiki</button>
             </p>
-            <p class="border-bottom">
-
-            <p>
-
+            <p class="border-bottom"></p>
             <p id="ocptitle">Occupations</p>
-
             <div id="ocplist" class="my-list-group">
                 <a href="#" class="my-list-group-item">
                     <span class="badge"></span>
@@ -80,12 +78,13 @@
     </div>
     <div id="friend_info" class="col-md-1 mynopadding">
         <p id="friend_title">Related People<span id="friend_cnt"></span></p>
-
         <div id="friendlist" class="my-list-group">
         </div>
     </div>
+
+  <%- partial("partial/year_slider") %>
+
 </div>
-<script src="/js/d3-operatable.js"></script>
 <script>
 
   let personOccupationRaw = null;
@@ -195,7 +194,7 @@
                             var dest_year = handle.getValue();
                             console.log("exit timetunnel! destination year : " + dest_year);
 
-                            $("#timehandle,#timetunnel").fadeOut();
+                            $("#timehandle,#timetunnel,#time_indicator").fadeOut();
                             trip(dest_year);
                         });
                     }
@@ -203,11 +202,10 @@
         );
         // centerize time handle
         $("#timehandle").css("left", ($(window).width() - $("#timehandle").width()) / 2);
-        $("#back_to_machine").css("top", $(window).height() - 90);
 
         $("#back_to_machine").click(function(){
             force.stop();
-            $("#timehandle,#timetunnel").fadeIn();
+            $("#timehandle,#timetunnel,#time_indicator").fadeIn();
             tunnel.start();
         });
     });
@@ -592,11 +590,13 @@
         });
 
         node_root.on("mouseover", function (node, evt) {
-            console.log(node);
-            $("#tooltip").text(node.pname).css("left",d3.event.x + 20 ).css("top",d3.event.y - 10 ).css("display","block");
+            $("#tooltip").text(node.pname)
+            .css("left",d3.event.pageX + 20 )
+            .css("top", d3.event.pageY - 10 - 50) //50 : body padding-top
+            .show();
         });
         node_root.on("mouseout", function (node, evt) {
-            $("#tooltip").css("display","none");
+            $("#tooltip").hide();
         });
 
         node.exit().remove();

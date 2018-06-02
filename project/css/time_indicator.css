@@ -1,0 +1,9 @@
+#time_indicator{
+        position: fixed;
+        z-index: 3;
+        color: #ccff33;
+        font-size: 30px;
+        font-family:"indicator";
+        bottom: 3px;
+        right: 10px;
+}

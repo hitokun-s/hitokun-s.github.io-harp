@@ -1,0 +1,7 @@
+<link href="css/time_indicator.css" rel="stylesheet">
+<div id="time_indicator"></div>
+<script>
+  window.setInterval(function(){
+    $("#time_indicator").text((new Date).toUTCString());
+  }, 1000);
+</script>
