@@ -1,6 +1,6 @@
 
 <% title = "Historip - A Social TimeMachine -" %>
-<% dependsOn( ["jquery", "bootstrap", "d3.v3", "font-awesome", "three.46"]); %>
+<% dependsOn( ["jquery", "bootstrap", "d3.v3", "font-awesome", "three.46", "jszip", "axios"]); %>
 
 <% image = "../images/historip_profile.jpg" %>
 <% description = "A Social Time-Machine" %>
@@ -64,6 +64,36 @@
 </div>
 <script src="/js/d3-operatable.js"></script>
 <script>
+
+  let personOccupationRaw = null;
+  let occupationRaw = null;
+
+  Promise.all([
+    axios.get('data/basic_occupation.zip', {
+      responseType: 'arraybuffer'
+      // responseType: 'blob'
+    }).then(function(res){
+      return JSZip.loadAsync(res.data).then(function (zip) {
+        return zip.file("basic_occupation.csv").async("string").then(d3.csv.parse);
+      });
+    }),
+    axios.get('data/occupation_mst.zip', {
+      responseType: 'arraybuffer'
+      // responseType: 'blob'
+    }).then(function(res){
+      return JSZip.loadAsync(res.data).then(function (zip) {
+        return zip.file("occupation_mst.csv").async("string").then(d3.csv.parse);
+      });
+    })
+  ]).then(function(results){
+    console.log(results);
+
+    personOccupationRaw = results[0];
+    occupationRaw = results[1];
+
+    console.log("json parse done!");
+  });
+
     var FRAME_COLOR = "#b45f06";
     var NOBODY_IMAGE = "data:image/jpeg;base64,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";
 
@@ -402,16 +432,36 @@
         //$("#portrait").css("background-image", "url('" + n.img + "')");
         $("#name").text(n.pname);
         $("#life").text("AD " + n.birth + " - " + n.death);
-        $("#portrait").css("background-image", "url('" + (n.noImage ? NOBODY_IMAGE : "/img/" + n.name + ".jpg") + "')");
+        $("#portrait").css("background-image", "url('" + (n.noImage ? NOBODY_IMAGE : "img/" + n.name + ".jpg") + "')");
 
-        d3.json("/query_ocp?pid=" + n.name, function (error, data) {
-            $("#ocplist").empty();
-            $("#ocptitle").text("Occupations (" + data.occupations.length + ")");
-            data.occupations.forEach(function (e, i) {
-                var ocp = $("<a href=\"#\" class=\"my-list-group-item\"></a>").text(e.name);
-                $("#ocplist").append(ocp);
-            })
+        // d3.json("/query_ocp?pid=" + n.name, function (error, data) {
+        //     $("#ocplist").empty();
+        //     $("#ocptitle").text("Occupations (" + data.occupations.length + ")");
+        //     data.occupations.forEach(function (e, i) {
+        //         var ocp = $("<a href=\"#\" class=\"my-list-group-item\"></a>").text(e.name);
+        //         $("#ocplist").append(ocp);
+        //     });
+        // });
+
+        // 'select bo.occupation_id, om.name from basic_occupation bo, occupation_mst om "
+        //" where bo.occupation_id = om.occupation_id and bo.person_id = ".$pid
+
+        var occupations = personOccupationRaw.filter(function(d){
+          return d.person_id == n.name;
+        }).map(function(d){
+          return occupationRaw.find(function(v){
+            return v.occupation_id == d.occupation_id;
+          });
         });
+        console.log(occupations);
+          $("#ocplist").empty();
+          $("#ocptitle").text("Occupations (" + occupations.length + ")");
+          occupations.forEach(function (e, i) {
+              var ocp = $("<a href=\"#\" class=\"my-list-group-item\"></a>").text(e.name);
+              $("#ocplist").append(ocp);
+          });
+
+
         var friends = getFriends(n);
         $("#friendlist").empty();
         $("#friendlist").css("height", "");
