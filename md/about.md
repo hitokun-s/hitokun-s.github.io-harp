@@ -38,4 +38,5 @@ I became a freelance <b>Full-Scratch engineer</b> after worked for enterprises f
 
 - [Tokyo University](http://www.u-tokyo.ac.jp/en/index.html)
 - [Fujisan Magazine Service](http://www.fujisan.co.jp/)
+- and several stealth startups
 
