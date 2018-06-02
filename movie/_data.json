@@ -5,6 +5,12 @@
       "img":"../images/tomatos.png",
       "title": "HOW TO PLAY TOMATOS",
       "description": "HOW TO PLAY TOMATOS"
+    },
+    {
+      "href": "abc-song.html",
+      "img":"img/epoch180.png",
+      "title": "ABC song by deep learning",
+      "description": "ABC song by deep learning"
     }
   ]
 }
