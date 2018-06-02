@@ -51,19 +51,20 @@ image{
     padding-left: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    /*margin-bottom: 20px;*/
 }
 
 #ocplist .my-list-group-item {
     position: relative;
     display: block;
     padding: 2px 30px 2px 15px;
-    /* margin-bottom: -1px; */
-    /*border: 1px solid #dddddd;*/
 }
 
 .my-list-group-item{
     border-top: 1px solid #000;
+}
+
+.my-list-group-item div{
+    line-height: 1.1;
 }
 
 .my-list-group-item > .badge {
@@ -80,15 +81,9 @@ image{
     position: relative;
     display: block;
     padding: 2px 2px 2px 2px; 
-    /* margin-bottom: -1px; */
-    background-color: #ffffff;
-    /*border: 1px solid #dddddd;*/
-}
-
-#friendlist .my-list-group-item {
+    overflow: hidden;
     height: 50px;
     background: #000;
-    /*border-top: 1px solid #fff;*/
 }
 
 #friendlist .my-list-group-item:not(:last-child){

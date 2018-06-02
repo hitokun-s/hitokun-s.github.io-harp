@@ -128,10 +128,6 @@
         //tmp_img.remove();
         return size;
     }
-    var getMaxHeightAsPix = function (elm) {
-        return elm.parent().height() * parseInt(elm.css("max-height")) / 100;
-    }
-
 
     $(function () {
         //add custom event handler
@@ -139,9 +135,9 @@
             console.log("catch slider_click event!");
             force.stop();
         });
-        $(document).bind('yearClick', function (evt, _year) {
-            console.log('caught year click!:' + _year);
-            trip(_year);
+        $(document).bind('yearClick', function (evt) {
+            console.log('caught year click!:' + evt.detail.year);
+            trip(evt.detail.year);
         });
 
         // $(document).on('event', 'selector', function() {}); replaces .live().
@@ -202,6 +198,8 @@
         );
         // centerize time handle
         $("#timehandle").css("left", ($(window).width() - $("#timehandle").width()) / 2);
+
+        $("#friendlist").css("max-height", $(window).height() - 148);
 
         $("#back_to_machine").click(function(){
             force.stop();
@@ -475,7 +473,7 @@
 
         var friends = getFriends(n);
         $("#friendlist").empty();
-        $("#friendlist").css("height", "");
+        // $("#friendlist").css("height", "");
         $("#friend_info").css("height", "");
         friends.nodes.each(function (e) {
             var img = $("<img/>").attr("src", e.img);
@@ -484,28 +482,6 @@
             $("#friendlist").append(friend);
         })
         $("#friend_cnt").text(" (" + friends.nodes.size() + ")");
-        //adjust height
-        var inner_height = $("#friendlist").innerHeight() + $("#friendlist").position().top;
-        console.log(inner_height);
-        overflow = inner_height - getMaxHeightAsPix($("#friend_info"));
-        console.log(overflow);
-        var goal_height;
-        if (overflow > 0) {
-            goal_height = $("#friendlist").height() - overflow - 4;
-//                            $("#friendlist").css("height", $("#friendlist").height() - overflow - 4);
-        } else {
-            goal_height = $("#friendlist").height() + 1;
-        }
-        console.log(goal_height);
-        $("#friendlist").css("overflow-y", "hidden");
-        $("#friendlist").css("height", 0);
-        $("#friendlist").animate(
-                {height: goal_height},
-                goal_height,
-                function () {
-                    $("#friendlist").css("overflow-y", "auto");
-                }
-        );
     }
     var sel_node;
 
