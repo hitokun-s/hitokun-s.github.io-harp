@@ -4,9 +4,10 @@
 
 <% image = "../images/historip_profile.jpg" %>
 <% description = "A Social Time-Machine" %>
+<% layout = "nolayout" %>
 
 <link href="css/historip.css" rel="stylesheet">
-<link rel="shortcut icon" href="/image/favicon.png" type="image/png">
+<link rel="shortcut icon" href="image/favicon.png" type="image/png">
 
 <script src="js/gradually.js"></script>
 
@@ -17,14 +18,36 @@
 <script src="../js/timetunnel.js"></script>
 <script src="../js/timehandle.js"></script>
 
-<style>
-    #ht-slider {
-        height: 40px;
-        position: fixed;
-        bottom: 0px;
-        width: 100%;
-    }
-</style>
+<script>
+  //add window.onload event
+  $(function() {
+    $("#frame").height($(window).height() - $("#navbar").height());
+  });
+</script>
+
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Hitokun's</a>
+      <img src="image/historip_mini.png" />
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="about">About</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
 <div id="tooltip">person name</div>
 <div id="frame">
     <div id="timetunnel"></div>
@@ -122,16 +145,6 @@
             trip(_year);
         });
 
-        // $("#friendlist .my-list-group-item").live("click",
-        //         function () {
-        //             var name = $(this).attr("id");
-        //             var node = findNodeByKey(name);
-        //             sel_family.lowlight();
-        //             sel_family.refreshOnUpload(name);
-        //             sel_family.highlight();
-        //             showPersonInfo(node);
-        //         }
-        // );
         // $(document).on('event', 'selector', function() {}); replaces .live().
         $(document).on("click", "#friendlist .my-list-group-item", function(){
           var name = $(this).attr("id");
@@ -188,7 +201,9 @@
                     }
                 }
         );
-        $("#timehandle").css("margin-left", ($(window).width() - $("#timehandle").width()) / 2);
+        // centerize time handle
+        $("#timehandle").css("left", ($(window).width() - $("#timehandle").width()) / 2);
+        $("#back_to_machine").css("top", $(window).height() - 90);
 
         $("#back_to_machine").click(function(){
             force.stop();
@@ -200,14 +215,12 @@
 
     var color = d3.scale.category20();
 
-    var year = 1200;
-
     var default_scale = 1;
     var window_w = window_h = $("#graph").width();
     var width = height = window_w * default_scale;
     var vbox_width = width;
     var vbox_height = height;
-    var year = 1200;
+    var year;
 
     var svg = d3.select('#graph')
             .append('svg')

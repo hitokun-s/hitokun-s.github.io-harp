@@ -49,7 +49,11 @@
 <%- console.log("let's include layout!", typeof(layout) != "undefined"); %>
 
 <% if(typeof(layout) != "undefined" && layout){ %>
-<%- include('layout/_' + layout) %>
+    <% if(layout != "nolayout"){ %>
+    <%- include('layout/_' + layout) %>
+    <% } else { %>
+        <%- yield %>
+    <% } %>
 <% } else { %>
 <%- include(global.libs["bootstrap"] ? 'layout/_bootstrap' :'layout/_semantic'); %>
 <% } %>

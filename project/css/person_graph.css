@@ -319,7 +319,8 @@ a.my-list-group-item.active > .badge{
     cursor:pointer;
     padding-left:4px;
     padding-right:4px;
-    bottom: 60px;
+    /*bottom: 60px;*/
+    /*top: 100px;*/
     left: 10px;
     position: absolute;
     border: solid 2px #000;
