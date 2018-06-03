@@ -1,13 +1,41 @@
-
-<% title = "Color" %>
+<% title = "Color Tones" %>
 <% dependsOn( ["vue.v2", "underscore", "axios", "d3.v4"]); %>
 
 <h1><%= title %></h1>
 
 <style>
-  svg{
+
+  @keyframes rotation {
+    from {
+      transform: perspective(550px) rotateX(70deg) rotateZ(0deg);
+    }
+    to {
+      transform: perspective(550px) rotateX(70deg) rotateZ(360deg);
+    }
+  }
+
+  svg {
     stroke: white;
     stroke-width: 5px;
+    -webkit-transition-property: transform;
+    -webkit-transition-duration: 2.5s;
+    transition-property: transform;
+    transition-duration: 2.5s;
+    transform: perspective(350px) rotateX(70deg);
+    animation-name: rotation;
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+    position: absolute;
+    top: -198px;
+    left: 72px;
+  }
+
+  .css-3d-holder {
+    transform-style: preserve-3d;
+    position: relative;
+    height: 76px;
   }
 </style>
 
@@ -15,22 +43,28 @@
   <hoge v-for="tone in tones" :data="tone" />
 </div>
 
-<svg id="hoge" width="200" height="200" ref="svg"></svg>
-
 <template id="tone-graph-template">
-  <div>
+  <div class="css-3d-holder">
     <p>{{data.name}}</p>
-    <svg width="200" height="200" ref="svg"/>
+    <svg width="400" height="400" ref="svg"/>
   </div>
-
 </template>
 
 <script>
 
+  // refs: https://medium.com/js-dojo/7-ways-to-define-a-component-template-in-vuejs-c04e0c72900d
+
   Vue.component('hoge', {
     props: ["data"],
     mounted: function(){
-      show(this.$refs.svg, this.data.colors.map(function(d){return d.code;}));
+      const svg = this.$refs.svg;
+      show(svg, this.data.colors.map(function(d){return d.code;}));
+      setTimeout(function(){
+        // d3.select(svg).style("transform", "perspective(350px) rotateX(70deg) rotateZ(60deg)");
+      }, 0);
+      d3.selectAll(".css-3d-holder").each(function(d, i){
+        d3.select(this).style("z-index", 100 -i);
+      });
     },
     template: '#tone-graph-template'
   });
@@ -50,7 +84,7 @@
 
     var path = d3.arc()
     .outerRadius(radius - 10)
-    .innerRadius(50);
+    .innerRadius(120);
 
     var label = d3.arc()
     .outerRadius(radius - 40)

@@ -1,6 +1,11 @@
 {
   "articles": [
     {
+      "href": "color-tones.html",
+      "header": "Color Tones",
+      "description": "Color Tones"
+    },
+    {
       "href": "http://hitokun-s.github.io/ht-markdown/",
       "header": "markdown",
       "description": "Online Markdown Editor"
