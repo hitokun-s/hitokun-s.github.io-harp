@@ -1,0 +1,223 @@
+<% title = "Donut CHart Animations" %>
+<% dependsOn(["d3.v3", "jquery.tmpl", "underscore"]); %>
+
+<style>
+    body{
+        min-width: 960px;
+    }
+    .arc path {
+        stroke: #fff;
+    }
+    .arc text {
+        font-size: 1em;
+    }
+</style>
+
+<h1>Donuts Chart Animations</h1>
+<div id="graph" class="row"></div>
+
+<template id="tmpl-stage">
+    <div class="panel col-sm-6">
+        <h2 class="label label-primary">${title}</h2>
+        <div id="${title}"></div>
+    </div>
+</template>
+<script>
+
+  var margin = {top: 10, right: 10, bottom: 10, left: 10};
+
+  var color = d3.scale.category10();
+
+  var pie = d3.layout.pie()
+  .startAngle(0).endAngle(Math.PI * 2)
+  .value(function (d) {
+    return d.value;
+  }).sort(null);
+
+  var showMainGraph = function (dataList, svg, opt) {
+
+    var width = opt.width;
+    var height = opt.height;
+    var radius = Math.min(width, height) / 2;
+
+    console.log("radius", radius);
+
+    var arc0 = d3.svg.arc().outerRadius(2).innerRadius(1);
+    var arc = d3.svg.arc().outerRadius(radius - 10).innerRadius(radius - 50);
+
+    svg.selectAll("*").remove();
+
+    var drawText = function(d){
+      var g = d3.select($(this).parent()[0]);
+      g.append("text")
+      .attr("transform", function (d) {
+        d.innerRadius = 0;
+        d.outerRadius = radius;
+        return "translate(" + arc.centroid(d) + ")";
+      })
+      .attr("dy", ".35em")
+      .style("text-anchor", "middle")
+      .text(function (d, i) {
+        return d.data.name;
+      });
+    }
+
+    var draw = function(data, i){
+      data.forEach(function(d, i){
+        d.color = color(i);
+      });
+
+      var baseSvg = svg.append("g").attr({
+        transform: "translate(" + (margin.left + opt.offset.x * i + radius) + "," + (margin.top + radius) + ")"
+      });
+      var g = baseSvg.selectAll(".arc")
+      .data(pie(data))
+      .enter().append("g")
+      .attr("class", "arc");
+
+      if(opt.arcTween){
+        g.append("path")
+        .attr("fill", function (d, i) {
+          return d.data.color;
+        })
+        .transition()
+        .duration(1000)
+        .attrTween("d", function(d){
+          var interpolate = d3.interpolate(
+              { startAngle : 0, endAngle : 0 },
+              { startAngle : d.startAngle, endAngle : d.endAngle }
+          );
+          return function(t){
+            return arc(interpolate(t));
+          }
+        }).each("end", drawText);
+      }
+      if(opt.fadeIn){
+        g.append("path")
+        .attr("d", arc)
+        .style("opacity", 0)
+        .attr("fill", function (d, i) {
+          return d.data.color;
+        }).transition().duration(1000).style("opacity", 1)
+        .each("end", drawText);
+      }
+      if(opt.spread){
+        g.append("path")
+        .attr("d", arc0)
+        .attr("fill", function (d, i) {
+          return d.data.color;
+        })
+        .transition().duration(800)
+        .attr("d", arc)
+        .each("end", drawText);
+      }
+      if(opt.spinSpread){
+        var ori_transform = baseSvg.attr("transform");
+        baseSvg.attr("transform", ori_transform + " rotate(-180)")
+        .transition().duration(800)
+        .attr("transform", ori_transform);
+        g.append("path")
+        .attr("d", arc0)
+        .attr("fill", function (d, i) {
+          return d.data.color;
+        })
+        .transition().duration(800)
+        .attr("d", arc)
+        .each("end", drawText);
+      }
+      if(opt.spinIn){
+        var path = g.append("path").attr("d", arc);
+        var cover = baseSvg.selectAll(".cover")
+        .data(pie([
+          {value:1},{value:1},{value:1},{value:1}
+        ]))
+        .enter().append("g")
+        .attr("class", "cover").append("path").attr("d", arc).attr("fill", "white")
+        .transition()
+        .duration(800)
+        .attrTween("d", function(d){
+          var interpolate = d3.interpolate(
+              { startAngle : d.startAngle, endAngle : d.endAngle },
+              { startAngle : d.startAngle, endAngle : d.startAngle }
+          );
+          return function(t){
+            return arc(interpolate(t));
+          }
+        })
+
+        path.attr("fill", function (d, i) {
+          return d.data.color;
+        }).each(drawText);
+      }
+      if(opt.slide){
+        var ori_transform = baseSvg.attr("transform");
+        baseSvg.attr("transform", "translate(" + (margin.left + opt.offset.x * 3 + radius ) + "," + (margin.top + radius) + ")")
+        .transition()
+        .duration(800 / (i + 1))
+        .attr("transform", ori_transform);
+        var path = g.append("path").attr("d", arc).attr("fill", function (d, i) {
+          return d.data.color;
+        }).each(drawText);
+      }
+    }
+
+    dataList.forEach(function(data, i){
+      setTimeout(function(){
+        draw(data, i)
+      }, i * 1000);
+    });
+  };
+
+  var data = [
+    [
+      {name: "A", value: 300},
+      {name: "B", value: 250},
+      {name: "C", value: 200},
+      {name: "D", value: 150},
+      {name: "E", value: 100}
+    ],
+    [
+      {name: "A", value: 250},
+      {name: "B", value: 200},
+      {name: "C", value: 100},
+      {name: "D", value: 80},
+      {name: "E", value: 60}
+    ],
+    [
+      {name: "A", value: 200},
+      {name: "B", value: 180},
+      {name: "C", value: 100},
+      {name: "D", value: 90},
+      {name: "E", value: 80}
+    ],
+  ]
+
+  $(function () {
+
+    [
+      {title: "Tween", opt: {arcTween: true}},
+      {title: "FadeIn", opt: {fadeIn:true}},
+      {title: "Spread", opt: {spread:true}},
+      {title: "Spin-Spread", opt: {spinSpread:true}},
+      {title: "SpinIn", opt: {spinIn:true}},
+      {title: "Slide", opt: {slide:true}},
+    ].forEach(function (d) {
+      var elm = $.tmpl($('#tmpl-stage'), {title: d.title});
+      $("#graph").append(elm);
+
+      var w = $(".panel").width();
+      var h = $(".panel").width()/3;
+
+      var svg = d3.select("#" + d.title).append("svg").attr({
+        width: w,
+        height: h,
+      });
+
+      showMainGraph(data, svg, $.extend({
+        width: w - margin.left - margin.right,
+        height: h - margin.top - margin.bottom,
+        offset:{x: h}
+      }, d.opt));
+    });
+  })
+</script>

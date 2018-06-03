@@ -1,0 +1,17 @@
+<% title = "Demo Charts" %>
+
+<h1><i class="student icon"></i>Demo Charts</h1>
+
+<div class="row">
+    <div class="ui link cards">
+        <% for(var article of public.demo.chart._data.articles){ %>
+        <a href="<%= article.href %>" class="card ui raised">
+            <div class="content">
+                <div class="header"><%= article.header %></div>
+            </div>
+        </a>
+        <% } %>
+    </div>
+</div>
+
+</div>

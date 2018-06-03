@@ -1,0 +1,185 @@
+<% title = "Donut Chart Containing Negative Value" %>
+<% dependsOn(["d3.v3", "underscore"]); %>
+
+    <style>
+        #graph,#graph2{
+            /*position: fixed;*/
+            z-index: 10;
+            width: 500px;
+            height: 500px;
+            background-color: white;
+            /*top:0px;*/
+            /*left: 0px;*/
+            font: 10px sans-serif;
+        }
+
+        .tt {
+            visibility: visible;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .arc path {
+            stroke: #fff;
+        }
+
+        .arc text {
+            font-size: 2em;
+        }
+
+        .arcOuter path {
+            stroke: #fff;
+        }
+
+        .arcOuter text {
+            font-size: 2em;
+        }
+        h2{
+            display: inline-block;
+            border:1px solid black;
+            border-radius: 3px;
+            padding:2px;
+        }
+
+    </style>
+
+    <h1>Donut Chart Containing Negative Value</h1>
+    <div class="row">
+        <div id="graph" class="col-sm-6"><h2>Pattern 1</h2></div>
+        <div id="graph2" class="col-sm-6"><h2>Pattern 2</h2></div>
+    </div>
+<script>
+    var svg;
+
+    var margin = {top: 30, right: 40, bottom: 100, left: 100};
+    var width = $("#graph").width() - margin.left - margin.right;
+    var height = $("#graph").height() - margin.top - margin.bottom;
+    var radius = Math.min($("#graph").width(), $("#graph").height()) / 2;
+
+    var color = d3.scale.category10();
+
+    var showMainGraph = function (data, baseSvg, opt, arcs) {
+
+        baseSvg.selectAll("*").remove();
+        var pie = d3.layout.pie()
+                .startAngle(0).endAngle(Math.PI * 2)
+                .value(function (d) {
+                    return d.total;
+                }).sort(null);
+        var pieData = pie(data);
+        console.log("radius", radius);
+        console.log(pieData);
+
+        data.forEach(function(d, i){
+            d.color = color(i);
+        });
+
+        baseSvg.attr("transform", "translate(" + radius + "," + radius + ")");
+        var g = baseSvg.selectAll(".arc")
+                .data(pieData)
+                .enter().append("g")
+                .attr("class", "arc");
+
+        g.append("path")
+                .attr("d", function(d, i){
+                    return arcs[i](d);
+                })
+                .attr("fill", function (d, i) {
+                    return d.data.color;
+                });
+        g.append("text")
+                .attr("transform", function (d, i) {
+                    d.innerRadius = 0;
+                    d.outerRadius = radius;
+                    return "translate(" + arcs[i].centroid(d) + ")";
+                })
+                .attr("dy", ".35em")
+                .style("text-anchor", "middle")
+                .text(function (d, i) {
+                    return d.data.name;
+                });
+
+        [radius - 50,radius - 90,radius - 130,radius - 170].forEach(function(r){
+            baseSvg.append("circle").attr({
+                x:0,
+                y:0,
+                r:r,
+                fill:"none",
+//                "stroke-dasharray":"3 3",
+                stroke:"gray"
+            });
+        });
+
+    };
+
+    $(function () {
+
+        var data = [
+            {
+                name: "A",
+                total: 300
+            },
+            {
+                name: "B",
+                total: -50
+            },
+            {
+                name: "C",
+                total: 200
+            },
+            {
+                name: "D",
+                total: 150
+            },
+            {
+                name: "E",
+                total: 100
+            },
+            {
+                name: "F",
+                total: 50
+            },
+            {
+                name: "G",
+                total: 30
+            },
+        ]
+
+        var arc1 = d3.svg.arc().outerRadius(radius - 50).innerRadius(radius - 90),
+                arc2 = d3.svg.arc().outerRadius(radius - 90).innerRadius(radius - 130),
+                arc3 = d3.svg.arc().outerRadius(radius - 130).innerRadius(radius - 170)
+
+        var g = d3.select("#graph").append("svg").attr({
+            class: "tt",
+            width: $("#graph").width(),
+            height: $("#graph").height()
+        }).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        showMainGraph(data, g, {
+            width: width,
+            height: height
+        },[
+            arc1,arc2,arc3,arc2,arc1,arc1,arc1
+        ]);
+
+        var g2 = d3.select("#graph2").append("svg").attr({
+            class: "tt",
+            width: $("#graph").width(),
+            height: $("#graph").height()
+        }).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        showMainGraph(data, g2, {
+            width: width,
+            height: height
+        },[
+            arc2,arc1,arc3,arc2,arc2,arc2,arc2
+        ]);
+
+    })
+
+</script>
