@@ -26,13 +26,14 @@
     </div>
     <div id="btn-sidebar" class="ui right floated"><i class="icon large grey content"></i></div>
 </div>
-<div id="navbar" class="ui thin vertical inverted {{ isMobile ? 'top':'left visible'}} sidebar menu">
+<!--<div id="navbar" class="ui thin vertical inverted {{ isMobile ? 'top':'left visible'}} sidebar menu">-->
+<div id="navbar" class="ui thin vertical inverted left visible sidebar menu">
     <a class="item">
         <h2>Hitokun's</h2>
     </a>
     <div id="breadcrumb">
         <template v-for="item in getMenu()">
-            <a href="{{ item.path }}" class="item"><i class="right chevron icon divider"></i>{{ item.name }}</a>
+            <a :href="item.path" class="item"><i class="right chevron icon divider"></i>{{ item.name }}</a>
         </template>
     </div>
     <div class="bio mobile hidden">
@@ -44,7 +45,8 @@
         </a>
     </div>
 </div>
-<div id="content" class="pusher" style="{{ isMobile ? 'padding-top: 40px !important;' : ''}}">
+<!--<div id="content" class="pusher" style="{{ isMobile ? 'padding-top: 40px !important;' : ''}}">-->
+<div id="content" class="pusher">
     <%- yield %>
 </div>
 <script>
