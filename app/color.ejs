@@ -1,0 +1,99 @@
+
+<% title = "Color" %>
+<% dependsOn( ["vue.v2", "underscore", "axios", "d3.v4"]); %>
+
+<h1><%= title %></h1>
+
+<style>
+  svg{
+    stroke: white;
+    stroke-width: 5px;
+  }
+</style>
+
+<div id="stage">
+  <hoge v-for="tone in tones" :data="tone" />
+</div>
+
+<svg id="hoge" width="200" height="200" ref="svg"></svg>
+
+<template id="tone-graph-template">
+  <div>
+    <p>{{data.name}}</p>
+    <svg width="200" height="200" ref="svg"/>
+  </div>
+
+</template>
+
+<script>
+
+  Vue.component('hoge', {
+    props: ["data"],
+    mounted: function(){
+      show(this.$refs.svg, this.data.colors.map(function(d){return d.code;}));
+    },
+    template: '#tone-graph-template'
+  });
+
+  const show = function(elm, colors){
+    var svg = d3.select(elm),
+        width = +svg.attr("width"),
+        height = +svg.attr("height"),
+        radius = Math.min(width, height) / 2,
+        g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+    var color = d3.scaleOrdinal(colors);
+
+    var pie = d3.pie()
+    .sort(null)
+    .value(function(d) { return 1; });
+
+    var path = d3.arc()
+    .outerRadius(radius - 10)
+    .innerRadius(50);
+
+    var label = d3.arc()
+    .outerRadius(radius - 40)
+    .innerRadius(radius - 40);
+
+    var arc = g.selectAll(".arc")
+    .data(pie(colors))
+    .enter().append("g")
+    .attr("class", "arc");
+
+    arc.append("path")
+    .attr("d", path)
+    .attr("visibility", "hidden")
+    .attr("fill", function(d) { return d.data; })
+    .transition()
+    .delay(function(d, i) {
+      return i * 40;
+    })
+    .attr("visibility", "visible")
+    //
+    // arc.append("text")
+    // .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
+    // .attr("dy", "0.35em")
+    // .text(function(d) { return d.data.age; });
+
+  }
+
+
+</script>
+
+<div id="main" class="ui">
+</div>
+
+<!--<script  src="sinhalese/dist/main.js"></script>-->
+
+<script>
+    axios.get("data/tones.json").then(function(res){
+      console.log(res.data);
+      new Vue({
+        el: "#stage",
+        data: {
+          tones: res.data
+        }
+      });
+    })
+</script>
