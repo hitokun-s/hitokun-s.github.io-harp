@@ -50,8 +50,14 @@
     transform-style: preserve-3d;
     position: relative;
     height: 76px;
+    -webkit-transition-property: margin;
+    -webkit-transition-duration: 2.5s;
+    transition-property: margin;
+    transition-duration: 0.5s;
   }
 
+  /* customize scroll bar */
+  /* refs: https://codepen.io/devstreak/pen/dMYgeO */
   .scrollbar::-webkit-scrollbar-track
   {
     /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);*/
@@ -72,11 +78,15 @@
     background-color: grey;
   }
 
+  svg text {
+    font-family: FontAwesome;
+  }
+
 
 </style>
 
 <div class="ui grid" id="stage">
-  <div class="eight wide column scrollbar" style="overflow-y: scroll;overflow-x: hidden;">
+  <div class="eight wide column scrollbar" style="overflow-y: scroll;overflow-x: hidden;height:100%">
     <div>
       <hoge v-for="(tone, index) in tones" :data="tone" :index="index" v-bind:test.sync="targetColor" />
     </div>
@@ -92,8 +102,7 @@
 <template id="tone-graph-template">
   <div class="css-3d-holder">
     <p class="tone-name">{{data.name}}</p>
-    <i class="fa fa-redo-alt" v-on:click="fuga"></i>
-    <svg class="tone-ring" width="400" height="400" ref="svg"/>
+    <svg class="tone-ring" width="400" height="400" ref="svg" />
   </div>
 </template>
 
@@ -120,7 +129,6 @@
       rotate: function(deg){
         const svg = d3.select(this.$refs.svg);
         const reg = svg.style("transform").match(/rotateZ\((\d+)deg\)/);
-        console.log(reg);
         if(reg){
           const rotateZ = (+reg[1]) + deg;
           console.log(reg.input.replace(reg[0], "rotateZ(" + rotateZ + ")"));
@@ -134,6 +142,18 @@
             height = +svg.attr("height"),
             radius = Math.min(width, height) / 2,
             g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        d3.select(self.$el).on("mouseover", function(){
+          d3.select(self.$el)
+          .style("margin-top", +self.index > 0 ? "80px": "0px")
+          .style("margin-bottom", "80px")
+          .style("z-index", 100);
+        }).on("mouseout", function(){
+          d3.select(self.$el)
+          .style("margin-top", "0px")
+          .style("margin-bottom", "0px")
+          .style("z-index", 100 - (+self.index));
+        }).on("dblclick", self.fuga);
 
         var color = d3.scaleOrdinal(colors);
 
@@ -153,18 +173,6 @@
         .data(pie(colors))
         .enter().append("g")
         .attr("class", "arc");
-
-        arc.call(d3.drag()
-        .on("start", function(d){
-          console.log(d3.mouse(this));
-          d.x = d3.mouse(this)[0];
-        })
-        .on("drag", function(d){
-          console.log(d3.mouse(this));
-        })
-        .on("end", function(){
-          console.log("drag end");
-        }));
 
         arc.append("path")
         .attr("d", path)
@@ -216,7 +224,7 @@
           //   d3.select(svg).style("transform", "perspective(550px) rotateX(70deg) rotateZ(360deg)");
           // }, 0);
           d3.selectAll(".css-3d-holder").each(function(d, i){
-            d3.select(this).style("z-index", 100 -i);
+            d3.select(this).style("z-index", 100 - i);
           });
         }
       });
