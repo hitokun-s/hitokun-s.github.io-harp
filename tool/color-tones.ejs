@@ -5,14 +5,14 @@
 
 <style>
 
-  @keyframes rotation {
-    from {
-      transform: perspective(550px) rotateX(70deg) rotateZ(0deg);
-    }
-    to {
-      transform: perspective(550px) rotateX(70deg) rotateZ(360deg);
-    }
-  }
+  /*@keyframes rotation {*/
+    /*from {*/
+      /*transform: perspective(550px) rotateX(70deg) rotateZ(0deg);*/
+    /*}*/
+    /*to {*/
+      /*transform: perspective(550px) rotateX(70deg) rotateZ(360deg);*/
+    /*}*/
+  /*}*/
 
   .tone-name{
     top: 33px;
@@ -81,27 +81,32 @@
   svg text {
     font-family: FontAwesome;
   }
-
-
+  
 </style>
 
 <div class="ui grid" id="stage">
   <div class="eight wide column scrollbar" style="overflow-y: scroll;overflow-x: hidden;height:100%">
     <div>
-      <hoge v-for="(tone, index) in tones" :data="tone" :index="index" v-bind:test.sync="targetColor" />
+      <hoge v-for="(tone, index) in tones" :data="tone" :index="index" v-bind:main.sync="mainColor" v-bind:accent.sync="accentColor" />
     </div>
   </div>
   <div class="eight wide column">
-    <svg width="200" height="200" >
-      <rect width="200" height="200" :fill="targetColor" />
+    <p>main color</p>
+    <svg width="200" height="100" >
+      <rect width="200" height="100" :fill="mainColor" />
     </svg>
-    {{targetColor}}
+    {{mainColor}}
+    <p>accent color</p>
+    <svg width="200" height="100" >
+      <rect width="200" height="100" :fill="accentColor" />
+    </svg>
+    {{accentColor}}
   </div>
 </div>
 
 <template id="tone-graph-template">
   <div class="css-3d-holder">
-    <p class="tone-name">{{data.name}}</p>
+    <p class="tone-name" v-html="toMultiLines(data.name)"></p>
     <svg class="tone-ring" width="400" height="400" ref="svg" />
   </div>
 </template>
@@ -114,15 +119,27 @@
 
   Vue.component('hoge', {
     props: ["data", "index"],
+    data: function(){
+      return {
+        colors: this.data.colors.map(function(d){return d.code;})
+      }
+    },
     mounted: function(){
       const svg = this.$refs.svg;
-      this.show(svg, this.data.colors.map(function(d){return d.code;}));
+      // this.show(svg, this.data.colors.map(function(d){return d.code;}));
+      this.show();
       setTimeout(function(){
         d3.select(svg).style("transform", "perspective(550px) rotateX(70deg) rotateZ(60deg)");
       }, this.index * 150);
     },
     template: '#tone-graph-template',
     methods: {
+      toMultiLines: function(text){
+        return text.split(" ").join("<br>");
+      },
+      getComplementary: function(colorCode){
+        return this.colors[(this.colors.indexOf(colorCode) + this.colors.length / 2) % this.colors.length];
+      },
       fuga: function(){
         this.rotate(60);
       },
@@ -135,9 +152,9 @@
           svg.style("transform", reg.input.replace(reg[0], "rotateZ(" + rotateZ + "deg)"));
         }
       },
-      show: function(elm, colors){
+      show: function(){
         const self = this;
-        var svg = d3.select(elm),
+        var svg = d3.select(this.$refs.svg),
             width = +svg.attr("width"),
             height = +svg.attr("height"),
             radius = Math.min(width, height) / 2,
@@ -155,7 +172,7 @@
           .style("z-index", 100 - (+self.index));
         }).on("dblclick", self.fuga);
 
-        var color = d3.scaleOrdinal(colors);
+        var color = d3.scaleOrdinal(this.colors);
 
         var pie = d3.pie()
         .sort(null)
@@ -170,7 +187,7 @@
         .innerRadius(radius - 40);
 
         var arc = g.selectAll(".arc")
-        .data(pie(colors))
+        .data(pie(this.colors))
         .enter().append("g")
         .attr("class", "arc");
 
@@ -179,8 +196,9 @@
         // .attr("visibility", "hidden")
         .attr("fill", function(d) { return d.data; })
         .on("click", function(d){
-          console.log(d.data);
-          self.$emit('update:test', d.data);
+          self.$emit('update:main', d.data);
+          console.log("getComplementary", self.getComplementary(d.data));
+          self.$emit('update:accent', self.getComplementary(d.data));
         });
         // .on("mouseover", function(){
         //   d3.select(this).classed("active", true);
@@ -217,7 +235,8 @@
         el: "#stage",
         data: {
           tones: res.data,
-          targetColor: null
+          mainColor: null, 
+          accentColor: null
         },
         mounted: function(){
           // setTimeout(function(){
