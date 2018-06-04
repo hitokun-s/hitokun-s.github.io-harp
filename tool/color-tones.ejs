@@ -1,5 +1,5 @@
 <% title = "Color Tones" %>
-<% dependsOn( ["vue.v2", "underscore", "axios", "d3.v4"]); %>
+<% dependsOn( ["vue.v2", "underscore", "axios", "d3.v4", "font-awesome"]); %>
 
 <h1><%= title %></h1>
 
@@ -14,22 +14,36 @@
     }
   }
 
-  svg {
+  .tone-name{
+    top: 33px;
+    position: absolute;
+  }
+  i{
+    cursor: pointer;
+  }
+
+  svg.tone-ring {
     stroke: white;
     stroke-width: 5px;
     -webkit-transition-property: transform;
     -webkit-transition-duration: 2.5s;
     transition-property: transform;
-    transition-duration: 2.5s;
-    transform: perspective(350px) rotateX(70deg);
-    animation-name: rotation;
-    animation-duration: 8s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
+    transition-duration: 0.5s;
+    transform: perspective(550px) rotateX(70deg) rotateZ(0deg);
+    /*animation-name: rotation;*/
+    /*animation-duration: 8s;*/
+    /*animation-iteration-count: infinite;*/
+    /*animation-timing-function: linear;*/
 
     position: absolute;
-    top: -198px;
+    top: -163px;
     left: 72px;
+  }
+  svg.tone-ring path{
+    cursor: pointer;
+  }
+  path.active{
+    stroke: red;
   }
 
   .css-3d-holder {
@@ -37,81 +51,149 @@
     position: relative;
     height: 76px;
   }
+
+  .scrollbar::-webkit-scrollbar-track
+  {
+    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);*/
+    border-radius: 10px;
+    background-color: #F5F5F5;
+  }
+
+  .scrollbar::-webkit-scrollbar
+  {
+    width: 12px;
+    background-color: #F5F5F5;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb
+  {
+    border-radius: 10px;
+    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);*/
+    background-color: grey;
+  }
+
+
 </style>
 
-<div id="stage">
-  <hoge v-for="tone in tones" :data="tone" />
+<div class="ui grid" id="stage">
+  <div class="eight wide column scrollbar" style="overflow-y: scroll;overflow-x: hidden;">
+    <div>
+      <hoge v-for="(tone, index) in tones" :data="tone" :index="index" v-bind:test.sync="targetColor" />
+    </div>
+  </div>
+  <div class="eight wide column">
+    <svg width="200" height="200" >
+      <rect width="200" height="200" :fill="targetColor" />
+    </svg>
+    {{targetColor}}
+  </div>
 </div>
 
 <template id="tone-graph-template">
   <div class="css-3d-holder">
-    <p>{{data.name}}</p>
-    <svg width="400" height="400" ref="svg"/>
+    <p class="tone-name">{{data.name}}</p>
+    <i class="fa fa-redo-alt" v-on:click="fuga"></i>
+    <svg class="tone-ring" width="400" height="400" ref="svg"/>
   </div>
 </template>
 
 <script>
 
+  $("#stage").height($(window).height() - $("#stage").position().top);
+
   // refs: https://medium.com/js-dojo/7-ways-to-define-a-component-template-in-vuejs-c04e0c72900d
 
   Vue.component('hoge', {
-    props: ["data"],
+    props: ["data", "index"],
     mounted: function(){
       const svg = this.$refs.svg;
-      show(svg, this.data.colors.map(function(d){return d.code;}));
+      this.show(svg, this.data.colors.map(function(d){return d.code;}));
       setTimeout(function(){
-        // d3.select(svg).style("transform", "perspective(350px) rotateX(70deg) rotateZ(60deg)");
-      }, 0);
-      d3.selectAll(".css-3d-holder").each(function(d, i){
-        d3.select(this).style("z-index", 100 -i);
-      });
+        d3.select(svg).style("transform", "perspective(550px) rotateX(70deg) rotateZ(60deg)");
+      }, this.index * 150);
     },
-    template: '#tone-graph-template'
+    template: '#tone-graph-template',
+    methods: {
+      fuga: function(){
+        this.rotate(60);
+      },
+      rotate: function(deg){
+        const svg = d3.select(this.$refs.svg);
+        const reg = svg.style("transform").match(/rotateZ\((\d+)deg\)/);
+        console.log(reg);
+        if(reg){
+          const rotateZ = (+reg[1]) + deg;
+          console.log(reg.input.replace(reg[0], "rotateZ(" + rotateZ + ")"));
+          svg.style("transform", reg.input.replace(reg[0], "rotateZ(" + rotateZ + "deg)"));
+        }
+      },
+      show: function(elm, colors){
+        const self = this;
+        var svg = d3.select(elm),
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            radius = Math.min(width, height) / 2,
+            g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        var color = d3.scaleOrdinal(colors);
+
+        var pie = d3.pie()
+        .sort(null)
+        .value(function(d) { return 1; });
+
+        var path = d3.arc()
+        .outerRadius(radius - 10)
+        .innerRadius(120);
+
+        var label = d3.arc()
+        .outerRadius(radius - 40)
+        .innerRadius(radius - 40);
+
+        var arc = g.selectAll(".arc")
+        .data(pie(colors))
+        .enter().append("g")
+        .attr("class", "arc");
+
+        arc.call(d3.drag()
+        .on("start", function(d){
+          console.log(d3.mouse(this));
+          d.x = d3.mouse(this)[0];
+        })
+        .on("drag", function(d){
+          console.log(d3.mouse(this));
+        })
+        .on("end", function(){
+          console.log("drag end");
+        }));
+
+        arc.append("path")
+        .attr("d", path)
+        // .attr("visibility", "hidden")
+        .attr("fill", function(d) { return d.data; })
+        .on("click", function(d){
+          console.log(d.data);
+          self.$emit('update:test', d.data);
+        });
+        // .on("mouseover", function(){
+        //   d3.select(this).classed("active", true);
+        // })
+        // .on("mouseout", function(){
+        //   d3.select(this).classed("active", false);
+        // });
+        // .transition()
+        // .delay(function(d, i) {
+        //   return i * 40;
+        // })
+        // .attr("visibility", "visible")
+        //
+        // arc.append("text")
+        // .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
+        // .attr("dy", "0.35em")
+        // .text(function(d) { return d.data.age; });
+
+      }
+    }
   });
-
-  const show = function(elm, colors){
-    var svg = d3.select(elm),
-        width = +svg.attr("width"),
-        height = +svg.attr("height"),
-        radius = Math.min(width, height) / 2,
-        g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-    var color = d3.scaleOrdinal(colors);
-
-    var pie = d3.pie()
-    .sort(null)
-    .value(function(d) { return 1; });
-
-    var path = d3.arc()
-    .outerRadius(radius - 10)
-    .innerRadius(120);
-
-    var label = d3.arc()
-    .outerRadius(radius - 40)
-    .innerRadius(radius - 40);
-
-    var arc = g.selectAll(".arc")
-    .data(pie(colors))
-    .enter().append("g")
-    .attr("class", "arc");
-
-    arc.append("path")
-    .attr("d", path)
-    .attr("visibility", "hidden")
-    .attr("fill", function(d) { return d.data; })
-    .transition()
-    .delay(function(d, i) {
-      return i * 40;
-    })
-    .attr("visibility", "visible")
-    //
-    // arc.append("text")
-    // .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
-    // .attr("dy", "0.35em")
-    // .text(function(d) { return d.data.age; });
-
-  }
-
 
 </script>
 
@@ -126,7 +208,16 @@
       new Vue({
         el: "#stage",
         data: {
-          tones: res.data
+          tones: res.data,
+          targetColor: null
+        },
+        mounted: function(){
+          // setTimeout(function(){
+          //   d3.select(svg).style("transform", "perspective(550px) rotateX(70deg) rotateZ(360deg)");
+          // }, 0);
+          d3.selectAll(".css-3d-holder").each(function(d, i){
+            d3.select(this).style("z-index", 100 -i);
+          });
         }
       });
     })
