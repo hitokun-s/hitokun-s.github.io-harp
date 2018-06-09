@@ -2,6 +2,9 @@
 <% dependsOn("p5"); %>
 
 <% description = "Sphere Rotation using p5.js" %>
+<% keywords = "sphere,skeleton,p5.js" %>
+<% image = "demo/img/skeleton-sphere.png" %>
+<% url = "demo/skeleton-sphere.html" %>
 
 <h1><%= title %></h1>
 <div id='myContainer'></div>
@@ -9,30 +12,42 @@
 <script>
 
   function setup() {
-    var canvas = createCanvas($("#myContainer").width(), 500, WEBGL);
+    var width = $("#myContainer").width();
+    var height = 500;
+    var canvas = createCanvas(width, height, WEBGL);
     canvas.parent("#myContainer");
+    ortho();
 
-    fill(0)
+    fill(0);
+    var c = orbitControl();
+    console.log(c);
   }
 
+  var radius = 200;
+
+  // refs: https://qiita.com/hp0me/items/1570694d9f61368f3ae6
+  // ortho(): https://processing.org/reference/ortho_.html
+
   function draw() {
+    orbitControl();
+
     background(255);
     var _frameCount = frameCount;
     rotateX(-0.6);
 
     for(var i = -9;i < 9;i++){
       push();
-      rotateY(_frameCount * 0.02 + Math.PI * 2 * i / 18);
-      torus(100, 1, 48, 16);
+      rotateY(_frameCount * 0.02 + TWO_PI * 2 * i / 18);
+      torus(radius, 1, 48, 16);
       pop();
     }
-    rotateX(Math.PI / 2);
-    torus(100, 1, 48, 16);
+    rotateX(HALF_PI);
+    torus(radius, 1, 48, 16);
 
     for(var i = -8;i < 9;i++){
       push();
-      translate(0,0,Math.sin((Math.PI / 2) * i / 9) * 100);
-      torus(Math.cos((Math.PI / 2) * i / 9) * 100, 1, 48, 16);
+      translate(0,0,Math.sin((HALF_PI) * i / 9) * radius);
+      torus(Math.cos((HALF_PI) * i / 9) * radius, 1, 48, 16);
       pop();
     }
   }
