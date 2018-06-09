@@ -1,0 +1,40 @@
+<% title = "Skeleton Sphere" %>
+<% dependsOn("p5"); %>
+
+<% description = "Sphere Rotation using p5.js" %>
+
+<h1><%= title %></h1>
+<div id='myContainer'></div>
+
+<script>
+
+  function setup() {
+    var canvas = createCanvas($("#myContainer").width(), 500, WEBGL);
+    canvas.parent("#myContainer");
+
+    fill(0)
+  }
+
+  function draw() {
+    background(255);
+    var _frameCount = frameCount;
+    rotateX(-0.6);
+
+    for(var i = -9;i < 9;i++){
+      push();
+      rotateY(_frameCount * 0.02 + Math.PI * 2 * i / 18);
+      torus(100, 1, 48, 16);
+      pop();
+    }
+    rotateX(Math.PI / 2);
+    torus(100, 1, 48, 16);
+
+    for(var i = -8;i < 9;i++){
+      push();
+      translate(0,0,Math.sin((Math.PI / 2) * i / 9) * 100);
+      torus(Math.cos((Math.PI / 2) * i / 9) * 100, 1, 48, 16);
+      pop();
+    }
+  }
+
+</script>

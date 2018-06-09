@@ -1,6 +1,12 @@
 {
   "articles": [
     {
+      "href": "skeleton-sphere.html",
+      "header": "Skeleton Sphere",
+      "img": "img/skeleton-sphere.png",
+      "description": "Skeleton Sphere by p5.js"
+    },
+    {
       "href": "auto-shape.html",
       "header": "Auto Shape",
       "img": "../images/auto_shape.png",
