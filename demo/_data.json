@@ -3,7 +3,7 @@
     {
       "href": "skeleton-sphere.html",
       "header": "Skeleton Sphere",
-      "img": "img/skeleton-sphere.png",
+      "img": "/demo/img/skeleton-sphere.png",
       "description": "Skeleton Sphere by p5.js"
     },
     {

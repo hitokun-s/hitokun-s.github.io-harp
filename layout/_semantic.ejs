@@ -33,7 +33,7 @@
 </div>
 <br>
 <div class="ui container">
-    <div class="ui big breadcrumb" id="breadcrumb">
+    <div class="ui big breadcrumb" id="breadcrumb" v-if="!isHome()">
         <template v-for="item in getMenu()">
             <a :href="item.path" class="section">{{ item.name }}</a>
             <i class="right chevron icon divider"></i>
@@ -57,7 +57,11 @@
                     res.push({name: path || "Home", path: totalPath})
                 }
                 return res;
-            }    
+            },
+            isHome: function(){
+              console.log(window.location.pathname);
+              return window.location.pathname == "/";
+            }
         },
         components: {
         }
