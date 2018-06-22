@@ -1,8 +1,6 @@
 About me
 ===
 
-<img id="face" src="img/face-color.jpg"/> 
-
 Hi, I'm Hitoshi Wada.  
 Thank you for visiting my homepage!  
 I became a freelance <b>Full-Scratch engineer</b> after worked for enterprises for several years.  

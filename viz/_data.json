@@ -1,7 +1,33 @@
 {
-  "articles":[
-    {"href":"coffee-chains-map-jp.html", "title":"Coffee Chains Location Map in Japan", "img":"img/coffee-chains-map-jp.png"},
-    {"href":"starbucks-latte-index-map.html", "title":"Starbucks Latte Index Map", "img":"img/starbucks-latte-index.png", "description": "Starbucks Latte Index map by country"},
-    {"href":"dogs-and-cats-killed-in-japan-2016.html", "title":"Dogs and Cats killed in Japan(2016)", "img":"img/dogs_and_cats_killed_in_japan_2016.png"}
+  "articles": [
+    {
+      "href": "coffee-chains-map-jp.html",
+      "title": "Coffee Chains Location Map in Japan",
+      "img": "img/coffee-chains-map-jp.png"
+    },
+    {
+      "href": "starbucks-latte-index-map.html",
+      "title": "Starbucks Latte Index Map",
+      "img": "img/starbucks-latte-index.png",
+      "description": "Starbucks Latte Index map by country"
+    },
+    {
+      "href": "africa-gdp-per-capita-2017.html",
+      "title": "Africa GDP per capita(2017)",
+      "img": "img/Africa_GDP_per_capita_2017.png"
+    },
+    {
+      "href": "dogs-and-cats-killed-in-japan-2016.html",
+      "title": "Dogs and Cats killed in Japan(2016)",
+      "img": "img/dogs_and_cats_killed_in_japan_2016.png"
+    },
+    {
+      "href": "avoid-overlapping-between-texts-1.html",
+      "title": "avoid-overlapping-between-texts-1"
+    },
+    {
+      "href": "avoid-overlapping-between-texts-2.html",
+      "title": "avoid-overlapping-between-texts-2"
+    }
   ]
 }

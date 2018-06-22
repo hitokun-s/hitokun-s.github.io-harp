@@ -1,0 +1,202 @@
+<% title = "Visualizations" %>
+<% dependsOn(["d3.v4", "leaflet", "vue.v2"]) %>
+
+<p>leaflet + leaflet label</p>
+<div id="map0" class="map"></div>
+
+<p>leaflet + mapbox(light-v9)</p>
+<div id="map1" class="map"></div>
+
+<p>leftlet + d3.js label</p>
+<div id="map2" class="map"></div>
+
+<p>pure d3.js</p>
+<div id="map3" class="map"></div>
+
+<style>
+    .map{
+        height: 400px;
+        margin-bottom: 10px;
+    }
+    svg path{
+      stroke:#fff;
+      stroke-width: 0.5px;
+    }
+    svg text{
+        text-anchor: middle;
+        dominant-baseline: middle;
+    }
+    .label{
+        text-align: center;
+    }
+    #map3 svg{
+        background: #ddd;
+    }
+    #map3 path{
+        stroke-opacity: 1;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: rgb(51, 136, 255);
+        fill-opacity: 0.2;
+        fill-rule: evenodd;
+    }
+    #map3 g{
+      font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+    }
+</style>
+<script>
+  var maps = ["map0", "map1","map2"].map(function(id){
+    return new L.Map(id, {
+      'center': [0, 0],
+      'zoom': 2
+    });
+  });
+
+  var createOnEachFeature = function(map){
+    return function(feature, layer) {
+      var label = L.marker(layer.getBounds().getCenter(), {
+        icon: L.divIcon({
+          className: 'label',
+          html: feature.properties.name,
+          iconSize: [100, 40]
+        })
+      }).addTo(map);
+    }
+  }
+
+  var map;
+  d3.json("data/africa.geo.json", function(res){
+
+    // map 1
+    map = maps[0]
+    var layer = new L.GeoJSON(res, {
+      onEachFeature:createOnEachFeature(map)
+    }).addTo(map);
+    map.fitBounds(layer.getBounds()); // Fit map to bounds of geojson
+    map.setZoom(3);
+    layer.eachLayer(function(l) {
+      console.log("l", l);
+      d3.select(l._path).datum(l.feature);
+    });
+    d3.select("#map0").select("svg").selectAll("path").on("click", function(d){
+      console.log(d);
+      d3.select(this).style("fill", "red");
+    });
+
+    // map2
+    map = maps[1];
+    var accessToken = 'pk.eyJ1IjoiaGl0b2t1biIsImEiOiJjaXVqYnd0NXUwMGRwMm9tc3RvcGZ1ZDZ5In0.Q4wyiiGDLH_lTi3zzFcAtA';
+    var mapboxUrl = 'https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
+    var grayscale = L.tileLayer(mapboxUrl, {id: 'light-v9', attribution: '', maxZoom: 20, accessToken: accessToken});
+    grayscale.addTo(map);
+    var layer = new L.GeoJSON(res).addTo(map);
+    map.fitBounds(layer.getBounds());
+    map.setZoom(3);
+
+
+    //位置→座標変換
+    function projectPoint(x, y) {
+      var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+      this.stream.point(point.x, point.y);
+    }
+    //緯度経度->パスジェネレーター関数作成
+    var transform = d3.geoTransform({point: projectPoint});
+    var path = d3.geoPath().projection(transform);
+
+    // map3
+    map = maps[2]
+    var layer = new L.GeoJSON(res, {}).addTo(map);
+    map.fitBounds(layer.getBounds()); // Fit map to bounds of geojson
+    layer.eachLayer(function(l) {
+      console.log("l", l);
+      d3.select(l._path).datum(l.feature);
+    });
+    d3.select("#map2").select("svg").selectAll("path").on("click", function(d){
+      console.log(d);
+      d3.select(this).style("fill", "red");
+    });
+
+    var featureElement = d3.select("#map2").select("svg").append("g").selectAll("text")
+    .data(res.features)
+    .enter()
+    .append("text")
+    .text(function(d){
+      return d.properties.name;
+    });
+    function update() {
+      featureElement.attr("x", function(d){
+        return path.centroid(d)[0];
+      })
+      .attr("y", function(d){
+        return path.centroid(d)[1];
+      });
+    }
+    update();
+    map.on("zoom", update);
+    map.on("move", update);
+    map.setZoom(3);
+
+    // pure d3.js
+    (function(){
+      var projection = d3.geoMercator().scale(400);
+      var map = d3.select("#map3").append("svg")
+      .style("width", "100%")
+      .style("height", $(".map").height());
+      var g = map.append("g");
+
+      projection.center(d3.geoCentroid(res));
+      var path = d3.geoPath().projection(projection);
+
+      var country = g.selectAll("path")
+      .data(res.features)
+      .enter()
+      .append("g");
+      country.append("path")
+      .attr("d", path);
+
+      // var drag = d3.drag()
+      // // .on('start', drag_start)
+      // .on('drag', function(d){
+      //   projection.invert([d3.event.x, d3.event.y]);
+      // });
+      // drag(map);
+
+      var initFontSize = parseFloat(g.style("font-size"));
+      var initStrokeWitdh = parseFloat(g.style("stroke-width"));
+      console.log("initFontSize", initFontSize);
+
+      const zoom = d3.zoom()
+      .on('zoom', function(){
+        g.style("font-size", initFontSize / d3.event.transform.k + "px");
+        country.style('stroke-width', initStrokeWitdh / d3.event.transform.k + "px !important");
+
+        console.log("transform.k", d3.event.transform.k);
+        console.log(country.style("stroke-width"));
+        console.log("initStrokeWitdh", initStrokeWitdh);
+        console.log("initStrokeWitdh / d3.event.transform.k", initStrokeWitdh / d3.event.transform.k);
+
+        g.attr('transform', d3.event.transform) // updated for d3 v4
+      });
+      map.call(zoom);
+
+      g.selectAll("text")
+      .data(res.features)
+      .enter()
+      .append("text")
+      .text(function(d){
+        return d.properties.name;
+      })
+      .attr("x", function(d){
+        return path.centroid(d)[0];
+      })
+      .attr("y", function(d){
+        return path.centroid(d)[1];
+      });
+
+    })();
+
+
+
+  })
+
+</script>
