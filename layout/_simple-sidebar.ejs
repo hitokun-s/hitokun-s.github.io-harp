@@ -9,9 +9,6 @@
     }
  %>
 <style>
-    body{
-        padding-top: 10px;
-    }
     .bio{
         position: absolute;
         bottom: 0px;
@@ -22,34 +19,58 @@
         right:0px;
         cursor: pointer;
     }
+    .my-sidebar{
+        width: 120px;
+        height: 100%;
+        background: #428bca;
+        position: absolute;
+        left: 0px;
+        padding-left: 5px;
+    }
+    body{
+        padding-left: 120px;
+    }
+
+    #content{
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow-y: scroll;
+    }
+    .my-sidebar a{
+        color: white;
+    }
+    .my-title{
+        color: white;
+    }
+    .bio{
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+    }
 </style>
-<div class="ui thin fixed inverted menu mobile only">
-    <div class="menu">
-        <div  class="item">Hitokun's</div>
-    </div>
-    <div id="btn-sidebar" class="ui right floated"><i class="icon large grey content"></i></div>
-</div>
+
 <!--<div id="navbar" class="ui thin vertical inverted {{ isMobile ? 'top':'left visible'}} sidebar menu">-->
-<div id="navbar" class="ui thin vertical inverted left visible sidebar menu">
-    <a class="item">
+<div class="my-sidebar">
+    <a class="my-title">
         <h2>Hitokun's</h2>
     </a>
-    <div id="breadcrumb">
-        <template v-for="item in getMenu()">
-            <a :href="item.path" class="item"><i class="right chevron icon divider"></i>{{ item.name }}</a>
-        </template>
-    </div>
-    <div class="bio mobile hidden">
-        <a href="/about.html" class="item">
+    <!--<div id="breadcrumb">-->
+        <!--<template v-for="item in getMenu()">-->
+            <!--<a :href="item.path" class="item"><i class="right chevron icon divider"></i>{{ item.name }}</a>-->
+        <!--</template>-->
+    <!--</div>-->
+    <div class="bio">
+        <a href="/about.html">
             About
         </a>
-        <a href="/contact.html" class="item">
+        <a href="/contact.html">
             Contact
         </a>
     </div>
 </div>
 <!--<div id="content" class="pusher" style="{{ isMobile ? 'padding-top: 40px !important;' : ''}}">-->
-<div id="content" class="pusher">
+<div id="content">
     <%- yield %>
 </div>
 <script>
@@ -106,7 +127,7 @@
         content.setWindowSize(); // 変数windowSizeが共有されているので、どれか1個を呼ぶだけでいい。
     };
     $("#btn-sidebar").click(function(){
-        $('.ui.sidebar').sidebar('toggle');    
+        $('.ui.sidebar').sidebar({});
     });
     
 </script>

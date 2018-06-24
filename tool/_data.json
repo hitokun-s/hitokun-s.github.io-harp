@@ -1,8 +1,15 @@
 {
   "articles": [
     {
+      "href": "pccs-tone-map.html",
+      "header": "PCCS Tone Map",
+      "img": "/tool/img/pccs_tone_map.png",
+      "description": "PCCS Tone Map"
+    },
+    {
       "href": "color-tones.html",
       "header": "Color Tones",
+      "img": "/tool/img/color-tones.png",
       "description": "Color Tones"
     },
     {

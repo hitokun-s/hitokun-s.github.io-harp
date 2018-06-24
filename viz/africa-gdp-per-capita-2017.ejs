@@ -1,3 +1,4 @@
+<% layout = "simple-sidebar" %>
 <% title = "Africa GDP per capita(2017)" %>
 <% dependsOn(["d3.v4", "leaflet", "vue.v2", "underscore"]) %>
 
@@ -7,13 +8,13 @@
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.js"></script>
 
-<p><%=title%> <span><a href="https://en.wikipedia.org/wiki/List_of_African_countries_by_GDP_(PPP)_per_capita">source</a></span></p>
-<div id="map"></div>
-
+<p class="title"><%=title%></p>
+<span class="source"><a href="https://en.wikipedia.org/wiki/List_of_African_countries_by_GDP_(PPP)_per_capita">source</a></span>
 <style>
     #map{
-        height: 900px;
-        margin-bottom: 10px;
+      /*width: 100%;*/
+      height: 900px;
+      margin-bottom: 10px;
     }
     svg path{
       stroke:#fff;
@@ -33,8 +34,19 @@
       fill-opacity: 1;
       fill: lightgrey;
     }
-
+  .source{
+    position: absolute;
+    top: 3px;
+    right: 5px;
+  }
+  .title{
+    padding-top: 3px;
+    padding-left: 6px;
+  }
 </style>
+
+<div id="map"></div>
+
 <script>
 
   var dict = [
@@ -51,12 +63,11 @@
 
   d3.json("data/africa.geo.json", function(res){
 
-    //位置→座標変換
     function projectPoint(x, y) {
       var point = map.latLngToLayerPoint(new L.LatLng(y, x));
       this.stream.point(point.x, point.y);
     }
-    //緯度経度->パスジェネレーター関数作成
+
     var transform = d3.geoTransform({point: projectPoint});
     var path = d3.geoPath().projection(transform);
 
@@ -70,9 +81,6 @@
     }).addTo(map);
     map.fitBounds(layer.getBounds()); // Fit map to bounds of geojson
     // map.setZoom(3);
-
-    const reg = d3.select("svg").attr("style").match(/translate3d\((.+)px, (.+)px/);
-    var initTranslate = reg[1].split(",").map(parseFloat);
 
     layer.eachLayer(function(l) {
       d3.select(l._path).datum(l.feature);
