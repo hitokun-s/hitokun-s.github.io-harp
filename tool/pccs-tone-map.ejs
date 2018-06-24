@@ -138,6 +138,12 @@
         .sort(null)
         .value(function(d) { return 1; });
 
+        if(this.colors.length == 12){
+          pie.startAngle(-(0.5 + 1/12) * Math.PI);
+        }else if(this.colors.length == 24){
+          pie.startAngle(-(7/12 + 1/24) * Math.PI);
+        }
+
         var path = d3.arc()
         .outerRadius(radius - 10)
         .innerRadius(radius * 0.6);
