@@ -57,6 +57,10 @@
     cursor: pointer;
   }
 
+  .color-explanation{
+    float:right;
+    margin-left: 5px;
+  }
 </style>
 
 <div class="column" id="stage">
@@ -87,7 +91,10 @@
           <rect x="0" y="0" width="120" height="60" :fill="color.code"></rect>
           <text x="120" y="12" v-on:click="remove(color)" class="btn-remove">x</text>
         </svg>
-        <span>{{color.name}}</span>
+        <div class="color-explanation">
+          <span class="ui grey horizontal label">{{color.name}}</span><br>
+          <span>{{color.code}}</span>
+        </div>
       </div>
   </div>
 </div>
