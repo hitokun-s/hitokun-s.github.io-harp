@@ -1,133 +1,203 @@
-<% dependsOn(["font-awesome", "p5"]); %>
+<% dependsOn(["d3.v4", "font-awesome", "underscore"]); %>
+<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+<link rel="stylesheet" href="css/top.css">
 
 <% title = "Top" %>
+<% layout = "nolayout" %>
 
-<link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet'
-      type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
-      rel='stylesheet' type='text/css'>
+<div class="stage">
 
-<div class="ui right floated vertical compact menu">
-    <a href="/demo" class="item">
-        <i class="student icon"></i>
-        Demos
-    </a>
-    <a href="/viz" class="item">
-        <i class="bar chart icon"></i>
-        Viz
-    </a>
-    <a href="/movie" class="item">
-        <i class="video camera icon"></i>
-        Movies
-    </a>
-    <a href="/music" class="item">
-        <i class="music icon"></i>
-        Musics
-    </a>
-    <a href="/project" class="item">
-        <i class="lab icon"></i>
-        Projects
-    </a>
-    <a href="/game" class="item">
-        <i class="game icon"></i>
-        Games
-    </a>
-    <a href="/tool" class="item">
-        <i class="configure icon"></i>
-        Tools
-    </a>
-    <a href="/watch" class="item">
-        <i class="wait icon"></i>
-        Watches
-    </a>
-    <a href="/helloworld" class="item">
-        <i class="trash icon"></i>
-        HelloWorld
-    </a>
-    <a href="/garbage" class="item">
-        <i class="trash icon"></i>
-        Garbages
-    </a>
+  <h1 class="title">Hitokun's</h1>
+
+  <div class="menu top">
+    <ul>
+      <li>
+        <a href="/demo"><i class="fas fa-flask"></i>Demos</a>
+      </li>
+      <li>
+        <a href="/viz"><i class="fas fa-chart-bar"></i>Viz</a>
+      </li>
+      <li>
+        <a href="/project"><i class="fas fa-flask"></i>Projects</a>
+      </li>
+      <li>
+        <a href="/tool" class="item"><i class="configure icon"></i>Tools</a>
+      </li>
+      <li>
+        <a href="/movie" class="item"><i class="fas fa-video"></i>Movies</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="menu bottom">
+    <ul>
+      <li>
+        <a href="/music">
+          <i class="fas fa-music"></i>Musics
+        </a>
+      </li>
+      <li>
+        <a href="/game">
+          <i class="fas fa-gamepad"></i>Game
+        </a>
+      </li>
+      <li>
+        <a href="/watch" class="item">
+          <i class="wait icon"></i>
+          Watches
+        </a>
+      </li>
+      <li>
+        <a href="/garbage" class="item">
+          <i class="trash icon"></i>
+          Garbages
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="svg-bg">
+    <marker id="m_ar" viewBox="0 0 10 10" refX="5" refY="5" markerUnits="strokeWidth" preserveAspectRatio="none" markerWidth="4" markerHeight="6" orient="auto">
+      <polygon points="0,0 0,10 10,5" id="ms"/>
+    </marker>
+    <g transform="translate(0,250)">
+    <rect class="main-box" x="0" y="0" width="100%" height="50"></rect>
+    <text class="catch-copy" x="50%" y="25">
+      <tspan id="copy0" class="obj">My</tspan>
+      <tspan id="copy1">.status = (</tspan>
+      <tspan id="copy2" class="obj"> I </tspan>
+      <tspan id="copy3">as</tspan>
+      <tspan id="copy4" class="class">Programmer</tspan>
+      <tspan id="copy5">)</tspan>
+      <tspan id="copy6">.canHelp(</tspan>
+      <tspan id="copy7" class="obj">You</tspan>
+      <tspan>)</tspan> ? <tspan class="const">HAPPY</tspan> : <tspan class="const">SAD</tspan>;
+    </text>
+    </g>
+  </svg>
 </div>
 
-<style>
-    #background{
-        z-index: 0;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        left: -330px;
-        top: -41px;
-    }
-    body{
-        overflow-y: hidden;
-    }
-</style>
-
 <script>
-  function setup() {
 
-    $("body").prepend("<div id='background'></div>");
+  var w = window,
+      d = document,
+      e = d.documentElement,
+      g = d.getElementsByTagName('body')[0],
+      x = w.innerWidth || e.clientWidth || g.clientWidth,
+      y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+  console.log(x + ' × ' + y);
 
-    var width = $("#background").width();
-    var height = $("#background").height() + 50;
-    var canvas = createCanvas(width, height, WEBGL);
-    canvas.parent("#background");
-    ortho();
+  var svg = d3.select("svg")
+  console.log(svg.attr("width"));
 
-    // camera(0, -150, 1, 2, -150, 0, 0, 1, 0);
-    camera(-180, 0, 200, 0, 0, 0, 0, 1, 0);
+  svg.select(".main-box")
+  .on("click", function(){
+    console.log("hi!");
+  });
 
-    fill(200);
-    stroke(200);
+  var catchCopyBox = svg.select(".catch-copy").node().getBBox();
+  catchCopyBox.bottom = catchCopyBox.y + catchCopyBox.height;
+
+  // catch copy
+
+  var g = d3.select("g");
+
+  // getComputedTextLength();
+  // var offset = g.select("#copy1").node().getComputedTextLength()
+  //     + g.select("#copy2").node().getComputedTextLength()
+  //     + g.select("#copy3").node().getComputedTextLength();
+  var getOffset = function(idx){
+    var sum = 0;
+    for(var i = 0;i < idx;i++){
+      sum += g.select("#copy" + i).node().getComputedTextLength();
+    }
+    console.log("getOffset" + idx, sum);
+    return sum + 3 * idx;
   }
 
-  var radius = 300;
-  var speed = 0.005;
+  var _x = catchCopyBox.x + getOffset(3);
 
-  // refs: https://qiita.com/hp0me/items/1570694d9f61368f3ae6
-  // ortho(): https://processing.org/reference/ortho_.html
+  // add About line
+  g.append("path")
+  .classed("line-i", true)
+  .attr("d", "M" + _x + " " +  catchCopyBox.y
+      + " L" + (_x + 30) + " " + (catchCopyBox.y - 30)
+      + " L" + (_x + 60) + " " + (catchCopyBox.y - 30)
+      + " ");
+  g.append("text")
+  .attrs({
+    x: _x + 60,
+    y: catchCopyBox.y - 30,
+    class: "text-about"
+  }).text("About")
+  .on("click", function(){
+    console.log("About");
+    window.location.href = "/about"
+  });
 
-  function draw() {
-    orbitControl();
+  // add Contact line
+  var youOffset = catchCopyBox.x + getOffset(7);
+  var lineContactY = catchCopyBox.bottom + 5;
+  g.append("path")
+  .classed("line-contact", true)
+  .attr("d", "M" + youOffset + " " + lineContactY
+    + "Q " + (_x + youOffset) / 2 + "," + (lineContactY + 40) + " " + _x + "," +  lineContactY
+  )
+  .attr("marker-end", "url(#m_ar)");
 
-    background(255);
+  g.append("text")
+  .attrs({
+    x: (_x + youOffset) / 2,
+    y: lineContactY + 40,
+    class: "text-contact"
+  }).text("Contact")
+  .on("click", function(){
+    console.log("Contact");
+    window.location.href = "/contact"
+  });
 
-    // var locY = (mouseY / height - 0.5) * (-2);
-    // var locX = (mouseX / width - 0.5) * 2;
-    // ambientLight(100, 80, 80);
-    // pointLight(200, 200, 200, locX, locY, 0);
-    // directionalLight(250, 250, 250, locX, -locY, 0.25);
+  // bar chart
+  var drawBarChart = function(x, y, w, h){
 
-    var _frameCount = frameCount;
-    // rotateX(-0.6);
-    rotateZ(0.5);
+    var data = [10, 30, 40, 30, 20, 30, 50, 40, 20];
+    var count = data.length;
+    var band = w / (count * 2 - 1);
 
-    for(var i = -9;i < 9;i++){
-      push();
-      rotateY(_frameCount * speed + TWO_PI * 2 * i / 18);
-      torus(radius, 1, 48, 16);
-      pop();
-    }
-    rotateX(HALF_PI);
-    torus(radius, 1, 48, 16);
+    var max = _.max(data);
+    console.log("max", max);
+    var scale = function(d){
+      return h * d / max;
+    };
 
-    for(var i = -8;i < 9;i++){
-      push();
-      translate(0,0,Math.sin((HALF_PI) * i / 9) * radius);
-      torus(Math.cos((HALF_PI) * i / 9) * radius, 1, 48, 16);
-      pop();
-    }
-
-    for(var i = -18;i < 18;i++){
-      push();
-      var ang = _frameCount * speed + TWO_PI * 2 * i / 36;
-      translate(radius * 1.2 * sin(ang), radius * 1.2 * cos(ang), 0);
-      rotateX(HALF_PI);
-      cylinder(30, 1); // radius, height
-      pop();
-    }
-
+    g.append("g")
+    .attr("transform", "translate(" + x + "," + y + ")")
+    .selectAll(".bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .classed("bar", true)
+    .attrs({
+      x: function(d, i){
+        return band * 2 * i;
+      },
+      y: function(d){
+        return - scale(d);
+      },
+      width: band,
+      height: scale
+    })
   }
+  drawBarChart(30, 0, 120, 80);
 
+
+  // star orbits
+
+
+  // binary tree
+
+
+  // fully connected layers
+
+
+  // decision tree
 </script>

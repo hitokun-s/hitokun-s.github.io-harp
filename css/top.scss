@@ -1,0 +1,117 @@
+//$back-color: #a5cad7;
+$back-color: #C5F0FF;
+//$main-color: #005692;
+$main-color: #003C66;
+
+body{
+  background: linear-gradient($back-color, $main-color);
+}
+
+.title{
+  position: absolute;
+  padding: 0 8px;
+  color: $main-color;
+}
+
+.main-box, .bar{
+  //fill: $main-color
+  fill: transparent;
+}
+
+.stage{
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.catch-copy{
+  text-anchor: middle;
+  //dominant-baseline: middle;
+  fill: #fff;
+}
+
+#svg-bg {
+  /*position: absolute;*/
+  width: 100%;
+  //height: 300px;
+  height: 100%;
+  /*top: 0;*/
+  /*left: 0;*/
+  /*z-index: -1;*/
+  //background: $back-color;
+}
+
+text .obj{
+  fill: yellow;
+}
+text .const{
+  fill: #A3FF69;
+}
+text .class{
+  fill: lightgoldenrodyellow;
+}
+
+.line-i{
+  stroke: yellow;
+  stroke-width: 2px;
+  fill: transparent;
+}
+.line-contact{
+  stroke: yellow;
+  stroke-width: 2px;
+  fill: transparent;
+}
+.text-about{
+  fill: yellow;
+  dominant-baseline: middle;
+  cursor: pointer;
+  &:hover{
+    fill: orange;
+  }
+}
+marker{
+  fill: yellow;
+}
+.text-contact{
+  fill: yellow;
+  dominant-baseline: middle;
+  cursor: pointer;
+  &:hover{
+    fill: orange;
+  }
+}
+
+.menu{
+  position: absolute;
+  z-index: 1;
+  font-size: 15px;
+  ul{
+    list-style: none;
+    padding-left: 0;
+    margin: 0 auto;
+  }
+  li{
+    display: inline-block;
+    margin-right: 15px;
+    width: 99px;
+    text-align: left;
+  }
+
+  &.top {
+    a{
+      color: $main-color;
+    }
+    right: 0;
+  }
+
+  &.bottom{
+    bottom: 0;
+    a{
+      color: $back-color;
+    }
+    left: 30px;
+  }
+  .fa, .fas{
+    margin-right: 5px;
+  }
+}
